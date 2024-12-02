@@ -1,0 +1,130 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Artemiik\\Documents\\git\\FlickFinder\\desktop\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{9F5BB593-CC60-491E-ADC0-CC4CDDD7C070}|flick_finder.csproj|c:\\users\\artemiik\\documents\\git\\flickfinder\\desktop\\view\\films\\movie.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{9F5BB593-CC60-491E-ADC0-CC4CDDD7C070}|flick_finder.csproj|solutionrelative:view\\films\\movie.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F5BB593-CC60-491E-ADC0-CC4CDDD7C070}|flick_finder.csproj|c:\\users\\artemiik\\documents\\git\\flickfinder\\desktop\\style\\combobox.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{9F5BB593-CC60-491E-ADC0-CC4CDDD7C070}|flick_finder.csproj|solutionrelative:style\\combobox.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F5BB593-CC60-491E-ADC0-CC4CDDD7C070}|flick_finder.csproj|c:\\users\\artemiik\\documents\\git\\flickfinder\\desktop\\view\\home\\mainhome.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{9F5BB593-CC60-491E-ADC0-CC4CDDD7C070}|flick_finder.csproj|solutionrelative:view\\home\\mainhome.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F5BB593-CC60-491E-ADC0-CC4CDDD7C070}|flick_finder.csproj|c:\\users\\artemiik\\documents\\git\\flickfinder\\desktop\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{9F5BB593-CC60-491E-ADC0-CC4CDDD7C070}|flick_finder.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 7,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ComboBox.xaml",
+              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\FlickFinder\\Desktop\\Style\\ComboBox.xaml",
+              "RelativeDocumentMoniker": "Style\\ComboBox.xaml",
+              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\FlickFinder\\Desktop\\Style\\ComboBox.xaml",
+              "RelativeToolTip": "Style\\ComboBox.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-11-13T18:24:58.572Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MainHome.xaml",
+              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\FlickFinder\\desktop\\View\\Home\\MainHome.xaml",
+              "RelativeDocumentMoniker": "View\\Home\\MainHome.xaml",
+              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\FlickFinder\\desktop\\View\\Home\\MainHome.xaml",
+              "RelativeToolTip": "View\\Home\\MainHome.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-11-13T18:10:32.389Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\FlickFinder\\desktop\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "MainWindow.xaml",
+              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\FlickFinder\\desktop\\MainWindow.xaml",
+              "RelativeToolTip": "MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-11-13T18:19:23.968Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Movie.xaml",
+              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\FlickFinder\\desktop\\View\\Films\\Movie.xaml",
+              "RelativeDocumentMoniker": "View\\Films\\Movie.xaml",
+              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\FlickFinder\\desktop\\View\\Films\\Movie.xaml",
+              "RelativeToolTip": "View\\Films\\Movie.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-11-13T17:55:11.387Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 1449,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 268,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 55,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

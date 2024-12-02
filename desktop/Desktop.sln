@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "flick_finder", "flick_finder.csproj", "{9F5BB593-CC60-491E-ADC0-CC4CDDD7C070}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9F5BB593-CC60-491E-ADC0-CC4CDDD7C070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F5BB593-CC60-491E-ADC0-CC4CDDD7C070}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F5BB593-CC60-491E-ADC0-CC4CDDD7C070}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F5BB593-CC60-491E-ADC0-CC4CDDD7C070}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

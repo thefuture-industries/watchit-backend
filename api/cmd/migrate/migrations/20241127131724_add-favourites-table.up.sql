@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS favourites (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `uuid` VARCHAR(255) NOT NULL,
+  `movieId` INT NOT NULL,
+  `moviePoster` VARCHAR(255) NOT NULL,
+  `createdAt` VARCHAR(50) NOT NULL,
+
+  PRIMARY KEY (id)
+);

@@ -1,0 +1,35 @@
+#loader
+  display: flex
+  justify-content: center
+  align-items: center
+  height: 100vh
+
+  position: fixed
+  left: 19rem
+  top: 0
+  z-index: 1000
+  background: #000
+  width: 70vw
+
+  padding: 2.4px 0
+  #loading
+    width: 40px
+    height: 40px
+
+    display: flex
+    margin: 0 auto
+
+    border: 10px solid rgba(22, 22, 22, 0.5)
+    box-shadow: 0 0 60px 0 rgba(255, 255, 255, 0.3)
+    border-radius: 50%
+    border-left-color: #ffffff
+    animation: loader__loading 1s linear infinite
+
+  .wait-text
+    font-weight: 300
+    margin-top: 20px
+    letter-spacing: .3px
+
+@keyframes loader__loading
+  100%
+    transform: rotate(360deg)

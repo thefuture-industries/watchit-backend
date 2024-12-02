@@ -1,0 +1,41 @@
+<Window x:Class="flick_finder.StartWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:flick_finder"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        Background="Transparent"
+        AllowsTransparency="True"
+        Title="Flick Finder" Height="480" Width="800"
+        Icon="Public/Images/icon.png" Loaded="StartWindow_Loaded">
+    <Border CornerRadius="20" Cursor="Wait">
+        <Border.Background>
+            <ImageBrush ImageSource="Public/Images/bg.jpeg"></ImageBrush>
+        </Border.Background>
+        
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+        
+            <Border Grid.Column="0" CornerRadius="20">
+                <Rectangle Fill="Black" Opacity="0.3"></Rectangle>
+            </Border>
+            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="20 0">
+                <Label FontFamily="Kanit" FontWeight="Bold"
+                       FontSize="60" Foreground="#fff">Flick Finder</Label>
+        
+                <TextBlock Foreground="#fff" FontFamily="Kanit"
+                           FontSize="16" Margin="10 0 0 0">Find it quickly and start watching</TextBlock>
+            </StackPanel>
+            <Border Grid.Column="1" CornerRadius="20">
+                <Rectangle Fill="Black" Opacity="0.3"></Rectangle>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
