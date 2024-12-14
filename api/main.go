@@ -2,9 +2,9 @@ package main
 
 import (
 	"database/sql"
-	"flick_finder/cmd/api"
-	"flick_finder/internal/config"
-	"flick_finder/internal/db"
+	"flicksfi/cmd/api"
+	"flicksfi/internal/config"
+	"flicksfi/internal/db"
 	"log"
 
 	"github.com/go-sql-driver/mysql"

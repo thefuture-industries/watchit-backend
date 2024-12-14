@@ -2,9 +2,12 @@ package api
 
 import (
 	"database/sql"
-	"flick_finder/internal/app/admin"
-	"flick_finder/internal/app/apis"
-	"flick_finder/internal/app/user"
+	"flicksfi/internal/app/admin"
+	"flicksfi/internal/app/apis"
+	"flicksfi/internal/app/favourite"
+	"flicksfi/internal/app/limiter"
+	"flicksfi/internal/app/recommendation"
+	"flicksfi/internal/app/user"
 	"log"
 	"net/http"
 
@@ -34,15 +37,37 @@ func (s *APIServer) Run() error {
 	// -----------------------
 	// определение user router
 	// -----------------------
+	limiterService := limiter.NewService(s.db)
 	userService := user.NewService(s.db)
-	userHandler := user.NewHandler(userService)
+	userHandler := user.NewHandler(userService, limiterService)
 	userHandler.RegisterRoutes(subrouter)
+
+	// ----------------------------
+	// определение recommendations router
+	// ----------------------------
+	recommendationService := recommendation.NewService(s.db)
+	recommendationHandler := recommendation.NewHandler(recommendationService, userService)
+	recommendationHandler.RegisterRoutes(subrouter)
+
+	// ----------------------------
+	// определение favourite router
+	// ----------------------------
+	favouriteService := favourite.NewService(s.db)
+	favouriteHandler := favourite.NewHandler(favouriteService, userService, recommendationService)
+	favouriteHandler.RegisterRoutes(subrouter)
+
+	// ----------------------------
+	// определение favourite router
+	// ----------------------------
+	limiterService = limiter.NewService(s.db)
+	limiterHandler := limiter.NewHandler(limiterService, userService)
+	limiterHandler.RegisterRoutes(subrouter)
 
 	// -----------------------
 	// определение apis router
 	// -----------------------
 	apisService := apis.NewService(s.db)
-	apisHandler := apis.NewHandler(apisService, userService)
+	apisHandler := apis.NewHandler(apisService, userService, limiterService)
 	apisHandler.RegisterRoutes(subrouter)
 
 	// -----------------------

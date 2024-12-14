@@ -6,6 +6,7 @@ import {
   Text,
   Heart,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const itemNav = [
@@ -42,6 +43,22 @@ const itemNav = [
 ];
 
 const Navigation = () => {
+  const [user, setUser] = useState<{
+    uuid: string;
+    username: string;
+    email: string | null;
+  }>();
+
+  useEffect(() => {
+    const _sess = sessionStorage.getItem("_sess");
+
+    if (!_sess) {
+      return;
+    }
+
+    setUser(JSON.parse(_sess));
+  }, []);
+
   return (
     <>
       <div className="fixed">
@@ -49,9 +66,13 @@ const Navigation = () => {
           <Link to="/" className="flex items-center">
             <img src="/src/assets/gradient.webp" width={45} alt="" />
             <div className="ml-3">
-              <p className="text-[#fff]">Artemiik</p>
+              <p className="text-[#fff]">{user?.username}</p>
               <p className="font-normal text-[14px] text-[#888]">
-                artemvlasiv1909@gmail.com
+                {user?.email ? (
+                  <p>{user.email}</p>
+                ) : (
+                  <p>Specify the email address</p>
+                )}
               </p>
             </div>
           </Link>

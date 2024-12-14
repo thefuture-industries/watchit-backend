@@ -3,8 +3,8 @@ package movie
 import (
 	"compress/gzip"
 	"encoding/json"
-	"flick_finder/internal/types"
-	"flick_finder/pkg"
+	"flicksfi/internal/types"
+	"flicksfi/pkg"
 	"fmt"
 	"io"
 	"os"

@@ -5,15 +5,19 @@ import {
   Monitor,
   LayoutDashboard,
   MoveLeft,
+  Heart,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import SimilarMovie from "~/components/controls/SimilarMovie";
 import Skeleton from "~/components/Skeletons/Skeleton";
+import favouritesService from "~/services/favourites-service";
 import movieService from "~/services/movie-service";
 import { MovieModel } from "~/types/movie";
 
 const MovieDetails = () => {
+  const [isSuccessFavourite, setIsSuccessFavourite] = useState<boolean>(false);
+  const [isHoverFavourites, setIsHoverFavourites] = useState<boolean>(false);
   const genres: Record<number, string> = {
     28: "Action",
     12: "Adventure",
@@ -50,12 +54,12 @@ const MovieDetails = () => {
     // Получение деталий фильма по ID
     const movieDetails = async () => {
       // Получение деталий фильма по ID
-      let movieDetails = await movieService.details_movie(Number(id));
+      let movieDetails = await movieService.details(Number(id));
       setMovieDetails(movieDetails);
 
       // Получение похожих фильмов
       try {
-        let similarMovies = await movieService.similar_movies(
+        let similarMovies = await movieService.similar(
           movieDetails.genre_ids,
           movieDetails.title,
           movieDetails.overview
@@ -107,18 +111,24 @@ const MovieDetails = () => {
             }}
           />
           <div className="flex items-center gap-[1rem] mr-[4rem]">
-            <Youtube
-              size={22}
-              className="cursor-pointer text-[#4b4b4b] hover:text-[#fff] transition"
-            />
-            <Clapperboard
-              size={22}
-              className="cursor-pointer text-[#4b4b4b] hover:text-[#fff] transition"
-            />
-            <Text
-              size={22}
-              className="cursor-pointer text-[#4b4b4b] hover:text-[#fff] transition"
-            />
+            <Link to="/youtube/filter">
+              <Youtube
+                size={22}
+                className="cursor-pointer text-[#4b4b4b] hover:text-[#fff] transition"
+              />
+            </Link>
+            <Link to="/movie/filter">
+              <Clapperboard
+                size={22}
+                className="cursor-pointer text-[#4b4b4b] hover:text-[#fff] transition"
+              />
+            </Link>
+            <Link to="/story">
+              <Text
+                size={22}
+                className="cursor-pointer text-[#4b4b4b] hover:text-[#fff] transition"
+              />
+            </Link>
           </div>
         </div>
         <div className="flex mt-7 items-center">
@@ -186,13 +196,41 @@ const MovieDetails = () => {
                 to={`https://www.justwatch.com/us/movie/${movieDetails?.title
                   .toLocaleLowerCase()
                   .replace(/ /g, "-")}`}
-                className="cursor-pointer bg-[#b7b7b7] hover:bg-[#fff] transition py-2 px-9 rounded inline-block font-semibold"
+                className="flex items-center cursor-pointer bg-[#b7b7b7] hover:bg-[#fff] transition py-2 px-9 rounded inline-block font-semibold"
               >
+                <Monitor strokeWidth={1.5} color="#000" className="mr-3" />
                 <p className="uppercase text-[#000]">trailer</p>
               </Link>
-              <div className="text-[#888] hover:text-[#fff] transition flex items-center gap-[0.8rem] cursor-pointer">
+              {/* <div className="text-[#888] hover:text-[#fff] transition flex items-center gap-[0.8rem] cursor-pointer">
                 <Monitor strokeWidth={1.5} />
                 <p className="uppercase">watch</p>
+              </div> */}
+              <div
+                onMouseEnter={() => setIsHoverFavourites(true)}
+                onMouseLeave={() => setIsHoverFavourites(false)}
+                className={`p-2 rounded-[50%] flex items-center justify-center cursor-pointer ${
+                  isSuccessFavourite ? "motion-preset-confetti" : ""
+                }`}
+                style={{
+                  background: "rgba(0, 0, 0, 0.3)",
+                  boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.3)",
+                  border: "1px solid #fff",
+                }}
+                onClick={async () => {
+                  await favouritesService.add({
+                    movie_id: movieDetails?.id as number,
+                    movie_poster: movieDetails?.poster_path as string,
+                  });
+                  setIsSuccessFavourite(true);
+                }}
+              >
+                <Heart
+                  size={18}
+                  color={`${isHoverFavourites ? "red" : "white"}`}
+                  className={`fill-[${
+                    isHoverFavourites ? "red" : ""
+                  }] transition`}
+                />
               </div>
             </div>
           </div>

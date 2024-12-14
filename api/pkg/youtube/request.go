@@ -2,7 +2,7 @@ package youtube
 
 import (
 	"context"
-	"flick_finder/internal/config"
+	"flicksfi/internal/config"
 
 	"google.golang.org/api/option"
 	"google.golang.org/api/youtube/v3"

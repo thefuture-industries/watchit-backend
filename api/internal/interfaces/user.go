@@ -1,6 +1,6 @@
 package interfaces
 
-import "flick_finder/internal/types"
+import "flicksfi/internal/types"
 
 type IUser interface {
 	// Получения всех пльзователей
@@ -23,10 +23,4 @@ type IUser interface {
 
 	// Проверка на существования пользователя в БД
 	CheckUser(user types.LoginUserPayload) (*types.User, error)
-
-	// Запись избранного в БД
-	AddFavourite(favourite types.FavouriteAddPayload, uuid string) error
-
-	// Получение списка избранных фильмов
-	Favourites(uuid string) ([]types.Favourites, error)
 }

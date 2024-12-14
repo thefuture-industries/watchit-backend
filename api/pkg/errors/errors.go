@@ -1,7 +1,7 @@
 package errors
 
 import (
-	"flick_finder/internal/types"
+	"flicksfi/internal/types"
 	"fmt"
 )
 

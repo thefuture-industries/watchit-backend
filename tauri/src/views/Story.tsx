@@ -33,7 +33,7 @@ const Story = () => {
                 className="bg-[#111] mb-2 w-[68vw] p-2 border border-[#333] rounded flex justify-center items-center cursor-pointer text-[#999] hover:bg-[#000] hover:text-[#fff] transition"
                 onClick={async () => {
                   await movieService
-                    .plot_movies(plotInput, "simple")
+                    .plot(plotInput, "simple")
                     .then((movies) => {
                       setMovies(movies);
                       setSearchPage(true);
@@ -45,12 +45,10 @@ const Story = () => {
               <div
                 className="bg-[#111] w-[68vw] p-2 border border-[#333] rounded flex justify-center items-center cursor-pointer text-[#999] hover:bg-[#000] hover:text-[#fff] transition"
                 onClick={async () => {
-                  await movieService
-                    .plot_movies(plotInput, "exact")
-                    .then((movies) => {
-                      setMovies(movies);
-                      setSearchPage(true);
-                    });
+                  await movieService.plot(plotInput, "exact").then((movies) => {
+                    setMovies(movies);
+                    setSearchPage(true);
+                  });
                 }}
               >
                 <p className="text-[0.9rem]">Accurate search</p>

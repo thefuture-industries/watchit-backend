@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"database/sql"
-	"flick_finder/internal/types"
+	"flicksfi/internal/types"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -278,51 +278,43 @@ func (s *Service) CheckUser(user types.LoginUserPayload) (*types.User, error) {
 	return u, nil
 }
 
-// Запись избранного в БД
-// ----------------------
-func (s *Service) AddFavourite(favourite types.FavouriteAddPayload, uuid string) error {
-	// определение контекста времени
-	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
-	defer cancel()
+// func (s *Service) UserUpdate(user types.UserUpdate, uuid string) error {
+// 	// определение контекста времени
+// 	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
+// 	defer cancel()
 
-	// Запрос к БД на создания пользователя
-	_, err := s.db.ExecContext(ctx, "insert into favourites (uuid, movieId, moviePoster, createdAt) values (?, ?, ?, ?)", uuid, favourite.MovieID, favourite.MoviePoster, time.Now().Format("2006-01-02 15:04:05"))
+// 	query := "update users set "
+// 	args := make(map[string]interface{})
+// 	first := true
 
-	// Обработка ошибки
-	if err != nil {
-		return fmt.Errorf("database insert error")
-	}
+// 	if *user.Username != "" {
+// 		if !first {
+// 			query += ", "
+// 		}
 
-	return nil
-}
+// 		query += "username = :username"
+// 		args["username"] = user.Username
+// 		first = false
+// 	}
 
-// ----------------------------------
-// Получение списка избранных фильмов
-// ----------------------------------
-func (s *Service) Favourites(uuid string) ([]types.Favourites, error) {
-	// определение контекста времени
-	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
-	defer cancel()
+// 	if *user.Email != "" {
+// 		if !first {
+// 			query += ", "
+// 		}
 
-	rows, err := s.db.QueryContext(ctx, "select * from favourites where uuid = ?", uuid)
-	if err != nil {
-		return nil, fmt.Errorf("error execute query to db")
-	}
+// 		query += "email = :email"
+// 		args["email"] = user.Email
+// 		first = false
+// 	}
 
-	var favourites []types.Favourites
-	for rows.Next() {
-		var f types.Favourites
-		err := rows.Scan(&f.ID, &f.UUID, &f.MovieID, &f.MoviePoster, &f.CreatedAt)
-		if err != nil {
-			return nil, err
-		}
+// 	if !first {
+// 		query += " where uuid = :uuid"
+// 		args["uuid"] = uuid
+// 	} else {
+// 		return fmt.Errorf("no fields provided for update")
+// 	}
 
-		favourites = append(favourites, f)
-	}
+// 	result, err := s.db.NamedRe(ctx, "update users set username = ?, username_apper = ?, email = ?, email_upper = ?, secret_word = ?")
 
-	if len(favourites) == 0 {
-		return nil, fmt.Errorf("you don't have any favourites!")
-	}
-
-	return favourites, nil
-}
+// 	return nil
+// }

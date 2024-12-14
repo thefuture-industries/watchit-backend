@@ -7,6 +7,8 @@ interface Props {
 }
 
 const YoutubeIndex = (prop: Props) => {
+  const popular_data = ["🔥 Popular", "🆕 News", "🔝 Top", "✨ Famous"];
+  const [popular, setPopular] = useState<string>("");
   const [video, setVideo] = useState<YoutubeModel[]>([]);
 
   useEffect(() => {
@@ -15,6 +17,8 @@ const YoutubeIndex = (prop: Props) => {
     } else {
       setVideo(prop.video);
     }
+
+    setPopular(popular_data[Math.floor(Math.random() * 4)]);
   }, [prop.video]);
 
   return (
@@ -32,7 +36,9 @@ const YoutubeIndex = (prop: Props) => {
             style={{ background: "rgba(0, 0, 0, 0.6)" }}
             className="absolute top-5 left-5 cursor-pointer text-[14px] inline-block py-[0.5px] px-3 rounded-xl"
           >
-            <p className="font-light tracking-wide pr-2">🔥 Popular</p>
+            <p className="font-light tracking-wide px-[0.3rem] pr-[0.8rem] pb-[3px]">
+              {popular}
+            </p>
           </div>
 
           <div>

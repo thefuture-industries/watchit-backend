@@ -4,26 +4,22 @@ import (
 	"compress/gzip"
 	"crypto/tls"
 	"encoding/json"
-	"flick_finder/internal/config"
-	"flick_finder/internal/types"
-	"flick_finder/pkg"
+	"flicksfi/internal/config"
+	"flicksfi/internal/types"
+	"flicksfi/pkg"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"regexp"
 	"strings"
 
 	"github.com/google/uuid"
 )
 
-// Стоп-слова
-var stopWordsTxt []string = []string{"a", "on", "is", "the", "are", "in", "of", "to", "and", "an", "be", "where"}
-
 // ----------------------
 // Поиск по сюжету фильма
 // ----------------------
-func OverviewText(text string) ([]types.Movie, error) { // This is word -> ["This", "is", "word"] -> ["This", "word"] -> ["this", "word"]
+func OverviewText(text string) ([]types.Movie, error) {
 	// Чтение файла
 	file, err := os.Open("pkg/movie/db/movies.json.gz")
 	if err != nil {
@@ -53,34 +49,13 @@ func OverviewText(text string) ([]types.Movie, error) { // This is word -> ["Thi
 		return nil, fmt.Errorf("error convert data to json")
 	}
 
-	re := regexp.MustCompile(`\b\w+\b`)
-	array_text := re.FindAllString(text, -1) // ["This", "is", "word"]
-
-	filterArrayText := []string{} // ["this", "word"]
-	for _, txt := range array_text {
-		txt = strings.ToLower(txt)
-		isStop := false
-
-		for _, word := range stopWordsTxt {
-			if txt == word {
-				isStop = true
-				break
-			}
-		}
-
-		if !isStop {
-			filterArrayText = append(filterArrayText, txt)
-		}
-	}
-
-	fmt.Println(filterArrayText)
 	for _, movie := range movies {
 		for _, movieItem := range movie.Results {
-			for _, txt := range filterArrayText {
-				if strings.Contains(movieItem.Overview, txt) {
-					response = append(response, movieItem)
-					break
-				}
+			tfidf := pkg.TF_IDF_MOVIE(movieItem.Overview, text, 0.289)
+			fmt.Printf("tfidf для %s: %.4f\n", movieItem.Title, tfidf)
+
+			if tfidf >= 0.4 {
+				response = append(response, movieItem)
 			}
 		}
 	}

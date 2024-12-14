@@ -1,11 +1,29 @@
 package pkg
 
 import (
-	"flick_finder/internal/types"
+	"flicksfi/internal/types"
 	"math/rand"
 	"time"
 )
 
+// Удаление дубликатов из массива
+// ------------------------------
+func DeleteDublicateMovies(arr []types.Movie) []types.Movie {
+	seen := make(map[int]bool)
+	var result []types.Movie
+
+	for _, movie := range arr {
+		if _, ok := seen[movie.Id]; !ok {
+			seen[movie.Id] = true
+			result = append(result, movie)
+		}
+	}
+
+	return result
+}
+
+// Массив с random начальным индексом
+// ----------------------------------
 func TruncateArrayMovies(arr []types.Movie) []types.Movie {
 	var arrayLength int = len(arr)
 	var startIndex int = 1
@@ -20,5 +38,6 @@ func TruncateArrayMovies(arr []types.Movie) []types.Movie {
 		endIndex = arrayLength
 	}
 
-	return arr[startIndex-1 : endIndex]
+	fillterArray := DeleteDublicateMovies(arr[startIndex-1 : endIndex])
+	return fillterArray
 }

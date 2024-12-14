@@ -1,12 +1,10 @@
 import "~/App.css";
 import { createBrowserRouter } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import * as page from "~/pages/export.page.config";
 import ProtectedRouter from "./Protected";
-const Loader = lazy(() => import("./components/Loader"));
-const MovieDetailsSkeleton = lazy(
-  () => import("./components/Skeletons/MovieDetailsSkeleton")
-);
+import Loader from "./components/Loader";
+import MovieDetailsSkeleton from "./components/Skeletons/MovieDetailsSkeleton";
 
 const App = createBrowserRouter([
   {
@@ -19,6 +17,14 @@ const App = createBrowserRouter([
             <ProtectedRouter>
               <page.home />
             </ProtectedRouter>
+          </Suspense>
+        ),
+      },
+      {
+        path: "/favourites",
+        element: (
+          <Suspense fallback={<Loader />}>
+            <page.favourites />
           </Suspense>
         ),
       },

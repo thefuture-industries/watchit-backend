@@ -1,13 +1,13 @@
 package apis
 
 import (
-	"flick_finder/internal/config"
-	"flick_finder/internal/interfaces"
-	"flick_finder/internal/types"
-	"flick_finder/internal/utils"
-	"flick_finder/pkg/movie"
-	"flick_finder/pkg/translate"
-	"flick_finder/pkg/youtube"
+	"flicksfi/internal/config"
+	"flicksfi/internal/interfaces"
+	"flicksfi/internal/types"
+	"flicksfi/internal/utils"
+	"flicksfi/pkg/movie"
+	"flicksfi/pkg/translate"
+	"flicksfi/pkg/youtube"
 	"fmt"
 	"io"
 	"math/rand"
@@ -21,14 +21,16 @@ import (
 )
 
 type Handler struct {
-	service     interfaces.IApis
-	userService interfaces.IUser
+	service        interfaces.IApis
+	userService    interfaces.IUser
+	limiterService interfaces.ILimiter
 }
 
-func NewHandler(service interfaces.IApis, userService interfaces.IUser) *Handler {
+func NewHandler(service interfaces.IApis, userService interfaces.IUser, limiterService interfaces.ILimiter) *Handler {
 	return &Handler{
-		service:     service,
-		userService: userService,
+		service:        service,
+		userService:    userService,
+		limiterService: limiterService,
 	}
 }
 
@@ -118,12 +120,14 @@ func (h Handler) handleMovies(w http.ResponseWriter, r *http.Request) {
 
 	// Инициализация переменной для получения из URL параметров
 	query := r.URL.Query()
+
 	var genre_id string = query.Get("genre_id")
 	var release_date string = query.Get("date")
 	search, err := url.QueryUnescape(query.Get("s"))
 	if err != nil {
 		return
 	}
+	fmt.Println(search)
 
 	// Создания данных для получения фильмов
 	var parametrs map[string]string = map[string]string{
@@ -209,6 +213,7 @@ func (h Handler) handleMoviesText(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
+	fmt.Println(text_to_en)
 
 	// Получение фильмов по сюжету
 	if payload.Lege == "simple" {
@@ -231,7 +236,7 @@ func (h Handler) handleMoviesText(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Получение лимитов пользователя
-		limiter, err := h.service.GetLimitText(u.UUID)
+		limiter, err := h.limiterService.GetLimits(u.UUID)
 		if err != nil {
 			utils.WriteError(w, http.StatusInternalServerError, err)
 			return
@@ -251,7 +256,7 @@ func (h Handler) handleMoviesText(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Уменьшение лимита
-		if err := h.service.ReducingLimitText(u.UUID); err != nil {
+		if err := h.limiterService.ReducingLimitText(u.UUID); err != nil {
 			utils.WriteError(w, http.StatusInternalServerError, err)
 			return
 		}
@@ -275,19 +280,11 @@ func (h Handler) handlePopularFilms(w http.ResponseWriter, r *http.Request) {
 	var page string = query.Get("page")
 
 	rand.Seed(time.Now().UnixNano())
-	// pageINT, err := strconv.Atoi(page)
-	// if err != nil {
-	// 	return
-	// }
 
 	if page == "" {
 		page = strconv.Itoa(rand.Intn(total_page) + 1)
 	}
-
-	// if pageINT > total_page {
-	// 	page = strconv.Itoa(rand.Intn(total_page) + 1)
-	// }
-
+	
 	// Конвертируем string to int
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {

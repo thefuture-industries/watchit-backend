@@ -1,11 +1,11 @@
 package main
 
 import (
-	"flick_finder/internal/config"
+	"flicksfi/internal/config"
 	"log"
 	"os"
 
-	"flick_finder/internal/db"
+	"flicksfi/internal/db"
 
 	mysqlCfg "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"

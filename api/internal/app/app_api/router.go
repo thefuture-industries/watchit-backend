@@ -1,9 +1,9 @@
 package app_api
 
 import (
-	"flick_finder/internal/interfaces"
-	"flick_finder/internal/types"
-	"flick_finder/internal/utils"
+	"flicksfi/internal/interfaces"
+	"flicksfi/internal/types"
+	"flicksfi/internal/utils"
 	"fmt"
 	"net/http"
 

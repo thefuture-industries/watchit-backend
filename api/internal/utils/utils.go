@@ -9,13 +9,12 @@ import (
 	"net/http"
 	"time"
 
-	env "flick_finder/internal/config"
+	env "flicksfi/internal/config"
 
 	"github.com/go-playground/validator"
 	"github.com/juju/ratelimit"
 )
 
-// ------------------------------
 // ------------------------------
 // Переменная для валидации данных
 // ------------------------------
@@ -24,9 +23,9 @@ var Validate = validator.New()
 var key string = env.Envs.SUPER_SECRET_KEY
 var iv string = env.Envs.IV
 
-// ------------------------------
+// ---------------------------------------
 // Проверка и декодирование данных от user
-// ------------------------------
+// ---------------------------------------
 func ParseJSON(r *http.Request, payload any) error {
 	if r.Body == nil {
 		return fmt.Errorf("missing request body")
@@ -35,10 +34,9 @@ func ParseJSON(r *http.Request, payload any) error {
 	return json.NewDecoder(r.Body).Decode(payload)
 }
 
-// ------------------------
-// ------------------------
+// ---------------------------
 // Функция ответа пользователю
-// ------------------------
+// ---------------------------
 func WriteJSON(w http.ResponseWriter, status int, v any) error {
 	w.Header().Set("Content-Security-Policy", "script-src 'self';")
 	w.Header().Add("Content-Type", "application/json")
@@ -48,7 +46,6 @@ func WriteJSON(w http.ResponseWriter, status int, v any) error {
 }
 
 // ------------------------
-// ------------------------
 // Функция обработки ошибок
 // ------------------------
 func WriteError(w http.ResponseWriter, status int, err error) {
@@ -56,17 +53,15 @@ func WriteError(w http.ResponseWriter, status int, err error) {
 }
 
 // ------------------------
-// ------------------------
 // Функция избежания DDos
 // ------------------------
 func DDosPropperty() *ratelimit.Bucket {
 	return ratelimit.NewBucket(10, int64(time.Second))
 }
 
-// -----------------------
-// -----------------------
+// --------------------
 // Шифрование (encrypt)
-// -----------------------
+// --------------------
 func Encrypt(plaintext string) (string, error) {
 	// Создание блока шифрования AES
 	block, err := aes.NewCipher([]byte(key))
@@ -88,7 +83,6 @@ func Encrypt(plaintext string) (string, error) {
 	return encodedCiphertext, nil
 }
 
-// -----------------------
 // -----------------------
 // Де-шифрование (decrypt)
 // -----------------------

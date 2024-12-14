@@ -2,12 +2,25 @@ use crate::models::user;
 use dotenv::dotenv;
 
 #[derive(Clone)]
-pub struct NewStore {}
+pub struct NewStore {
+  client: reqwest::Client,
+  server_url: String,
+}
 
 
+// ------------------------------
+// Инициализация default значений
+// ------------------------------
 impl NewStore {
   pub fn new() -> Self {
-    NewStore {}
+    dotenv().ok();
+    let server_url = std::env::var("SERVER_URL")
+      .expect("SERVER_URL environment variable not set");
+
+    Self {
+      client: reqwest::Client::new(),
+      server_url,
+    }
   }
 }
 
@@ -16,7 +29,7 @@ impl NewStore {
 // -------------------------
 pub trait IUser {
   // Создание пользователя
-  async fn add_user(&self, secret_word: &str, ip_address: &str, latitude: &str, longitude: &str, country: &str, region_name: &str, zip: &str) -> std::result::Result<String, String>;
+  async fn add_user(&self, user: user::UserAddPayload) -> std::result::Result<user::IsUser, String>;
   // Проверка на существования пользователя
   async fn check_user(&self, ip_address: &str, created_at: &str) -> std::result::Result<String, String>;
 }
@@ -24,66 +37,58 @@ pub trait IUser {
 impl IUser for NewStore {
   // ---------------------
   // Создание пользователя
-  async fn add_user(&self, secret_word: &str, ip_address: &str, latitude: &str, longitude: &str, country: &str, region_name: &str, zip: &str) -> std::result::Result<String, String> {
-    dotenv().ok();
-
-    // Создания клиента
-    let client = reqwest::Client::new();
-
-    // Получение url сервера из .env
-    let server = std::env::var("SERVER_URL").map_err(|e| format!("Error get env: {}", e))?;
-
+  async fn add_user(&self, user: user::UserAddPayload) -> std::result::Result<user::IsUser, String> {
     // Отправка запроса на сервер
-    let url = format!("{}user/add", server);
+    let url = format!("{}user/add", self.server_url);
     let body = serde_json::json!({
-      "secret_word": secret_word,
-      "ip_address": ip_address,
-      "latitude": latitude,
-      "longitude": longitude,
-      "country": country,
-      "regionName": region_name,
-      "zip": zip
+      "secret_word": &user.secret_word,
+      "ip_address": &user.ip_address,
+      "latitude": &user.latitude,
+      "longitude": &user.longitude,
+      "country": &user.country,
+      "regionName": &user.region_name,
+      "zip": &user.zip
     });
-    let response = client.post(url).json(&body).send().await.map_err(|e| format!("Error request: {}", e))?;
+
+    let response = self.client.post(url).json(&body).send().await
+      .map_err(|e| format!("ERROR request: {}", e))?;
 
     // Обработка ошибки
     match response.status() {
       reqwest::StatusCode::CREATED => {
-        let res: std::string::String = response.json().await.map_err(|e| format!("Error deserialization json: {}", e))?;
+        let res: user::IsUser = response.json().await
+          .map_err(|e| format!("ERROR deserialization json: {}", e))?;
+
         Ok(res)
       }
 
-      status_code => Err(format!("Error HTTP: {} {}", status_code, response.text().await.unwrap_or_default()))
+      status_code => Err(format!("ERROR HTTP: {} {}", status_code, response.text().await.unwrap_or_default()))
     }
   }
 
   // --------------------------------------
   // Проверка на существования пользователя
   async fn check_user(&self, ip_address: &str, created_at: &str) -> std::result::Result<String, String> {
-    dotenv().ok();
-
-    // Создания клиента
-    let client = reqwest::Client::new();
-
-    // Получение url сервера из .env
-    let server = std::env::var("SERVER_URL").map_err(|e| format!("Error get env: {}", e))?;
-
     // Отправка запроса на сервер
-    let url = format!("{}user/check", server);
+    let url = format!("{}user/check", self.server_url);
     let body = serde_json::json!({
       "ip_address": ip_address,
       "created_at": created_at,
     });
-    let response = client.post(url).json(&body).send().await.map_err(|e| format!("Error request: {}", e))?;
+
+    let response = self.client.post(url).json(&body).send().await
+      .map_err(|e| format!("ERROR request: {}", e))?;
 
     // Обработка ошибки
     match response.status() {
       reqwest::StatusCode::OK => {
-        let res: std::string::String = response.json().await.map_err(|e| format!("Error deserialization json: {}", e))?;
+        let res: std::string::String = response.json().await
+          .map_err(|e| format!("ERROR deserialization json: {}", e))?;
+
         Ok(res)
       }
 
-      status_code => Err(format!("Error HTTP: {} {}", status_code, response.text().await.unwrap_or_default()))
+      status_code => Err(format!("ERROR HTTP: {} {}", status_code, response.text().await.unwrap_or_default()))
     }
   }
 }

@@ -3,13 +3,17 @@ package movie
 import (
 	"compress/gzip"
 	"encoding/json"
-	"flick_finder/internal/types"
-	"flick_finder/pkg"
-	"flick_finder/pkg/errors"
+	"flicksfi/internal/types"
+	"flicksfi/pkg"
+	"flicksfi/pkg/errors"
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/xrash/smetrics"
 )
 
 var genres map[string]int = map[string]int{
@@ -102,7 +106,8 @@ func GetMovies(parametrs map[string]string) ([]types.Movie, error) {
 
 			// Поиск фильма по Title и Overview
 			if parametrs["search"] != "" {
-				if strings.Contains(movieItem.Title, parametrs["search"]) || strings.Contains(movieItem.Overview, parametrs["search"]) {
+				similarity := smetrics.JaroWinkler(strings.ToLower(parametrs["search"]), strings.ToLower(movieItem.Title), 0.1, 4)
+				if similarity >= 0.7 {
 					response = append(response, movieItem)
 					isTitle = true
 				}
@@ -162,6 +167,71 @@ func MovieDetails(id int) (types.Movie, error) {
 				response = movieItem
 				break
 			}
+		}
+	}
+
+	return response, nil
+}
+
+func GetMovieByGenre(genre int, limit int) ([]types.Movie, error) {
+	// Читаем файл (gzip)
+	file, err := os.Open("pkg/movie/db/movies.json.gz")
+	if err != nil {
+		return nil, fmt.Errorf("error open file")
+	}
+	defer file.Close()
+
+	// Создать декомпрессор gzip
+	zr, err := gzip.NewReader(file)
+	if err != nil {
+		return nil, fmt.Errorf("error decompress file to movie")
+	}
+	defer zr.Close()
+
+	// Читаем массив байтов
+	data, err := io.ReadAll(zr)
+	if err != nil {
+		return nil, fmt.Errorf("error read data movies")
+	}
+
+	// Создаем переменную для фильмов
+	var movies []types.JsonMovies
+	var response []types.Movie
+	var count int = 0
+
+	err = json.Unmarshal(data, &movies)
+	if err != nil {
+		return nil, fmt.Errorf("error decode movies %s", err)
+	}
+
+	rand.Seed(time.Now().UnixNano())
+
+	indices := make([]int, len(movies))
+	for i := range indices {
+		indices[i] = i
+	}
+	rand.Shuffle(len(indices), func(i, j int) {
+		indices[i], indices[j] = indices[j], indices[i]
+	})
+
+	for _, i := range indices {
+		movie := movies[i]
+
+		for _, movieItem := range movie.Results {
+			for _, movieGenre := range movieItem.GenreIds {
+				if movieGenre == genre && count <= limit {
+					response = append(response, movieItem)
+					count++
+				}
+			}
+
+			if count > limit {
+				break
+			}
+		}
+
+		if count > limit {
+			break
 		}
 	}
 

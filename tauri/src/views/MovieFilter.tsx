@@ -102,12 +102,10 @@ const MovieFilter = () => {
                   boxShadow: "inset 0px -7px 0px 0px rgba(0, 0, 0, 0.4)",
                 }}
                 onClick={async () => {
-                  await movieService
-                    .get_movies(search, genre, date)
-                    .then((movies) => {
-                      setMovies(movies);
-                      setSearchPage(true);
-                    });
+                  await movieService.get(search, genre, date).then((movies) => {
+                    setMovies(movies);
+                    setSearchPage(true);
+                  });
                 }}
               >
                 <p className="uppercase text-[17px] -mt-1">search</p>

@@ -48,6 +48,15 @@ type Limiter struct {
 	UpdateAt     string `json:"update_at"`
 }
 
+// Recommendations: Моделька предпочтений пользователя в системе БД
+// Id, UUID, Title, Genre (string[] "27,28")
+type Recommendations struct {
+	ID    int    `json:"id"`
+	UUID  string `json:"uuid"`
+	Title string `json:"title"`
+	Genre string `json:"genre"`
+}
+
 // JsonMovies: Модель данных фильмов
 // Структурирует модель данных json из запроса к tmdb
 type JsonMovies struct {
@@ -170,6 +179,12 @@ type LoginUserPayload struct {
 	UUID string `json:"uuid"`
 }
 
+type UserUpdate struct {
+	Username   *string `json:"username"`
+	Email      *string `json:"email"`
+	SecretWord *string `json:"secret_word"`
+}
+
 // тип DTO от пользователя
 // Требуется для регестрации в системе
 type RegisterUserPayload struct {
@@ -193,6 +208,17 @@ type FavouriteAddPayload struct {
 	UUID        string `json:"uuid" validate:"required"`
 	MovieID     int    `json:"movieId" validate:"required"`
 	MoviePoster string `json:"moviePoster" validate:"required"`
+}
+
+type FavouriteDeletePayload struct {
+	UUID    string `json:"uuid" validate:"required"`
+	MovieID int    `json:"movieId" validate:"required"`
+}
+
+type RecommendationAddPayload struct {
+	UUID  string `json:"uuid" validate:"required"`
+	Title string `json:"title" validate:"required"`
+	Genre string `json:"genre" validate:"required"`
 }
 
 type TextMoviePayload struct {

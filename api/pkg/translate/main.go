@@ -2,7 +2,7 @@ package translate
 
 import (
 	"encoding/json"
-	"flick_finder/internal/types"
+	"flicksfi/internal/types"
 	"fmt"
 	"io"
 	"net/http"

@@ -1,9 +1,9 @@
 package user
 
 import (
-	"flick_finder/internal/interfaces"
-	"flick_finder/internal/types"
-	"flick_finder/internal/utils"
+	"flicksfi/internal/interfaces"
+	"flicksfi/internal/types"
+	"flicksfi/internal/utils"
 	"fmt"
 	"net/http"
 	"time"
@@ -14,12 +14,14 @@ import (
 )
 
 type Handler struct {
-	service interfaces.IUser
+	service        interfaces.IUser
+	limiterService interfaces.ILimiter
 }
 
-func NewHandler(service interfaces.IUser) *Handler {
+func NewHandler(service interfaces.IUser, limiterService interfaces.ILimiter) *Handler {
 	return &Handler{
-		service: service,
+		service:        service,
+		limiterService: limiterService,
 	}
 }
 
@@ -30,10 +32,6 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/user/add", h.handleAddUser).Methods("POST")
 	// обновление данных аккаунт
 	router.HandleFunc("/user/update", h.handleUpdate).Methods("PUT")
-	// Созранения избранного
-	router.HandleFunc("/favourites", h.handleFavouriteAdd).Methods("POST")
-	// Получение избранных пользователя
-	router.HandleFunc("/favourites", h.handleFavourites).Methods("GET")
 }
 
 // ----------------------
@@ -107,9 +105,26 @@ func (h *Handler) handleAddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, _ := h.service.GetUserBySecretWord(payload.SecretWord)
+	// Шифромание секретного слова
+	encryptSecretWord, err := utils.Encrypt(payload.SecretWord)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	// Получение пользователя
+	user, _ := h.service.GetUserBySecretWord(encryptSecretWord)
 	if user != nil {
-		utils.WriteJSON(w, http.StatusCreated, user.UUID)
+		if err := h.limiterService.UpdateLimits(user.UUID); err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		utils.WriteJSON(w, http.StatusCreated, map[string]interface{}{
+			"uuid":     user.UUID,
+			"username": user.UserName,
+			"email":    user.Email,
+		})
 		return
 	}
 
@@ -117,7 +132,7 @@ func (h *Handler) handleAddUser(w http.ResponseWriter, r *http.Request) {
 	uuid := uuid.NewString()
 	if err := h.service.CreateUser(types.User{
 		UUID:       uuid,
-		SecretWord: payload.SecretWord,
+		SecretWord: encryptSecretWord,
 		IPAddress:  payload.IPAddress,
 		Lat:        payload.Lat,
 		Lon:        payload.Lon,
@@ -130,8 +145,18 @@ func (h *Handler) handleAddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	u, err := h.service.GetUserByUUID(uuid)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
 	// Отправка успешного выполнения
-	utils.WriteJSON(w, http.StatusCreated, uuid)
+	utils.WriteJSON(w, http.StatusCreated, map[string]interface{}{
+		"uuid":     uuid,
+		"username": u.UserName,
+		"email":    u.Email,
+	})
 }
 
 // --------------------------------
@@ -139,14 +164,6 @@ func (h *Handler) handleAddUser(w http.ResponseWriter, r *http.Request) {
 // обновление данных аккаунт
 // --------------------------------
 func (h Handler) handleUpdate(w http.ResponseWriter, r *http.Request) {
-
-}
-
-// --------------------------------
-// --------------------------------
-// Созранения избранного
-// --------------------------------
-func (h Handler) handleFavouriteAdd(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
 	limiter := utils.DDosPropperty()
 	if limiter.Available() == 0 {
@@ -155,7 +172,7 @@ func (h Handler) handleFavouriteAdd(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Получаем данные пользователя
-	var payload *types.FavouriteAddPayload
+	var payload *types.UserUpdate
 
 	// Отправляем пользователю ошибку, что не все поля заполнены
 	if err := utils.ParseJSON(r, &payload); err != nil {
@@ -168,44 +185,4 @@ func (h Handler) handleFavouriteAdd(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", errors))
 		return
 	}
-
-	// Получение текущего пользователя
-	user, err := h.service.GetUserByUUID(payload.UUID)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
-		return
-	}
-
-	// Запись в БД избранного
-	if err := h.service.AddFavourite(*payload, user.UUID); err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
-		return
-	}
-
-	utils.WriteJSON(w, http.StatusOK, "success")
-}
-
-// --------------------------------
-// --------------------------------
-// Получение избранных фильмов пользователя
-// --------------------------------
-func (h Handler) handleFavourites(w http.ResponseWriter, r *http.Request) {
-	// Проверка на кол-во запросов от пользователя
-	limiter := utils.DDosPropperty()
-	if limiter.Available() == 0 {
-		utils.WriteError(w, http.StatusTooManyRequests, fmt.Errorf("too many requests"))
-		return
-	}
-
-	// Получаем параметры запроса
-	query := r.URL.Query()
-	uuid := query.Get("uuid")
-
-	favourites, err := h.service.Favourites(uuid)
-	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	utils.WriteJSON(w, http.StatusOK, favourites)
 }

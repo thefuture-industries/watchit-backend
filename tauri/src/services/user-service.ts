@@ -1,21 +1,15 @@
 import { invoke } from "@tauri-apps/api/core";
-import { UserModel } from "~/types/user";
+import { UserAddPayload } from "~/types/user";
 
 class UserService {
   /**
    * Создания пользователя
    */
-  public async add_user(user: UserModel): Promise<string> {
+  public async add_user(user: UserAddPayload): Promise<string> {
     try {
       let response: string = await invoke("add_user", {
-        ipAddress: user.ip_address,
-        latitude: user.latitude,
-        longitude: user.longitude,
-        country: user.country,
-        regionName: user.region_name,
-        zip: user.zip,
+        user: user,
       });
-
       return response;
     } catch (err: any) {
       return err;
@@ -39,6 +33,19 @@ class UserService {
     } catch (err: any) {
       return err;
     }
+  }
+
+  /**
+   * Получение из сессии uuid пользователя
+   */
+  public get_uuid(): string {
+    const uuid = sessionStorage.getItem("_sess");
+
+    if (!uuid) {
+      return "";
+    }
+
+    return JSON.parse(uuid).uuid;
   }
 }
 

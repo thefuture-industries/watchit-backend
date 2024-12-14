@@ -1,8 +1,8 @@
 package admin
 
 import (
-	"flick_finder/internal/interfaces"
-	"flick_finder/internal/utils"
+	"flicksfi/internal/interfaces"
+	"flicksfi/internal/utils"
 	"fmt"
 	"net/http"
 
