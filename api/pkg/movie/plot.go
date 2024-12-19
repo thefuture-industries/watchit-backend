@@ -7,6 +7,7 @@ import (
 	"flicksfi/internal/config"
 	"flicksfi/internal/types"
 	"flicksfi/pkg"
+	"flicksfi/pkg/machinelearning"
 	"fmt"
 	"io"
 	"net/http"
@@ -51,16 +52,25 @@ func OverviewText(text string) ([]types.Movie, error) {
 
 	for _, movie := range movies {
 		for _, movieItem := range movie.Results {
-			tfidf := pkg.TF_IDF_MOVIE(movieItem.Overview, text, 0.289)
-			fmt.Printf("tfidf для %s: %.4f\n", movieItem.Title, tfidf)
-
-			if tfidf >= 0.4 {
-				response = append(response, movieItem)
+			tfidf := machinelearning.Word2VecPlot(movieItem.Overview, text, movieItem.Title)
+			if tfidf >= 0.7 {
+				fmt.Printf("tfidf для %s: %.4f\n", movieItem.Title, tfidf)
 			}
 		}
 	}
 
-	return pkg.TruncateArrayMovies(response), nil
+	// for _, movie := range movies {
+	// 	for _, movieItem := range movie.Results {
+	// 		tfidf := machinelearning.TF_IDF(movieItem.Overview, text, 0.289)
+	// 		// fmt.Printf("tfidf для %s: %.4f\n", movieItem.Title, tfidf)
+
+	// 		if tfidf >= 0.59 {
+	// 			response = append(response, movieItem)
+	// 		}
+	// 	}
+	// }
+
+	return pkg.ShuffleArray(response), nil
 }
 
 // -------------------------
@@ -214,5 +224,5 @@ func GIGA_CHAT_OVERVIEW(text string) ([]types.Movie, error) {
 		}
 	}
 
-	return pkg.TruncateArrayMovies(response), nil
+	return pkg.ShuffleArray(response), nil
 }

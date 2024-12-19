@@ -73,6 +73,14 @@ const App = createBrowserRouter([
         ),
       },
       {
+        path: "/user",
+        element: (
+          <Suspense fallback={<Loader />}>
+            <page.user />
+          </Suspense>
+        ),
+      },
+      {
         path: "*",
         element: (
           <Suspense fallback={<Loader />}>

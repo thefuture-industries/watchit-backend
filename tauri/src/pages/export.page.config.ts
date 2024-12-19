@@ -8,6 +8,7 @@ const movie_details = lazy(() => import("./movie_details"));
 const favourites = lazy(() => import("./favourites"));
 const load = lazy(() => import("./load"));
 const not_found = lazy(() => import("./not_found"));
+const user = lazy(() => import("./user"));
 
 export {
   home,
@@ -19,4 +20,5 @@ export {
   favourites,
   load,
   not_found,
+  user,
 };

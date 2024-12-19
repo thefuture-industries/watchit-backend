@@ -13,20 +13,20 @@ const Header: React.FC<{ onSearch: (query: string) => Promise<void> }> = ({
   const handleKeyDown = async (event: any) => {
     if (event.key === "Enter") {
       const history = JSON.parse(
-        sessionStorage.getItem("history__search") || "[]"
+        sessionStorage.getItem("sess_history__search") || "[]"
       );
 
       if (!history.includes(searchInput)) {
         history.push(searchInput);
       }
 
-      sessionStorage.setItem("history__search", JSON.stringify(history));
+      sessionStorage.setItem("sess_history__search", JSON.stringify(history));
       await onSearch(searchInput);
     }
   };
 
   useEffect(() => {
-    const history = sessionStorage.getItem("history__search");
+    const history = sessionStorage.getItem("sess_history__search");
 
     if (!history) {
       setIsOpenHistory(false);
@@ -35,7 +35,7 @@ const Header: React.FC<{ onSearch: (query: string) => Promise<void> }> = ({
 
   useEffect(() => {
     setHistoryElements(
-      JSON.parse(sessionStorage.getItem("history__search") || "[]")
+      JSON.parse(sessionStorage.getItem("sess_history__search") || "[]")
     );
   }, []);
 

@@ -1,23 +1,28 @@
 package api
 
 import (
+	"context"
 	"database/sql"
+	"flicksfi/cmd/configuration"
 	"flicksfi/internal/app/admin"
 	"flicksfi/internal/app/apis"
 	"flicksfi/internal/app/favourite"
 	"flicksfi/internal/app/limiter"
 	"flicksfi/internal/app/recommendation"
 	"flicksfi/internal/app/user"
+	logging "flicksfi/pkg/logger"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"go.uber.org/zap"
 )
 
 type APIServer struct {
-	addr string
-	db   *sql.DB
+	addr   string
+	db     *sql.DB
+	server *http.Server
 }
 
 func NewAPIServer(addr string, db *sql.DB) *APIServer {
@@ -34,46 +39,59 @@ func (s *APIServer) Run() error {
 	router := mux.NewRouter()
 	subrouter := router.PathPrefix("/api/v1").Subrouter()
 
+	// Создание logger
+	track := configuration.NewTrack()
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+
+	// ------------------
+	// Логирование server
+	// ------------------
+	router.Use(logging.NewLogger(logger).LoggerMiddleware)
+
+	// --------------
+	// Services route
+	// --------------
+	limiterService := limiter.NewService(s.db, logger, track)
+	userService := user.NewService(s.db, logger, track)
+	recommendationService := recommendation.NewService(s.db, logger, track)
+	favouriteService := favourite.NewService(s.db, logger, track)
+	apisService := apis.NewService(s.db)
+	adminService := admin.NewService(s.db, track)
+
 	// -----------------------
 	// определение user router
 	// -----------------------
-	limiterService := limiter.NewService(s.db)
-	userService := user.NewService(s.db)
 	userHandler := user.NewHandler(userService, limiterService)
 	userHandler.RegisterRoutes(subrouter)
 
 	// ----------------------------
 	// определение recommendations router
 	// ----------------------------
-	recommendationService := recommendation.NewService(s.db)
 	recommendationHandler := recommendation.NewHandler(recommendationService, userService)
 	recommendationHandler.RegisterRoutes(subrouter)
 
 	// ----------------------------
 	// определение favourite router
 	// ----------------------------
-	favouriteService := favourite.NewService(s.db)
 	favouriteHandler := favourite.NewHandler(favouriteService, userService, recommendationService)
 	favouriteHandler.RegisterRoutes(subrouter)
 
 	// ----------------------------
 	// определение favourite router
 	// ----------------------------
-	limiterService = limiter.NewService(s.db)
 	limiterHandler := limiter.NewHandler(limiterService, userService)
 	limiterHandler.RegisterRoutes(subrouter)
 
 	// -----------------------
 	// определение apis router
 	// -----------------------
-	apisService := apis.NewService(s.db)
 	apisHandler := apis.NewHandler(apisService, userService, limiterService)
 	apisHandler.RegisterRoutes(subrouter)
 
-	// -----------------------
+	// ------------------------
 	// определение admin router
-	// -----------------------
-	adminService := admin.NewService(s.db)
+	// ------------------------
 	adminHandler := admin.NewHandler(adminService, userService)
 	adminHandler.RegisterRoutes(subrouter)
 
@@ -89,4 +107,12 @@ func (s *APIServer) Run() error {
 	// --------------------
 	log.Println("Listening on", s.addr)
 	return http.ListenAndServe(s.addr, handlers.CORS(origins, methods, headers)(router))
+}
+
+func (s *APIServer) Shutdown(ctx context.Context) error {
+	if s.server != nil {
+		return s.server.Shutdown(ctx)
+	}
+
+	return nil
 }

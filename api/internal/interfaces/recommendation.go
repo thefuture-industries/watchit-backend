@@ -10,6 +10,9 @@ type IRecommendation interface {
 	// Запись рекомендаций пользователя
 	AddRecommendation(recommendation types.RecommendationAddPayload) error
 
+	// Проверка на существования рекомендаций пользователя
+	IsRecommendation(uuid, title string) (bool, error)
+
 	// Получение данных из данных таблицы
 	GetMovieRecommendations(recoms []types.Recommendations) ([]types.Movie, error)
 

@@ -1,7 +1,6 @@
 import {
   Clapperboard,
   LayoutTemplate,
-  Server,
   Youtube,
   Text,
   Heart,
@@ -19,11 +18,6 @@ const itemNav = [
     title: "Favourites",
     link: "/favourites",
     icon: <Heart size={22} />,
-  },
-  {
-    title: "API",
-    link: "/api",
-    icon: <Server size={22} />,
   },
   {
     title: "Youtube",
@@ -63,7 +57,7 @@ const Navigation = () => {
     <>
       <div className="fixed">
         <div className="w-[18rem] h-screen bg-[#111] rounded-xl p-3 border border-[#222]">
-          <Link to="/" className="flex items-center">
+          <Link to="/user" className="flex items-center">
             <img src="/src/assets/gradient.webp" width={45} alt="" />
             <div className="ml-3">
               <p className="text-[#fff]">{user?.username}</p>

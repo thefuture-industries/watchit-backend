@@ -64,6 +64,7 @@ const Movie = (prop: Props) => {
                       border: "1px solid #fff",
                     }}
                     onClick={async () => {
+                      setIsSuccessFavourite(true);
                       await Promise.all([
                         favouritesService.add({
                           movie_id: prop.movies.id,
@@ -74,8 +75,6 @@ const Movie = (prop: Props) => {
                           genre: prop.movies.genre_ids.join(", "),
                         }),
                       ]);
-
-                      setIsSuccessFavourite(true);
                     }}
                   >
                     <Heart

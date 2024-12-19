@@ -67,14 +67,7 @@ func (h Handler) handleGetRecommendations(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Получение фильмов подходящих пользователю
-	movies, err := h.service.GetMovieRecommendations(recoms)
-	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	if len(movies) == 0 {
+	if len(recoms) == 0 {
 		// Конвертируем string to int
 		pageInt, err := strconv.Atoi(page)
 		if err != nil {
@@ -90,6 +83,14 @@ func (h Handler) handleGetRecommendations(w http.ResponseWriter, r *http.Request
 		}
 
 		utils.WriteJSON(w, http.StatusOK, movies)
+		return
+	}
+
+	// Получение фильмов подходящих пользователю
+	movies, err := h.service.GetMovieRecommendations(recoms)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	utils.WriteJSON(w, http.StatusOK, movies)
@@ -132,6 +133,17 @@ func (h Handler) handleAddRecommendations(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Проверка на существования рекомендаций пользователя
+	exists, err := h.service.IsRecommendation(payload.UUID, payload.Title)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	} else if exists {
+		utils.WriteJSON(w, http.StatusNoContent, nil)
+		return
+	}
+
+	// Запись рекомендаций пользователя
 	if err := h.service.AddRecommendation(*payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return

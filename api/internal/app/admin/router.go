@@ -24,6 +24,7 @@ func NewHandler(service interfaces.IAdmin, userService interfaces.IUser) *Handle
 func (h Handler) RegisterRoutes(router *mux.Router) {
 	// Получение статистики приложения
 	router.HandleFunc("/statistic", h.handleGetStatistic).Methods("GET")
+	router.HandleFunc("/monitoring", h.handleGetMonitoring).Methods("GET")
 }
 
 // -------------------------------
@@ -42,4 +43,11 @@ func (h Handler) handleGetStatistic(w http.ResponseWriter, r *http.Request) {
 	// 	utils.WriteError(w, http.StatusInternalServerError, err)
 	// 	return
 	// }
+}
+
+// --------------------------------
+// Получение мониторинга приложения
+// --------------------------------
+func (h Handler) handleGetMonitoring(w http.ResponseWriter, r *http.Request) {
+	utils.WriteJSON(w, http.StatusOK, h.service.GetMonitoring())
 }

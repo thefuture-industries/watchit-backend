@@ -1,5 +1,10 @@
 package types
 
+import (
+	"sync"
+	"time"
+)
+
 // User: Моделька пользователя в системе БД
 // Id, UUID, UserName, UserNameUpper, Email, EmailUpper, IPAddress, Lat, Lon, Country, RegionName, Zip, CreatedAt
 type User struct {
@@ -171,6 +176,42 @@ type Definition struct {
 	Example       string      `json:"example"`
 	OtherExamples interface{} `json:"other-examples"`
 	Synonyms      interface{} `json:"synonyms"`
+}
+
+// Моделька для мониторинга приложения
+type MonitoringStats struct {
+	sync.Mutex
+	RequestCount   int64
+	ErrorCount     int64
+	TotalLatency   time.Duration
+	DBQueryCount   int64
+	DBErrorCount   int64
+	DBTotalLatency time.Duration
+	LastErrors     []ErrorLog
+}
+
+// Моделька для ошибок в приложении
+type ErrorLog struct {
+	Timestamp time.Time `json:"timestamp"`
+	Method    string    `json:"method"`
+	Path      string    `json:"path"`
+	Error     string    `json:"error"`
+}
+
+// Моделька для ответа мониторинга приложения
+type MonitoringResponse struct {
+	Requests struct {
+		Total        int64   `json:"total"`
+		Errors       int64   `json:"errors"`
+		SuccessRate  float64 `json:"success_rate"`
+		AvgLatencyMs float64 `json:"avg_latency_ms"`
+	} `json:"requests"`
+	Database struct {
+		TotalQueries int64   `json:"total_queries"`
+		Errors       int64   `json:"errors"`
+		AvgLatencyMs float64 `json:"avg_latency_ms"`
+	} `json:"database"`
+	LastErrors []ErrorLog `json:"last_errors,omitempty"`
 }
 
 // тип DTO от пользователя

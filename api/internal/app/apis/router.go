@@ -223,6 +223,7 @@ func (h Handler) handleMoviesText(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		fmt.Println(movies)
 		utils.WriteJSON(w, http.StatusOK, movies)
 	}
 
@@ -284,7 +285,7 @@ func (h Handler) handlePopularFilms(w http.ResponseWriter, r *http.Request) {
 	if page == "" {
 		page = strconv.Itoa(rand.Intn(total_page) + 1)
 	}
-	
+
 	// Конвертируем string to int
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {

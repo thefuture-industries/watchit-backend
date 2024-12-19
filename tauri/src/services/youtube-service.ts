@@ -8,7 +8,7 @@ class YoutubeService {
    * // Получение популярного видео с ютуба
    */
   public async get_video(): Promise<YoutubeModel[]> {
-    const cacheVideo = sessionStorage.getItem("pop__v1");
+    const cacheVideo = sessionStorage.getItem("sess_youtube_index");
 
     if (cacheVideo) {
       try {
@@ -20,7 +20,7 @@ class YoutubeService {
 
     try {
       const video = await invoke("get_popular_video");
-      sessionStorage.setItem("pop__v1", JSON.stringify(video));
+      sessionStorage.setItem("sess_youtube_index", JSON.stringify(video));
 
       return video as YoutubeModel[];
     } catch (err) {

@@ -22,6 +22,26 @@ func DeleteDublicateMovies(arr []types.Movie) []types.Movie {
 	return result
 }
 
+// Функция для перемешивания массива
+// ---------------------------------
+func ShuffleArray(arr []types.Movie) []types.Movie {
+	rand.Seed(time.Now().UnixNano())
+
+	shuffled := make([]types.Movie, len(arr))
+	copy(shuffled, arr)
+
+	rand.Shuffle(len(shuffled), func(i, j int) {
+		shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
+	})
+
+	fillterArray := DeleteDublicateMovies(shuffled)
+	if len(fillterArray) > 100 {
+		return fillterArray[:100]
+	}
+
+	return fillterArray
+}
+
 // Массив с random начальным индексом
 // ----------------------------------
 func TruncateArrayMovies(arr []types.Movie) []types.Movie {

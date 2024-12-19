@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import FavouriteMovie from "~/components/controls/FavouriteMovie";
 import Navigation from "~/components/Navigation";
 import favouritesService from "~/services/favourites-service";
@@ -18,7 +19,10 @@ const FavouritesList = React.memo(
 const Favourites = () => {
   const [isButtonVisible, setIsButtonVisible] = useState<boolean>(false);
   const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
-  const [movies, setMovies] = useState<FavouriteModel[]>([]);
+  const { data: movies } = useQuery("movies", favouritesService.get, {
+    initialData: [] as FavouriteModel[],
+    refetchOnWindowFocus: false,
+  });
 
   // Скрол вниз/верх
   const scrollToTopOrBottom = () => {
@@ -47,16 +51,6 @@ const Favourites = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Получение списка избранных фильмов
-  useEffect(() => {
-    const getMovies = async () => {
-      let res: FavouriteModel[] = await favouritesService.get();
-      setMovies(res);
-    };
-
-    getMovies();
-  }, []);
-
   return (
     <>
       <div className="container flex w-screen m-2">
@@ -65,7 +59,7 @@ const Favourites = () => {
         </div>
         <div className="right ml-[19rem] w-[67vw]">
           {/* Фильмы */}
-          <FavouritesList movies={movies} />
+          <FavouritesList movies={movies as FavouriteModel[]} />
 
           {/* Кнопка вверх/вниз */}
           {isButtonVisible && (

@@ -56,5 +56,5 @@ func PopularMovie(page int) ([]types.Movie, error) {
 		return nil, fmt.Errorf("page %d not found", page)
 	}
 
-	return pkg.TruncateArrayMovies(response), nil
+	return pkg.ShuffleArray(response), nil
 }

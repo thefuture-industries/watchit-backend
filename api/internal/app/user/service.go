@@ -3,68 +3,28 @@ package user
 import (
 	"context"
 	"database/sql"
+	"flicksfi/cmd/configuration"
 	"flicksfi/internal/types"
 	"fmt"
 	"math/rand"
 	"strings"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 type Service struct {
-	db *sql.DB
+	db      *sql.DB
+	logger  *zap.Logger
+	monitor *configuration.Track
 }
 
-func NewService(db *sql.DB) *Service {
+func NewService(db *sql.DB, logger *zap.Logger, monitor *configuration.Track) *Service {
 	return &Service{
-		db: db,
+		db:      db,
+		logger:  logger,
+		monitor: monitor,
 	}
-}
-
-// Пробегаемся по данным по rows
-func scanRowDataUser(rows *sql.Rows) (*types.User, error) {
-	user := new(types.User)
-
-	err := rows.Scan(
-		&user.ID,
-		&user.UUID,
-		&user.SecretWord,
-		&user.UserName,
-		&user.UserNameUpper,
-		&user.Email,
-		&user.EmailUpper,
-		&user.IPAddress,
-		&user.Lon,
-		&user.Lat,
-		&user.Country,
-		&user.RegionName,
-		&user.Zip,
-		&user.CreatedAt,
-	)
-
-	if err != nil {
-		return nil, fmt.Errorf("error scaning data")
-	}
-
-	return user, nil
-}
-
-func scanRowUser(rows *sql.Rows, user *types.User) error {
-	return rows.Scan(
-		&user.ID,
-		&user.UUID,
-		&user.SecretWord,
-		&user.UserName,
-		&user.UserNameUpper,
-		&user.Email,
-		&user.EmailUpper,
-		&user.IPAddress,
-		&user.Lon,
-		&user.Lat,
-		&user.Country,
-		&user.RegionName,
-		&user.Zip,
-		&user.CreatedAt,
-	)
 }
 
 // Получения всех пльзователей
@@ -75,6 +35,9 @@ func (s *Service) GetUsers() ([]types.User, error) {
 
 	rows, err := s.db.QueryContext(ctx, "select * from users")
 	if err != nil {
+		// Логирование ошибки
+		s.logger.Error("database error",
+			zap.Error(err))
 		return nil, fmt.Errorf("error execute query to db")
 	}
 
@@ -83,6 +46,9 @@ func (s *Service) GetUsers() ([]types.User, error) {
 		var user types.User
 		err := rows.Scan(&user.ID, &user.UUID, &user.UserName, &user.UserNameUpper, &user.Email, &user.EmailUpper, &user.IPAddress, &user.Lat, &user.Lon, &user.Country, &user.RegionName, &user.Zip, &user.CreatedAt)
 		if err != nil {
+			// Логирование ошибки
+			s.logger.Error("scan user",
+				zap.Error(err))
 			return nil, err
 		}
 
@@ -90,7 +56,7 @@ func (s *Service) GetUsers() ([]types.User, error) {
 	}
 
 	if len(users) == 0 {
-		return nil, fmt.Errorf("there are no users")
+		return []types.User{}, nil
 	}
 
 	return users, nil
@@ -99,31 +65,40 @@ func (s *Service) GetUsers() ([]types.User, error) {
 // Получения пользователя по ID
 // ----------------------------
 func (s *Service) GetUserById(id int) (*types.User, error) {
+	start := time.Now()
+	defer func() {
+		s.monitor.TrackRequest(time.Since(start))
+	}()
+
 	// определение контекста времени
 	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
 	defer cancel()
 
 	// Запрос к БД на вывод пользователя по ID
-	rows, err := s.db.QueryContext(ctx, "select * from users where id = ?", id)
-
-	// проверка ошибки
-	if err != nil {
-		return nil, fmt.Errorf("database request error")
-	}
+	queryStart := time.Now()
+	row := s.db.QueryRowContext(ctx, "select * from users where id = ? limit 1", id)
 
 	// читаем из результата
 	u := new(types.User)
-	for rows.Next() {
-		u, err = scanRowDataUser(rows)
-		if err != nil {
-			return nil, err
+	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Lat, &u.Lon, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("user not found")
 		}
+
+		// Логирование ошибки
+		s.monitor.TrackDBError()
+		s.monitor.TrackError(err)
+		s.logger.Error("scan user",
+			zap.Int("userID", id),
+			zap.Error(err))
+
+		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
-	// если нет пользователя то ошибка
-	if u.ID == 0 {
-		return nil, fmt.Errorf("user not found")
-	}
+	// мониторинг времени запроса
+	s.monitor.TrackDBQuery(time.Since(queryStart))
 
 	// Отправка пользователя
 	return u, nil
@@ -132,89 +107,124 @@ func (s *Service) GetUserById(id int) (*types.User, error) {
 // Получения пользователя по секретному слову
 // ------------------------------------------
 func (s *Service) GetUserBySecretWord(word string) (*types.User, error) {
+	start := time.Now()
+	defer func() {
+		s.monitor.TrackRequest(time.Since(start))
+	}()
+
 	// определение контекста времени
 	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
 	defer cancel()
 
 	// Запрос к БД на вывод пользователя по ID
-	rows, err := s.db.QueryContext(ctx, "select * from users where secret_word = ?", word)
+	queryStart := time.Now()
+	row := s.db.QueryRowContext(ctx, "select * from users where secret_word = ? limit 1", word)
 
-	// проверка ошибки
+	// читаем из результата
+	u := new(types.User)
+	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Lat, &u.Lon, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
+
 	if err != nil {
-		return nil, fmt.Errorf("database request error")
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("user not found")
+		}
+
+		// Логирование ошибки
+		s.monitor.TrackDBError()
+		s.monitor.TrackError(err)
+		s.logger.Error("scan user",
+			zap.String("secret_word", word),
+			zap.Error(err))
+
+		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
-	var user *types.User
-	if rows.Next() {
-		user = new(types.User)
-		if err := scanRowUser(rows, user); err != nil {
-			return nil, fmt.Errorf("error scanning user data: %w", err)
-		}
-	} else if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating rows: %w", err)
-	}
+	// мониторинг времени запроса
+	s.monitor.TrackDBQuery(time.Since(queryStart))
 
 	// Отправка пользователя
-	return user, nil
+	return u, nil
 }
 
 // Получения пользователя по uuid
 // ------------------------------
 func (s *Service) GetUserByUUID(uuid string) (*types.User, error) {
+	start := time.Now()
+	defer func() {
+		s.monitor.TrackRequest(time.Since(start))
+	}()
+
 	// определение контекста времени
 	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
 	defer cancel()
 
 	// Запрос к БД на вывод пользователя по ID
-	rows, err := s.db.QueryContext(ctx, "select * from users where uuid = ?", uuid)
+	queryStart := time.Now()
+	row := s.db.QueryRowContext(ctx, "select * from users where uuid = ?", uuid)
 
-	// проверка ошибки
+	// читаем из результата
+	u := new(types.User)
+	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Lat, &u.Lon, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
+
 	if err != nil {
-		return nil, fmt.Errorf("database request error")
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("user not found")
+		}
+
+		// Логирование ошибки
+		s.monitor.TrackDBError()
+		s.monitor.TrackError(err)
+		s.logger.Error("scan user",
+			zap.String("uuid", uuid),
+			zap.Error(err))
+
+		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
-	var user *types.User
-	if rows.Next() {
-		user = new(types.User)
-		if err := scanRowUser(rows, user); err != nil {
-			return nil, fmt.Errorf("error scanning user data: %w", err)
-		}
-	} else if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating rows: %w", err)
-	}
+	// мониторинг времени запроса
+	s.monitor.TrackDBQuery(time.Since(queryStart))
 
 	// Отправка пользователя
-	return user, nil
+	return u, nil
 }
 
 // Получения пользователя по Email
 // -------------------------------
 func (s *Service) GetUserByEmail(email string) (*types.User, error) {
+	start := time.Now()
+	defer func() {
+		s.monitor.TrackRequest(time.Since(start))
+	}()
+
 	// определение контекста времени
 	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
 	defer cancel()
 
 	// Запрос к БД на вывод пользователя по Email
-	rows, err := s.db.QueryContext(ctx, "select * from users where email = ?", email)
-
-	// проверка ошибки
-	if err != nil {
-		return nil, fmt.Errorf("database request error")
-	}
+	queryStart := time.Now()
+	row := s.db.QueryRowContext(ctx, "select * from users where email = ?", email)
 
 	// читаем из результата
 	u := new(types.User)
-	for rows.Next() {
-		u, err = scanRowDataUser(rows)
-		if err != nil {
-			return nil, err
+	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Lat, &u.Lon, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("user not found")
 		}
+
+		// Логирование ошибки
+		s.monitor.TrackDBError()
+		s.monitor.TrackError(err)
+		s.logger.Error("scan user",
+			zap.String("email", email),
+			zap.Error(err))
+
+		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
-	// Проверка на существование
-	if u.ID == 0 {
-		return nil, fmt.Errorf("user not found")
-	}
+	// мониторинг времени запроса
+	s.monitor.TrackDBQuery(time.Since(queryStart))
 
 	// Отправка пользователя
 	return u, nil
@@ -223,6 +233,11 @@ func (s *Service) GetUserByEmail(email string) (*types.User, error) {
 // Создание пользователя
 // ---------------------
 func (s *Service) CreateUser(user types.User) error {
+	start := time.Now()
+	defer func() {
+		s.monitor.TrackRequest(time.Since(start))
+	}()
+
 	// определение контекста времени
 	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
 	defer cancel()
@@ -232,16 +247,34 @@ func (s *Service) CreateUser(user types.User) error {
 	username := fmt.Sprintf("Гость%d", randomNumber)
 
 	// Запрос к БД на создания пользователя
+	queryStart := time.Now()
 	_, err := s.db.ExecContext(ctx, "insert into users (uuid, secret_word, username, username_upper, ip_address, latitude, longitude, country, regionName, zip, createdAt) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", user.UUID, user.SecretWord, username, strings.ToUpper(username), user.IPAddress, user.Lat, user.Lon, user.Country, user.RegionName, user.Zip, user.CreatedAt)
 	if err != nil {
-		return fmt.Errorf("database insert error")
+		// Логирование ошибки
+		s.monitor.TrackDBError()
+		s.monitor.TrackError(err)
+		s.logger.Error("database error",
+			zap.String("uuid", user.UUID),
+			zap.Error(err))
+
+		return fmt.Errorf("iterate user: %w", err)
 	}
 
 	// Запрос к БД на создания лимитов
 	_, err = s.db.ExecContext(ctx, "insert into limiter (uuid, update_at) values (?, ?)", user.UUID, time.Now().Format("2006-01-02 15:04:05"))
 	if err != nil {
-		return fmt.Errorf("database insert error")
+		// Логирование ошибки
+		s.monitor.TrackDBError()
+		s.monitor.TrackError(err)
+		s.logger.Error("database error",
+			zap.String("uuid", user.UUID),
+			zap.Error(err))
+
+		return fmt.Errorf("iterate limiter: %w", err)
 	}
+
+	// мониторинг времени запроса
+	s.monitor.TrackDBQuery(time.Since(queryStart))
 
 	return nil
 }
@@ -254,25 +287,22 @@ func (s *Service) CheckUser(user types.LoginUserPayload) (*types.User, error) {
 	defer cancel()
 
 	// Запрос к БД на вывод пользователя по ID
-	rows, err := s.db.QueryContext(ctx, "select * from users where uuid = ?", user.UUID)
-
-	// проверка ошибки
-	if err != nil {
-		return nil, fmt.Errorf("database request error")
-	}
+	row := s.db.QueryRowContext(ctx, "select * from users where uuid = ?", user.UUID)
+	u := new(types.User)
 
 	// читаем из результата
-	u := new(types.User)
-	for rows.Next() {
-		u, err = scanRowDataUser(rows)
-		if err != nil {
-			return nil, err
+	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Lat, &u.Lon, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("user not found")
 		}
-	}
 
-	// если нет пользователя то ошибка
-	if u.ID == 0 {
-		return nil, fmt.Errorf("user not found")
+		// Логирование ошибки
+		s.logger.Error("scan user",
+			zap.String("uuid", user.UUID),
+			zap.Error(err))
+
+		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
 	return u, nil

@@ -7,12 +7,12 @@ class MovieService {
   /**
    * Проверка на хеш фильмов
    */
-  private getMovieArrayFromSessionStorage(): MovieModel[] {
-    const storedData = sessionStorage.getItem("m_array");
+  public getMovieArrayFromSessionStorage(): MovieModel[] {
+    const storedDataMovies = sessionStorage.getItem("sess_movies");
 
-    if (storedData) {
+    if (storedDataMovies) {
       try {
-        return JSON.parse(storedData);
+        return JSON.parse(storedDataMovies) as MovieModel[];
       } catch (error) {
         console.error("Error parsing movie array from sessionStorage:", error);
         return [];
@@ -78,8 +78,6 @@ class MovieService {
    * Поиск фильма по titla или overview (...)
    */
   public async search(search: string): Promise<MovieModel[]> {
-    sessionStorage.removeItem("m_array");
-
     let movies: MovieModel[] = await invoke("search_movies", {
       s: encodeURIComponent(search),
     });
@@ -91,8 +89,6 @@ class MovieService {
    * Получние деталей фильма по ID
    */
   public async details(id: number): Promise<MovieModel> {
-    sessionStorage.removeItem("m_array");
-
     let movie_details: MovieModel = await invoke("movie_details", {
       id: id,
     });
@@ -108,8 +104,6 @@ class MovieService {
     title: string,
     overview: string
   ): Promise<MovieModel[]> {
-    sessionStorage.removeItem("m_array");
-
     let similar_movies: MovieModel[] = await invoke("similar_movies", {
       genreId: genre_id,
       title: encodeURIComponent(title),

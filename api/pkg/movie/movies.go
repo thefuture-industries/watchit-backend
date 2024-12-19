@@ -124,7 +124,7 @@ func GetMovies(parametrs map[string]string) ([]types.Movie, error) {
 		return nil, err
 	}
 
-	return pkg.TruncateArrayMovies(response), nil
+	return pkg.ShuffleArray(response), nil
 }
 
 // ------------------------------

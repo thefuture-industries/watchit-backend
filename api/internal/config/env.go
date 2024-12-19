@@ -25,6 +25,10 @@ type Config struct {
 	SUPER_SECRET_KEY string
 	IV               string
 
+	// S3 storage
+	ACCESS_KEY string
+	SECRET_KEY string
+
 	// apis
 	YOUTUBE_KEY_API    string
 	TMDB_KEY_API       string
@@ -58,6 +62,10 @@ func initConfig() Config {
 		// hashing
 		SUPER_SECRET_KEY: getEnv("SUPER_SECRET_KEY", "abc&1*~#^2^#s0^=)^^7%b34"),
 		IV:               getEnv("IV", "123456789012"),
+
+		// S3 storage
+		ACCESS_KEY: getEnv("ACCESS_KEY", "1c4700bdc1b24df4a432afc62f350800"),
+		SECRET_KEY: getEnv("SECRET_KEY", "99f4d1b4ccf04975941e138e8b4e21ee"),
 
 		// apis
 		YOUTUBE_KEY_API:    getEnv("YOUTUBE_KEY_API", "AIzaSyDBDGaVTs3rUgYtKXeBkaQY6veyqWp8PKg"),

@@ -11,7 +11,10 @@ import { MovieModel } from "~/types/movie";
 import Error from "~/components/Error";
 import SearchResult from "./SearchResult";
 import recommendationsService from "~/services/recommendations-service";
-import { throttle } from "lodash";
+import { throttle, update } from "lodash";
+import { useQuery } from "react-query";
+import userService from "~/services/user-service";
+import { invoke } from "@tauri-apps/api/core";
 
 // Компонент список фильмов
 const MovieList = React.memo(
@@ -41,7 +44,6 @@ const MovieList = React.memo(
 const ScrollButton = React.memo(
   ({
     isVisible,
-    isAtBottom,
     onClick,
   }: {
     isVisible: boolean;
@@ -69,13 +71,26 @@ const ScrollButton = React.memo(
 const Home = () => {
   const [isButtonVisible, setIsButtonVisible] = useState<boolean>(false);
   const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
-
   const [searchPage, setSearchPage] = useState<boolean>(false);
-
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [isError, setIsError] = useState<boolean>(false);
   const [movies, setMovies] = useState<MovieModel[]>([]);
-  const [video, setVideo] = useState<YoutubeModel[]>([]);
+
+  const { data: video } = useQuery("video", youtubeService.get_video, {
+    initialData: [] as YoutubeModel[],
+    refetchOnWindowFocus: false,
+  });
+
+  const { refetch } = useQuery(
+    "refetch",
+    recommendationsService.get,
+    {
+      initialData: [] as MovieModel[],
+      onSuccess: (data) => {
+        setMovies(data);
+        sessionStorage.setItem("sess_movies", JSON.stringify(data));
+      },
+      refetchOnWindowFocus: false,
+    }
+  );
 
   // Скрол вниз/верх
   const scrollToTopOrBottom = useCallback(() => {
@@ -95,9 +110,16 @@ const Home = () => {
 
   // Загрузка большего количества фильмов
   const handleLoadMore = useCallback(async () => {
-    const newMovies = await recommendationsService.get();
-    setMovies([...movies, ...newMovies]);
-  }, []);
+    const newMovies: MovieModel[] = await invoke("get_recommendations", {
+      uuid: userService.get_uuid(),
+    });
+
+    setMovies((prevMovies) => {
+      const updateMovie = [...prevMovies, ...(newMovies as MovieModel[])];
+      sessionStorage.setItem("sess_movies", JSON.stringify(updateMovie));
+      return updateMovie;
+    });
+  }, [refetch]);
 
   useEffect(() => {
     const threshold = 100;
@@ -120,32 +142,12 @@ const Home = () => {
     };
   }, []);
 
-  // Получение популярных фильмов
-  useEffect(() => {
-    const movies_and_video = async () => {
-      try {
-        const [moviesRecom, videoData] = await Promise.all([
-          recommendationsService.get(),
-          youtubeService.get_video(),
-        ]);
-
-        setMovies(moviesRecom);
-        setVideo(videoData);
-      } catch (err: any) {
-        setErrorMessage(err);
-        setIsError(true);
-      }
-    };
-
-    movies_and_video();
-  }, []);
-
   return (
     <>
       {/* ERROR */}
-      {isError && <Error errorMessage={errorMessage} />}
+      {/* {isError && <Error errorMessage={error as string} />} */}
       {searchPage ? (
-        <SearchResult movies={movies} videos={null} />
+        <SearchResult movies={movies as MovieModel[]} videos={null} />
       ) : (
         <div className="container flex w-screen m-2">
           <div className="left">
@@ -155,7 +157,7 @@ const Home = () => {
             <Header onSearch={handleSearch} />
 
             {/* Популярное видео */}
-            <YoutubeIndex video={video} />
+            <YoutubeIndex video={video as YoutubeModel[]} />
 
             {/* Фильмы */}
             <MovieList movies={movies} onLoadMore={handleLoadMore} />

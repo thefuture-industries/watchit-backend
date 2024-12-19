@@ -8,15 +8,19 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 type Service struct {
-	db *sql.DB
+	db     *sql.DB
+	logger *zap.Logger
 }
 
-func NewService(db *sql.DB) *Service {
+func NewService(db *sql.DB, logger *zap.Logger) *Service {
 	return &Service{
-		db: db,
+		db:     db,
+		logger: logger,
 	}
 }
 
@@ -46,7 +50,12 @@ func (s *Service) InsertAPIKEY(api_key string, uuid string) error {
 
 	_, err := s.db.ExecContext(ctx, "insert into api_keys (uuid, api_key, createdAt) values(?, ?, ?)", uuid, api_key, time.Now().Format("2006-01-02 15:04:05"))
 	if err != nil {
-		return fmt.Errorf("database insert error")
+		// Логирование ошибки
+		s.logger.Error("database error",
+			zap.String("uuid", uuid),
+			zap.String("api_key", api_key),
+			zap.Error(err))
+		return fmt.Errorf("failed to insert api_key: %w", err)
 	}
 
 	return nil

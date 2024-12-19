@@ -15,5 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
   `createdAt` VARCHAR(100) NOT NULL,
 
   PRIMARY KEY (id),
-  UNIQUE KEY (email)
+  UNIQUE KEY (email),
+  UNIQUE KEY (uuid),
+  UNIQUE KEY (secret_word)
 );

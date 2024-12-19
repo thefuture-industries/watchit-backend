@@ -217,11 +217,11 @@ const MovieDetails = () => {
                   border: "1px solid #fff",
                 }}
                 onClick={async () => {
+                  setIsSuccessFavourite(true);
                   await favouritesService.add({
                     movie_id: movieDetails?.id as number,
                     movie_poster: movieDetails?.poster_path as string,
                   });
-                  setIsSuccessFavourite(true);
                 }}
               >
                 <Heart
