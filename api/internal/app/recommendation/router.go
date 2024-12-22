@@ -28,9 +28,9 @@ func NewHandler(service interfaces.IRecommendation, userService interfaces.IUser
 }
 
 func (h Handler) RegisterRoutes(router *mux.Router) {
-	// Получение рекомендация пользователя
+	// Получение рекомендаций пользователя
 	router.HandleFunc("/recommendations/{uuid}", h.handleGetRecommendations).Methods("GET")
-	// c
+	// Добавление рекомендаций пользователя
 	router.HandleFunc("/recommendations", h.handleAddRecommendations).Methods("POST")
 }
 
@@ -149,5 +149,5 @@ func (h Handler) handleAddRecommendations(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusNoContent, nil)
+	utils.WriteJSON(w, http.StatusOK, map[string]string{"message": "Recommendation is created successfully"})
 }

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"flicksfi/cmd/configuration"
 	"flicksfi/internal/types"
+	"flicksfi/internal/utils"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -308,43 +309,59 @@ func (s *Service) CheckUser(user types.LoginUserPayload) (*types.User, error) {
 	return u, nil
 }
 
-// func (s *Service) UserUpdate(user types.UserUpdate, uuid string) error {
-// 	// определение контекста времени
-// 	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
-// 	defer cancel()
+// Обновление данных пользователя
+// ------------------------------
+func (s *Service) UserUpdate(user types.UserUpdate) error {
+	start := time.Now()
+	defer func() {
+		s.monitor.TrackRequest(time.Since(start))
+	}()
 
-// 	query := "update users set "
-// 	args := make(map[string]interface{})
-// 	first := true
+	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
+	defer cancel()
 
-// 	if *user.Username != "" {
-// 		if !first {
-// 			query += ", "
-// 		}
+	preparing_query := "update users set "
+	params := []interface{}{}
 
-// 		query += "username = :username"
-// 		args["username"] = user.Username
-// 		first = false
-// 	}
+	// Обновление username
+	if user.Username != nil {
+		preparing_query += "username = ?, username_upper = ?, "
+		params = append(params, *user.Username, strings.ToUpper(*user.Username))
+	}
 
-// 	if *user.Email != "" {
-// 		if !first {
-// 			query += ", "
-// 		}
+	// Обновление email
+	if user.Email != nil {
+		preparing_query += "email = ?, email_upper = ?, "
+		params = append(params, *user.Email, strings.ToUpper(*user.Email))
+	}
 
-// 		query += "email = :email"
-// 		args["email"] = user.Email
-// 		first = false
-// 	}
+	// Обновление secret_word
+	if user.SecretWord != nil {
+		encrypted_secret_word, err := utils.Encrypt(*user.SecretWord)
+		if err != nil {
+			s.logger.Error("encrypt secret word", zap.Error(err))
+			s.monitor.TrackError(err)
+			return fmt.Errorf("failed to encrypt secret word: %w", err)
+		}
 
-// 	if !first {
-// 		query += " where uuid = :uuid"
-// 		args["uuid"] = uuid
-// 	} else {
-// 		return fmt.Errorf("no fields provided for update")
-// 	}
+		preparing_query += "secret_word = ?, "
+		params = append(params, encrypted_secret_word)
+	}
 
-// 	result, err := s.db.NamedRe(ctx, "update users set username = ?, username_apper = ?, email = ?, email_upper = ?, secret_word = ?")
+	// Удаляем последнюю запятую и пробел
+	preparing_query = preparing_query[:len(preparing_query)-2]
+	preparing_query += " where uuid = ?"
+	params = append(params, user.UUID)
 
-// 	return nil
-// }
+	queryStart := time.Now()
+	_, err := s.db.ExecContext(ctx, preparing_query, params...)
+	if err != nil {
+		s.monitor.TrackDBError()
+		s.monitor.TrackError(err)
+		s.logger.Error("database error", zap.String("uuid", user.UUID), zap.Error(err))
+		return fmt.Errorf("failed to update user: %w", err)
+	}
+
+	s.monitor.TrackDBQuery(time.Since(queryStart))
+	return nil
+}

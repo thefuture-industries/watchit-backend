@@ -11,7 +11,7 @@ use models::{
     favourites::{FavouriteAddPayload, Favourites},
     movie::MovieModel,
     recommendations::{RecommendationAddPayload, Recommendations},
-    user::{IsUser, UserAddPayload},
+    user::{IsUser, UserAddPayload, UserUpdatePayload},
     youtube::YoutubeModel,
 };
 
@@ -190,6 +190,20 @@ fn add_user(user: UserAddPayload) -> std::result::Result<IsUser, String> {
     };
 }
 
+// ------------------------------
+// Обновление данных пользователя
+// ------------------------------
+#[tauri::command]
+fn update_user(user: UserUpdatePayload) -> std::result::Result<IsUser, String> {
+    let store = user::NewStore::new();
+    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+
+    let _response = match rt.block_on(store.update_user(user)) {
+        Ok(res) => return Ok(res),
+        Err(e) => return Err(format!("{}", e)),
+    };
+}
+
 // ---------------------------
 // Добовление избанных фильмов
 // ---------------------------
@@ -218,8 +232,22 @@ fn get_favourites(uuid: &str) -> std::result::Result<Vec<Favourites>, String> {
     };
 }
 
+// -------------------------
+// Удаление избанных фильмов
+// -------------------------
 #[tauri::command]
-fn add_recommendations(recom: RecommendationAddPayload) -> std::result::Result<(), String> {
+fn delete_favourites(uuid: &str, movie_id: i32) -> std::result::Result<String, String> {
+    let store = favourites::NewStore::new();
+    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+
+    let _response = match rt.block_on(store.delete_favourites(uuid, movie_id)) {
+        Ok(r) => return Ok(r),
+        Err(e) => return Err(format!("{}", e)),
+    };
+}
+
+#[tauri::command]
+fn add_recommendations(recom: RecommendationAddPayload) -> std::result::Result<String, String> {
     let store = recommendations::NewStore::new();
     let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
 
@@ -276,9 +304,11 @@ pub fn run() {
             // USER
             add_user,
             check_user,
+            update_user,
             // FAVOURITES
             add_favourites,
             get_favourites,
+            delete_favourites,
             // RECOMMENDATIONS
             add_recommendations,
             get_recommendations,

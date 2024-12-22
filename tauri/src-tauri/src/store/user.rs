@@ -32,6 +32,8 @@ pub trait IUser {
   async fn add_user(&self, user: user::UserAddPayload) -> std::result::Result<user::IsUser, String>;
   // Проверка на существования пользователя
   async fn check_user(&self, ip_address: &str, created_at: &str) -> std::result::Result<String, String>;
+  // Обновление данных пользователя
+  async fn update_user(&self, user: user::UserUpdatePayload) -> std::result::Result<user::IsUser, String>;
 }
 
 impl IUser for NewStore {
@@ -83,6 +85,34 @@ impl IUser for NewStore {
     match response.status() {
       reqwest::StatusCode::OK => {
         let res: std::string::String = response.json().await
+          .map_err(|e| format!("ERROR deserialization json: {}", e))?;
+
+        Ok(res)
+      }
+
+      status_code => Err(format!("ERROR HTTP: {} {}", status_code, response.text().await.unwrap_or_default()))
+    }
+  }
+
+  // ------------------------------
+  // Обновление данных пользователя
+  async fn update_user(&self, user: user::UserUpdatePayload) -> std::result::Result<user::IsUser, String> {
+    // Отправка запроса на сервер
+    let url = format!("{}user/update", self.server_url);
+    let body = serde_json::json!({
+      "uuid": &user.uuid,
+      "username": &user.username,
+      "email": &user.email,
+      "secret_word": &user.secret_word,
+    });
+
+    let response = self.client.put(url).json(&body).send().await
+      .map_err(|e| format!("ERROR request: {}", e))?;
+
+    // Обработка ошибки
+    match response.status() {
+      reqwest::StatusCode::OK => {
+        let res: user::IsUser = response.json().await
           .map_err(|e| format!("ERROR deserialization json: {}", e))?;
 
         Ok(res)

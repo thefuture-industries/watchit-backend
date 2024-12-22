@@ -24,3 +24,10 @@ export type UserAddPayload = {
   region_name: string;
   zip: string;
 };
+
+export type UserUpdatePayload = {
+  uuid?: string;
+  username?: string;
+  email?: string;
+  secret_word?: string;
+};

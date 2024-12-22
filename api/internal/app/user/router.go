@@ -185,4 +185,17 @@ func (h Handler) handleUpdate(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", errors))
 		return
 	}
+
+	// Обновление данных пользователя
+	if err := h.service.UserUpdate(*payload); err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	fmt.Println(payload)
+	utils.WriteJSON(w, http.StatusOK, map[string]interface{}{
+		"uuid":     payload.UUID,
+		"username": payload.Username,
+		"email":    payload.Email,
+	})
 }

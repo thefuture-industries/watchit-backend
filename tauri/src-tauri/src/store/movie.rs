@@ -93,7 +93,7 @@ impl IMovie for NewStore {
     let url = format!("{}image/w500/{}", self.server_url, img);
 
     // Отправка запроса на сервер
-    let response = self.client.get(url).send().await
+    let response = self.client.get(&url).send().await
       .map_err(|e| format!("ERROR request: {}", e))?;
 
     // Обработка ошибки
@@ -104,8 +104,6 @@ impl IMovie for NewStore {
           Ok(image_bytes) => Ok(image_bytes.to_vec()),
           Err(e) => Err(format!("ERROR {}", e)),
         }
-
-        // Ok(image_bytes.to_vec())
       }
 
       status_code => {

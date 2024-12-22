@@ -35,6 +35,9 @@ type Config struct {
 	GIGA_CHAT_ID       string
 	GIGA_CHAT_SECRET   string
 	GIGA_CHAT_AUTH_KEY string
+
+	// key admin
+	ADMIN_KEY string
 }
 
 var Envs = initConfig()
@@ -50,7 +53,7 @@ func initConfig() Config {
 		// database
 		PublicHost: getEnv("PUBLIC_HOST", "http://localhost"),
 		Port:       getEnv("PORT", "8080"),
-		DBUser:     getEnv("DBU_USER", "root"),
+		DBUser:     getEnv("DB_USER", "root"), // DBU_USER
 		DBPassword: getEnv("DB_PASSWORD", "password"),
 		DBAddress:  fmt.Sprintf("%s:%s", getEnv("DB_HOST", "127.0.0.1"), getEnv("DB_PORT", "3306")),
 		DBName:     getEnv("DB_NAME", "flick_finder"),
@@ -73,6 +76,9 @@ func initConfig() Config {
 		GIGA_CHAT_ID:       getEnv("GIGA_CHAT_ID", "aaeaef98-1937-4790-b7e0-fad35de06a9b"),
 		GIGA_CHAT_SECRET:   getEnv("GIGA_CHAT_PERSONAL", "ab15a8cc-8903-4fb3-8ffb-b2f7dc158fd8"),
 		GIGA_CHAT_AUTH_KEY: getEnv("GIGA_CHAT_AUTH_KEY", "YWFlYWVmOTgtMTkzNy00NzkwLWI3ZTAtZmFkMzVkZTA2YTliOmFiMTVhOGNjLTg5MDMtNGZiMy04ZmZiLWIyZjdkYzE1OGZkOA=="),
+
+		// key admin
+		ADMIN_KEY: getEnv("ADMIN_KEY", "752b62fe-da74-4cce-9640-285aefa02d7b"),
 	}
 }
 

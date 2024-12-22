@@ -29,6 +29,8 @@ pub trait IFavourites {
   async fn add_favourites(&self, favourite: favourites::FavouriteAddPayload) -> std::result::Result<String, String>;
   // Получение избанных фильмов
   async fn get_favourites(&self, uuid: &str) -> std::result::Result<Vec<favourites::Favourites>, String>;
+  // Удаление избанных фильмов
+  async fn delete_favourites(&self, uuid: &str, movie_id: i32) -> std::result::Result<String, String>;
 }
 
 impl IFavourites for NewStore {
@@ -47,12 +49,7 @@ impl IFavourites for NewStore {
       .map_err(|e| format!("ERROR request {}", e))?;
 
     match response.status() {
-      reqwest::StatusCode::OK => {
-        let res: std::string::String = response.json().await
-          .map_err(|e| format!("ERROR deserialization json: {}", e))?;
-
-        Ok(res)
-      }
+      reqwest::StatusCode::OK => Ok(String::from("Favourite added successfully")),
 
       status_code => Err(format!("ERROR HTTP: {} {}", status_code, response.text().await.unwrap_or_default()))
     }
@@ -73,6 +70,24 @@ impl IFavourites for NewStore {
         Ok(res)
       }
 
+      status_code => Err(format!("ERROR HTTP: {} {}", status_code, response.text().await.unwrap_or_default()))
+    }
+  }
+
+  // --------------------------
+  // Удаление избанных фильмов
+  async fn delete_favourites(&self, uuid: &str, movie_id: i32) -> std::result::Result<String, String> {
+    let url = format!("{}favourites", self.server_url);
+    let body = serde_json::json!({
+      "uuid": uuid,
+      "movieId": movie_id,
+    });
+
+    let response = self.client.delete(url).json(&body).send().await
+      .map_err(|e| format!("ERROR request {}", e))?;
+
+    match response.status() {
+      reqwest::StatusCode::OK => Ok(String::from("Favourite deleted successfully")),
       status_code => Err(format!("ERROR HTTP: {} {}", status_code, response.text().await.unwrap_or_default()))
     }
   }

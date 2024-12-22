@@ -29,6 +29,7 @@ const MovieList = React.memo(
       {movies.map((movie, index) => (
         <Movie movies={movie} key={movie.id || index} />
       ))}
+      {/* <Movie movies={movies[2] ?? []} key={1} /> */}
       <div
         className="flex items-center text-[#555] hover:text-[#fff] ml-3 cursor-pointer transition"
         onClick={onLoadMore}
@@ -79,18 +80,14 @@ const Home = () => {
     refetchOnWindowFocus: false,
   });
 
-  const { refetch } = useQuery(
-    "refetch",
-    recommendationsService.get,
-    {
-      initialData: [] as MovieModel[],
-      onSuccess: (data) => {
-        setMovies(data);
-        sessionStorage.setItem("sess_movies", JSON.stringify(data));
-      },
-      refetchOnWindowFocus: false,
-    }
-  );
+  const { refetch } = useQuery("refetch", recommendationsService.get, {
+    initialData: [] as MovieModel[],
+    onSuccess: (data) => {
+      setMovies(data);
+      sessionStorage.setItem("sess_movies", JSON.stringify(data));
+    },
+    refetchOnWindowFocus: false,
+  });
 
   // Скрол вниз/верх
   const scrollToTopOrBottom = useCallback(() => {

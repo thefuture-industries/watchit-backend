@@ -11,7 +11,7 @@ import (
 // Настройка и создание БД
 // -----------------------
 func NewMySQLStorage(cfg mysql.Config) (*sql.DB, error) {
-	db, err := sql.Open("mysql", cfg.FormatDSN())
+	db, err := sql.Open("mysql", cfg.FormatDSN()) // cfg.FormatDSN()
 	if err != nil {
 		log.Fatal(err)
 	}

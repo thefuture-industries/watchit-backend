@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import FavouriteMovie from "~/components/controls/FavouriteMovie";
+import Loader from "~/components/Loader";
 import Navigation from "~/components/Navigation";
 import favouritesService from "~/services/favourites-service";
 import { FavouriteModel } from "~/types/favourites";
@@ -19,10 +20,14 @@ const FavouritesList = React.memo(
 const Favourites = () => {
   const [isButtonVisible, setIsButtonVisible] = useState<boolean>(false);
   const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
-  const { data: movies } = useQuery("movies", favouritesService.get, {
-    initialData: [] as FavouriteModel[],
-    refetchOnWindowFocus: false,
-  });
+  const { data: movies, isLoading } = useQuery(
+    "movies",
+    favouritesService.get,
+    {
+      initialData: [] as FavouriteModel[],
+      refetchOnWindowFocus: false,
+    }
+  );
 
   // Скрол вниз/верх
   const scrollToTopOrBottom = () => {
@@ -53,6 +58,8 @@ const Favourites = () => {
 
   return (
     <>
+      {isLoading && <Loader />}
+
       <div className="container flex w-screen m-2">
         <div className="left">
           <Navigation />

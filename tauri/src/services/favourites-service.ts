@@ -36,8 +36,13 @@ class FavouritesService {
   /**
    * Удаление фильма из избранного
    */
-  public async delete(): Promise<void> {
-    return;
+  public async delete(movie_id: number): Promise<void> {
+    const uuid = userService.get_uuid();
+
+    await invoke("delete_favourites", {
+      uuid,
+      movieId: movie_id,
+    });
   }
 }
 

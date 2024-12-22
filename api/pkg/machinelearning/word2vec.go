@@ -65,12 +65,30 @@ func Word2VecPlot(str1, str2, title string) float64 {
 		{"=>", "<="},
 	}
 
+	// Проверяем на совпадение названия
 	for _, word := range stemmSTR_2 {
+		// Фильмы с предположительным названием
 		if strings.Contains(word, "<?>") {
 			// Извлекаем текст между специальными символами и сравниваем с title
 			clean_text := extractText(word, markers)
-			if strings.ToLower(title) == strings.ToLower(clean_text) {
+			if strings.EqualFold(title, clean_text) {
 				weight += 10000.0
+			}
+		}
+
+		// Фильмы с точными моментами
+		if strings.Contains(word, "<>") {
+			clean_text := extractText(word, markers)
+			if strings.EqualFold(title, clean_text) || strings.EqualFold(str1, clean_text) {
+				weight++
+			}
+		}
+
+		// Фильмы по актерам
+		if strings.Contains(word, "=>") {
+			clean_text := extractText(word, markers)
+			if strings.EqualFold(title, clean_text) || strings.EqualFold(str1, clean_text) {
+				weight++
 			}
 		}
 	}
@@ -79,8 +97,30 @@ func Word2VecPlot(str1, str2, title string) float64 {
 	tone2 := AnalyzeTone(str2)
 	similarity := CalculateToneSimilarity(tone1, tone2)
 
+	// Проверяем тональность
 	if similarity >= 0.73 {
 		weight += 1.0
+	}
+
+	// Создаем мапу для быстрой проверки совпадения слов
+	stemm1Map := make(map[string]bool)
+	for _, s := range stemmSTR_1 {
+		stemm1Map[s] = true
+	}
+
+	// Ищем вектор отображающий смысл
+	cos_vect := CosineVector(stemmSTR_2)
+
+	// Проверяем совпадение слов
+	for _, stemm2 := range stemmSTR_2 {
+		if stemm1Map[stemm2] {
+			weight++
+		}
+	}
+
+	// Ищем слово отображающее смысл
+	if stemm1Map[cos_vect] {
+		weight++
 	}
 
 	if float64(len(stemmSTR_1)) < weight {

@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"flicksfi/internal/config"
 	"flicksfi/internal/interfaces"
 	"flicksfi/internal/utils"
 	"fmt"
@@ -49,5 +50,13 @@ func (h Handler) handleGetStatistic(w http.ResponseWriter, r *http.Request) {
 // Получение мониторинга приложения
 // --------------------------------
 func (h Handler) handleGetMonitoring(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	key := query.Get("key")
+
+	if key != config.Envs.ADMIN_KEY {
+		utils.WriteError(w, http.StatusForbidden, fmt.Errorf("invalid key"))
+		return
+	}
+
 	utils.WriteJSON(w, http.StatusOK, h.service.GetMonitoring())
 }

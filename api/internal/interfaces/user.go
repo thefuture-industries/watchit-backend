@@ -23,4 +23,7 @@ type IUser interface {
 
 	// Проверка на существования пользователя в БД
 	CheckUser(user types.LoginUserPayload) (*types.User, error)
+
+	// Обновление данных пользователя
+	UserUpdate(user types.UserUpdate) error
 }

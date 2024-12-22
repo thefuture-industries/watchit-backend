@@ -152,31 +152,32 @@ func (h Handler) handleImageMovie(w http.ResponseWriter, r *http.Request) {
 
 	// Получаем img
 	var img string = vars["img"]
+	if img == "" {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("path image is required"))
+		return
+	}
+
 	// URL TMDB
 	var url string = fmt.Sprintf("https://image.tmdb.org/t/p/w500/%s?api_key=%s", img, config.Envs.TMDB_KEY_API)
 
-	// Создаем новый запрос на TMDB API
-	tmdbRequest, err := http.NewRequest("GET", url, nil)
+	// Запрашиваем изображение
+	tmdbResponse, err := http.Get(url)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
+	defer tmdbResponse.Body.Close()
 
-	// Перенаправляем запрос на TMDB API
-	client := &http.Client{}
-	response, err := client.Do(tmdbRequest)
-	if err != nil {
+	if tmdbResponse.StatusCode != http.StatusOK {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
-	defer response.Body.Close()
 
-	// Копируем заголовок и тело ответа от TMDB
-	for k, v := range response.Header {
-		w.Header()[k] = v
-	}
-	w.WriteHeader(response.StatusCode)
-	_, err = io.Copy(w, response.Body)
+	w.Header().Set("Content-Type", "image/jpeg")
+	w.Header().Set("Cache-Control", "public, max-age=86400")
+	w.Header().Set("Expires", time.Now().Add(24*time.Hour).Format(http.TimeFormat))
+
+	_, err = io.Copy(w, tmdbResponse.Body)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return

@@ -1,12 +1,13 @@
 package logger
 
 import (
-	"bytes"
 	"context"
 	env "flicksfi/internal/config"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -19,6 +20,7 @@ import (
 type Logger struct {
 	logger *zap.Logger
 	client *s3.Client
+	mu     sync.Mutex
 }
 
 func NewLogger(logger *zap.Logger) *Logger {
@@ -31,18 +33,68 @@ func NewLogger(logger *zap.Logger) *Logger {
 	return &Logger{
 		logger: logger,
 		client: client,
+		mu:     sync.Mutex{},
 	}
 }
 
 const (
 	bucketName = "flicksfi-logs"
 	fileName   = "flicksfi-monitoring.log"
+	bufferSize = 173
 )
+
+var buffer = make([]string, 0, bufferSize)
 
 type responseWriter struct {
 	http.ResponseWriter
 	status int
 	size   int64
+}
+
+// flush отправляет накопленные логи в S3
+// --------------------------------------
+func (l *Logger) FlushBuffer(logs []string) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
+	// копируем данные из буфера в новый массив
+	quotedLogs := make([]string, len(logs))
+	copy(quotedLogs, logs)
+
+	// Объединение всех строк с разделителем новой строки
+	finalStr := strings.Join(quotedLogs, "")
+
+	// получаем старые данные из s3 storage
+	old_data_logs, err := l.readDataFromS3()
+	if err != nil {
+		l.logger.Error("failed to read old data logs", zap.Error(err))
+		return
+	}
+
+	// если есть старые данные, то добавляем их в конец
+	if len(old_data_logs) > 0 {
+		finalStr = string(old_data_logs) + "\n" + finalStr
+	}
+
+	// удаляем пробелы в начале и конце
+	finalStr = strings.TrimSpace(finalStr)
+
+	// записываем данные в s3 storage
+	if err := l.writeLogsToS3(finalStr); err != nil {
+		l.logger.Error("failed to upload log batch",
+			zap.String("bucket", bucketName),
+			zap.String("file", fileName),
+			zap.Error(err),
+		)
+
+		return
+	}
+
+	l.logger.Info("successfully flushed buffer .log",
+		zap.String("bucket", bucketName),
+		zap.String("file", fileName),
+		zap.Int("size", len(finalStr)),
+	)
 }
 
 // LoggerMiddleware добавляет данные в log (s3 storage)
@@ -75,37 +127,25 @@ func (l *Logger) LoggerMiddleware(next http.Handler) http.Handler {
 			time.Since(start),
 		)
 
-		if err := l.Logging(entry); err != nil {
-			l.logger.Error("failed to write logs",
-				zap.String("bucket", bucketName),
-				zap.String("file", fileName),
-				zap.Error(err),
-			)
+		if err := l.AddLogBuffer(entry); err != nil {
+			// логирование ошибки при добавлении данных
+			l.logger.Warn("buffer is full", zap.String("status", "sending to write logs"))
 		}
-
-		// логирование успешного добавления данных
-		l.logger.Info("successfully appended log",
-			zap.String("bucket", bucketName),
-			zap.String("file", fileName),
-			zap.Int("size", len(entry)),
-		)
 	})
 }
 
 // Logging добавляет данные в log (s3 storage)
 // ------------------------------------------
-func (l *Logger) Logging(entry string) error {
-	// Получаем текущие логи
-	existing_logs, err := l.readDataFromS3()
-	if err != nil {
-		return err
+func (l *Logger) AddLogBuffer(log string) error {
+	buffer = append(buffer, log)
+
+	if len(buffer) >= bufferSize {
+		l.FlushBuffer(buffer)
+		buffer = buffer[:0]
+		return fmt.Errorf("buffer is full")
 	}
 
-	// Добавляем новую запись
-	updated_logs := append(existing_logs, []byte(entry)...)
-
-	// Запись данных в s3 storage
-	return l.writeLogsToS3(updated_logs)
+	return nil
 }
 
 // getHTTPVersion добавляет версию http в строку
@@ -152,11 +192,14 @@ func createS3Client() (*s3.Client, error) {
 
 // writeLogsToS3 записывает лог в S3
 // ---------------------------------
-func (l *Logger) writeLogsToS3(logs []byte) error {
-	_, err := l.client.PutObject(context.Background(), &s3.PutObjectInput{
+func (l *Logger) writeLogsToS3(logs string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := l.client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket: aws.String(bucketName),
 		Key:    aws.String(fileName),
-		Body:   bytes.NewReader(logs),
+		Body:   strings.NewReader(logs),
 	})
 
 	return err
@@ -175,38 +218,11 @@ func (l *Logger) readDataFromS3() ([]byte, error) {
 		Key:    aws.String(fileName),
 	})
 	if err != nil {
-		err = l.createNewLogFile()
-		if err != nil {
-			return nil, fmt.Errorf("failed to create new log file: %w", err)
-		}
 		return []byte{}, nil
 	}
 	defer resp.Body.Close()
 
 	return io.ReadAll(resp.Body)
-}
-
-// createNewLogFile создает новый файл в s3 storage
-// ------------------------------------------------
-func (l *Logger) createNewLogFile() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	// Создаем начальное содержимое файла
-	initialContent := []byte(fmt.Sprintf("# Log file created at %s\n",
-		time.Now().Format("02/Jan/2006:15:04:05 -0700")))
-
-	// Загружаем пустой файл в S3
-	_, err := l.client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(fileName),
-		Body:   bytes.NewReader(initialContent),
-	})
-	if err != nil {
-		return fmt.Errorf("failed to create initial log file: %w", err)
-	}
-
-	return nil
 }
 
 // WriteHeader добавляет статус ответа в обертку

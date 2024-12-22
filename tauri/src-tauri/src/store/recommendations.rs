@@ -27,7 +27,7 @@ impl NewStore {
 
 pub trait IRecommendations {
   // Добовление избанных фильмов
-  async fn add_recommendations(&self, recom: recommendations::RecommendationAddPayload) -> std::result::Result<(), String>;
+  async fn add_recommendations(&self, recom: recommendations::RecommendationAddPayload) -> std::result::Result<String, String>;
   // Получение избанных фильмов
   async fn get_recommendations(&self, uuid: &str) -> std::result::Result<Vec<movie::MovieModel>, String>;
 }
@@ -35,7 +35,7 @@ pub trait IRecommendations {
 impl IRecommendations for NewStore {
   // ---------------------------
   // Добовление избанных фильмов
-  async fn add_recommendations(&self, recom: recommendations::RecommendationAddPayload) -> std::result::Result<(), String> {
+  async fn add_recommendations(&self, recom: recommendations::RecommendationAddPayload) -> std::result::Result<String, String> {
     // Отправка запроса на сервер
     let url = format!("{}recommendations", self.server_url);
     let body = serde_json::json!({
@@ -48,8 +48,8 @@ impl IRecommendations for NewStore {
       .map_err(|e| format!("ERROR request {}", e))?;
 
     match response.status() {
-      reqwest::StatusCode::NO_CONTENT => {
-        Ok(())
+      reqwest::StatusCode::OK => {
+        Ok(String::from("Recommendation is created successfully"))
       }
 
       status_code => Err(format!("ERROR HTTP: {} {}", status_code, response.text().await.unwrap_or_default()))

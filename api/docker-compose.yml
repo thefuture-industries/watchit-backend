@@ -1,0 +1,22 @@
+# version: "3.8"
+# services:
+#   app:
+#     build: .
+#     environment:
+#       - DB_USER=root
+#       - DB_PASSWORD=password
+#       - DB_HOST=host.docker.internal
+#       - DB_PORT=3306
+#       - DB_NAME=flick_finder
+#     ports:
+#       - "8080:8080"
+#     volumes:
+#       - ./app:/app
+#     networks:
+#       - app-network
+
+# networks:
+#   app-network:
+#     driver: bridge
+# volumes:
+#   db_data:

@@ -4,6 +4,7 @@ import lazyService from "~/services/lazy-service";
 import { FavouriteModel } from "~/types/favourites";
 import Skeleton from "../Skeletons/Skeleton";
 import { Link } from "react-router-dom";
+import favouritesService from "~/services/favourites-service";
 
 interface Props {
   movie: FavouriteModel;
@@ -20,7 +21,10 @@ const FavouriteMovie = (prop: Props) => {
   useEffect(() => {
     const cleanup = lazyService.createImageObserver(
       imgRef,
-      `https://image.tmdb.org/t/p/w500${prop.movie.moviePoster}`,
+      `http://${import.meta.env.VITE_SERVER_URL}:8080/api/v1/image/w500${
+        prop.movie.moviePoster
+      }`,
+      // `https://image.tmdb.org/t/p/w500${prop.movie.moviePoster}`,
       setPoster,
       setLoaded
     );
@@ -56,6 +60,11 @@ const FavouriteMovie = (prop: Props) => {
                     background: "rgba(0, 0, 0, 0.3)",
                     boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.3)",
                     border: "1px solid #fff",
+                  }}
+                  onClick={async () => {
+                    setIsSuccessFavourite(true);
+                    await favouritesService.delete(prop.movie.movieId);
+                    location.reload();
                   }}
                 >
                   <Heart

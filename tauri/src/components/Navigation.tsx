@@ -41,7 +41,11 @@ const Navigation = () => {
     uuid: string;
     username: string;
     email: string | null;
-  }>();
+  }>({
+    uuid: "",
+    username: "",
+    email: null,
+  });
 
   useEffect(() => {
     const _sess = sessionStorage.getItem("_sess");

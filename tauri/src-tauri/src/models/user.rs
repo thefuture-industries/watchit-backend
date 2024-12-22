@@ -71,6 +71,7 @@ pub struct IsUser {
     pub email: Option<String>,
 }
 
+// Тип DTO для добавления данных пользователя
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UserAddPayload {
     pub secret_word: String,
@@ -80,4 +81,16 @@ pub struct UserAddPayload {
     pub country: String,
     pub region_name: String,
     pub zip: String,
+}
+
+// Тип DTO для обновления данных пользователя
+#[derive(Serialize, Deserialize, Debug)]
+pub struct UserUpdatePayload {
+    pub uuid: String,
+    #[serde(rename = "username", default)]
+    pub username: Option<String>,
+    #[serde(rename = "email", default)]
+    pub email: Option<String>,
+    #[serde(rename = "secret_word", default)]
+    pub secret_word: Option<String>,
 }

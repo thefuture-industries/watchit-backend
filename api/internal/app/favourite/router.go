@@ -80,7 +80,7 @@ func (h Handler) handleFavouriteAdd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusOK, "success")
+	utils.WriteJSON(w, http.StatusOK, map[string]string{"message": "Favourite added successfully"})
 }
 
 // --------------------------------
@@ -148,5 +148,5 @@ func (h Handler) handleFavouriteDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusNoContent, nil)
+	utils.WriteJSON(w, http.StatusOK, map[string]string{"message": "Favourite deleted successfully"})
 }

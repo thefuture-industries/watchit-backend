@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { UserAddPayload } from "~/types/user";
+import { UserAddPayload, UserUpdatePayload } from "~/types/user";
 
 class UserService {
   /**
@@ -46,6 +46,24 @@ class UserService {
     }
 
     return JSON.parse(uuid).uuid;
+  }
+
+  /**
+   * Обновление данных пользователя
+   */
+  public async update_user(user: UserUpdatePayload): Promise<string> {
+    const payload: UserUpdatePayload = {
+      uuid: this.get_uuid(),
+      username: user.username,
+      email: user.email,
+      secret_word: user.secret_word,
+    };
+
+    const response: string = await invoke("update_user", {
+      user: payload,
+    });
+
+    return response;
   }
 }
 

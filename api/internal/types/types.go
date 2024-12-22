@@ -220,7 +220,9 @@ type LoginUserPayload struct {
 	UUID string `json:"uuid"`
 }
 
+// Тип DTO для обновления данных пользователя
 type UserUpdate struct {
+	UUID       string  `json:"uuid"`
 	Username   *string `json:"username"`
 	Email      *string `json:"email"`
 	SecretWord *string `json:"secret_word"`

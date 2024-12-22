@@ -8,8 +8,20 @@ interface Props {
 
 const YoutubeIndex = (prop: Props) => {
   const popular_data = ["🔥 Popular", "🆕 News", "🔝 Top", "✨ Famous"];
+  const [isCopied, setIsCopied] = useState<boolean>(false);
   const [popular, setPopular] = useState<string>("");
   const [video, setVideo] = useState<YoutubeModel[]>([]);
+
+  // Копирование ссылки в буфер обмена
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(
+        `https://www.youtube.com/watch?v=${video[0]?.id.videoId}`
+      );
+    } catch (err) {
+      console.error("Error copying text: ", err);
+    }
+  };
 
   useEffect(() => {
     if (prop.video.length == 0) {
@@ -50,11 +62,19 @@ const YoutubeIndex = (prop: Props) => {
                 {video[0]?.snippet?.description}
               </p>
 
-              <div className="cursor-pointer bg-[#fff] hover:bg-[#999] transition py-[5px] px-4 mt-3 rounded-2xl inline-block motion-preset-confetti">
+              <div
+                className={`cursor-pointer bg-[#fff] hover:bg-[#999] transition py-[5px] px-4 mt-3 rounded-2xl inline-block ${
+                  isCopied ? "motion-preset-confetti" : ""
+                }`}
+                onClick={() => {
+                  setIsCopied(true);
+                  copyToClipboard();
+                }}
+              >
                 <div className="flex items-center">
-                  <Play fill="#000" size={21} />
+                  <Play className="text-[#000] fill-[#000]" size={14} />
                   <p className="pr-2 text-[#000] text-[14px] ml-2 font-medium -mt-[1px]">
-                    Watch
+                    Copy link
                   </p>
                 </div>
               </div>
