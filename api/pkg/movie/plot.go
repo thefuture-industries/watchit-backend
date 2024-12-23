@@ -54,21 +54,10 @@ func OverviewText(text string) ([]types.Movie, error) {
 		for _, movieItem := range movie.Results {
 			tfidf := machinelearning.Word2VecPlot(movieItem.Overview, text, movieItem.Title)
 			if tfidf >= 0.7 {
-				fmt.Printf("tfidf для %s: %.4f\n", movieItem.Title, tfidf)
+				response = append(response, movieItem)
 			}
 		}
 	}
-
-	// for _, movie := range movies {
-	// 	for _, movieItem := range movie.Results {
-	// 		tfidf := machinelearning.TF_IDF(movieItem.Overview, text, 0.289)
-	// 		// fmt.Printf("tfidf для %s: %.4f\n", movieItem.Title, tfidf)
-
-	// 		if tfidf >= 0.59 {
-	// 			response = append(response, movieItem)
-	// 		}
-	// 	}
-	// }
 
 	return pkg.ShuffleArray(response), nil
 }

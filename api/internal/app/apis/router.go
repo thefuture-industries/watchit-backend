@@ -199,6 +199,8 @@ func (h Handler) handleMoviesText(w http.ResponseWriter, r *http.Request) {
 	// Отправляем пользователю ошибку, что не все поля заполнены
 	if err := utils.ParseJSON(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
+		fmt.Println(err)
+		return
 	}
 
 	// Валидация данных от пользователя
@@ -214,7 +216,6 @@ func (h Handler) handleMoviesText(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
-	fmt.Println(text_to_en)
 
 	// Получение фильмов по сюжету
 	if payload.Lege == "simple" {
@@ -224,8 +225,8 @@ func (h Handler) handleMoviesText(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Println(movies)
 		utils.WriteJSON(w, http.StatusOK, movies)
+		return
 	}
 
 	// Получение фильма с ИИ
@@ -264,6 +265,7 @@ func (h Handler) handleMoviesText(w http.ResponseWriter, r *http.Request) {
 		}
 
 		utils.WriteJSON(w, http.StatusOK, movies)
+		return
 	}
 }
 
