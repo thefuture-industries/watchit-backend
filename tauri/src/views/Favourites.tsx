@@ -17,6 +17,16 @@ const FavouritesList = React.memo(
   )
 );
 
+// Пустое состояние
+const FavouritesEmpty = React.memo(() => (
+  <div className="flex flex-col items-center justify-center h-screen">
+    <img src="/src/assets/empty_img.webp" width="200px" alt="" />
+    <p className="mt-[5vw] text-[1.5rem]">
+      You haven't added any movies to your favorites yet
+    </p>
+  </div>
+));
+
 const Favourites = () => {
   const [isButtonVisible, setIsButtonVisible] = useState<boolean>(false);
   const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
@@ -65,6 +75,8 @@ const Favourites = () => {
           <Navigation />
         </div>
         <div className="right ml-[19rem] w-[67vw]">
+          {movies?.length == 0 && <FavouritesEmpty />}
+
           {/* Фильмы */}
           <FavouritesList movies={movies as FavouriteModel[]} />
 
