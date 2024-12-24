@@ -30,6 +30,9 @@ const Error = (prop: Props) => {
               >
                 <p className="text-[0.9rem]">Exist</p>
               </div>
+              <div className="border border-[#900000] cursor-pointer hover:bg-[#900000] transition inline-block px-7 rounded-2xl ml-4">
+                <p className="text-[0.9rem]">OK</p>
+              </div>
             </div>
           </div>
         </div>

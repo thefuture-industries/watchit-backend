@@ -324,19 +324,19 @@ func (s *Service) UserUpdate(user types.UserUpdate) error {
 	params := []interface{}{}
 
 	// Обновление username
-	if user.Username != nil {
+	if user.Username != nil && *user.Username != "" {
 		preparing_query += "username = ?, username_upper = ?, "
 		params = append(params, *user.Username, strings.ToUpper(*user.Username))
 	}
 
 	// Обновление email
-	if user.Email != nil {
+	if user.Email != nil && *user.Email != "" {
 		preparing_query += "email = ?, email_upper = ?, "
 		params = append(params, *user.Email, strings.ToUpper(*user.Email))
 	}
 
 	// Обновление secret_word
-	if user.SecretWord != nil {
+	if user.SecretWord != nil && *user.SecretWord != "" {
 		encrypted_secret_word, err := utils.Encrypt(*user.SecretWord)
 		if err != nil {
 			s.logger.Error("encrypt secret word", zap.Error(err))

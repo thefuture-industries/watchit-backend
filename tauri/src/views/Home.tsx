@@ -8,13 +8,13 @@ import { MoveRight } from "lucide-react";
 import youtubeService from "~/services/youtube-service";
 import { YoutubeModel } from "~/types/youtube";
 import { MovieModel } from "~/types/movie";
-import Error from "~/components/Error";
 import SearchResult from "./SearchResult";
 import recommendationsService from "~/services/recommendations-service";
-import { throttle, update } from "lodash";
+import { throttle } from "lodash";
 import { useQuery } from "react-query";
 import userService from "~/services/user-service";
 import { invoke } from "@tauri-apps/api/core";
+import StateRequest from "~/components/StateRequest";
 
 // Компонент список фильмов
 const MovieList = React.memo(
@@ -29,7 +29,6 @@ const MovieList = React.memo(
       {movies.map((movie, index) => (
         <Movie movies={movie} key={movie.id || index} />
       ))}
-      {/* <Movie movies={movies[2] ?? []} key={1} /> */}
       <div
         className="flex items-center text-[#555] hover:text-[#fff] ml-3 cursor-pointer transition"
         onClick={onLoadMore}
@@ -70,6 +69,8 @@ const ScrollButton = React.memo(
 );
 
 const Home = () => {
+  const [error, setError] = useState<string>("");
+  const [isError, setIsError] = useState<boolean>(false);
   const [isButtonVisible, setIsButtonVisible] = useState<boolean>(false);
   const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
   const [searchPage, setSearchPage] = useState<boolean>(false);
@@ -107,15 +108,20 @@ const Home = () => {
 
   // Загрузка большего количества фильмов
   const handleLoadMore = useCallback(async () => {
-    const newMovies: MovieModel[] = await invoke("get_recommendations", {
-      uuid: userService.get_uuid(),
-    });
+    try {
+      const newMovies: MovieModel[] = await invoke("get_recommendations", {
+        uuid: userService.get_uuid(),
+      });
 
-    setMovies((prevMovies) => {
-      const updateMovie = [...prevMovies, ...(newMovies as MovieModel[])];
-      sessionStorage.setItem("sess_movies", JSON.stringify(updateMovie));
-      return updateMovie;
-    });
+      setMovies((prevMovies) => {
+        const updateMovie = [...prevMovies, ...(newMovies as MovieModel[])];
+        sessionStorage.setItem("sess_movies", JSON.stringify(updateMovie));
+        return updateMovie;
+      });
+    } catch (error) {
+      setIsError(true);
+      setError(error as string);
+    }
   }, [refetch]);
 
   useEffect(() => {
@@ -142,7 +148,14 @@ const Home = () => {
   return (
     <>
       {/* ERROR */}
-      {/* {isError && <Error errorMessage={error as string} />} */}
+      {isError && (
+        <StateRequest
+          statusCode={400}
+          message={error as string}
+          state={isError}
+          setState={setIsError}
+        />
+      )}
       {searchPage ? (
         <SearchResult movies={movies as MovieModel[]} videos={null} />
       ) : (

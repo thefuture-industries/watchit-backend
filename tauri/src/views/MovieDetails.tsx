@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import SimilarMovie from "~/components/controls/SimilarMovie";
 import Skeleton from "~/components/Skeletons/Skeleton";
+import StateRequest from "~/components/StateRequest";
 import favouritesService from "~/services/favourites-service";
 import movieService from "~/services/movie-service";
 import { MovieModel } from "~/types/movie";
@@ -44,56 +45,64 @@ const MovieDetails = () => {
   const [movieDetails, setMovieDetails] = useState<MovieModel>();
   const [similarMovies, setSimilarMovies] = useState<MovieModel[]>([]);
   const [loaded, setLoaded] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
   const [totalPage, setTotalPage] = useState<number>(5);
 
   const navigate = useNavigate();
   let { id } = useParams();
 
+  // Получение данных о фильме
   useEffect(() => {
     // Получение деталий фильма по ID
     const movieDetails = async () => {
-      // Получение деталий фильма по ID
-      let movieDetails = await movieService.details(Number(id));
-      setMovieDetails(movieDetails);
-
-      // Получение похожих фильмов
       try {
-        let similarMovies = await movieService.similar(
-          movieDetails.genre_ids,
-          movieDetails.title,
-          movieDetails.overview
-        );
+        // Получение деталий фильма по ID
+        let movieDetails: MovieModel = await movieService.details(Number(id));
+        setMovieDetails(movieDetails);
 
-        // Удаление повторяющихся фильмов
-        const uniqueIDs = new Set();
-        const filteredMovies = similarMovies.filter((movie) => {
-          const id = movie.id;
-          if (!uniqueIDs.has(id)) {
-            uniqueIDs.add(id);
-            return true;
-          }
+        // Получение похожих фильмов
+        try {
+          let similarMovies = await movieService.similar(
+            movieDetails.genre_ids,
+            movieDetails.title,
+            movieDetails.overview
+          );
 
-          return false;
-        });
-        setSimilarMovies(filteredMovies);
-      } catch (err) {
-        setSimilarMovies([]);
+          // Удаление повторяющихся фильмов
+          const uniqueIDs = new Set();
+          const filteredMovies = similarMovies.filter((movie) => {
+            const id = movie.id;
+            if (!uniqueIDs.has(id)) {
+              uniqueIDs.add(id);
+              return true;
+            }
+
+            return false;
+          });
+          setSimilarMovies(filteredMovies);
+        } catch (err) {
+          setSimilarMovies([]);
+        }
+
+        // Загрузка и отображение изображение фильма
+        const img = new Image();
+        img.src = `https://image.tmdb.org/t/p/w500${movieDetails?.poster_path}`;
+        img.onload = () => {
+          setPoster(
+            `https://image.tmdb.org/t/p/w500${movieDetails?.poster_path}`
+          );
+          setLoaded(true);
+        };
+        img.onerror = () => {
+          setPoster("/src/assets/default_image.jpg");
+          setLoaded(true);
+        };
+      } catch (error) {
+        setIsError(true);
+        setError("error movie details");
       }
-
-      // Загрузка и отображение изображение фильма
-      const img = new Image();
-      img.src = `https://image.tmdb.org/t/p/w500${movieDetails?.poster_path}`;
-      img.onload = () => {
-        setPoster(
-          `https://image.tmdb.org/t/p/w500${movieDetails?.poster_path}`
-        );
-        setLoaded(true);
-      };
-      img.onerror = () => {
-        setPoster("/src/assets/default_image.jpg");
-        setLoaded(true);
-      };
     };
 
     movieDetails();
@@ -101,6 +110,15 @@ const MovieDetails = () => {
 
   return (
     <>
+      {/* ERROR */}
+      {isError && (
+        <StateRequest
+          message={error}
+          statusCode={500}
+          state={isError}
+          setState={setIsError}
+        />
+      )}
       <div className="my-5 ml-[5rem]">
         <div className="flex items-center justify-between">
           <MoveLeft

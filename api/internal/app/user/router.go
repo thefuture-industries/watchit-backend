@@ -36,7 +36,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 
 // ----------------------
 // ----------------------
-// LOGIN ROUTER
+// Проверка на наличие аккаунта
 // ----------------------
 func (h *Handler) handleCheckUser(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
@@ -80,7 +80,7 @@ func (h *Handler) handleCheckUser(w http.ResponseWriter, r *http.Request) {
 
 // ----------------------
 // ----------------------
-// REGISTRATION ROUTER
+// Регестрация аккаунта
 // ----------------------
 func (h *Handler) handleAddUser(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
@@ -115,6 +115,7 @@ func (h *Handler) handleAddUser(w http.ResponseWriter, r *http.Request) {
 	// Получение пользователя
 	user, _ := h.service.GetUserBySecretWord(encryptSecretWord)
 	if user != nil {
+		fmt.Println("user", user)
 		if err := h.limiterService.UpdateLimits(user.UUID); err != nil {
 			utils.WriteError(w, http.StatusInternalServerError, err)
 			return
@@ -192,7 +193,6 @@ func (h Handler) handleUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(payload)
 	utils.WriteJSON(w, http.StatusOK, map[string]interface{}{
 		"uuid":     payload.UUID,
 		"username": payload.Username,

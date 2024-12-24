@@ -23,7 +23,7 @@ if /I "%method%"=="get" (
 @REM /recommendations/{uuid}
 :get_recommendations
     @REM Кол-во запросов
-    set requests_per_uuid=1000
+    set requests_per_uuid=500
 
     @REM Кол-во одновременных запросов
     set concurrent_requests=20
@@ -72,7 +72,7 @@ goto:eof
             )
             set /A random_index_uuid-=1
         )
-    
+
         @REM Выбор случайного жанра
         set "selected_genre="
         for %%g in (%genres%) do (

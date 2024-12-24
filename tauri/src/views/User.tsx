@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Error from "~/components/Error";
 import Navigation from "~/components/Navigation";
 import userService from "~/services/user-service";
 
@@ -6,6 +7,8 @@ const User = () => {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [secret_word, setSecretWord] = useState<string>("");
+  const [isSend, setIsSend] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
   const [user, setUser] = useState<{
     uuid: string;
@@ -44,9 +47,9 @@ const User = () => {
               <div>
                 <p className="mb-[9px]">Email address</p>
                 <input
-                  type="text"
+                  type="email"
                   className="w-full"
-                  value={email || user?.email || ""}
+                  value={email || ""}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
@@ -55,7 +58,7 @@ const User = () => {
                 <input
                   type="text"
                   className="w-full"
-                  value={username || user?.username}
+                  value={username || ""}
                   onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
@@ -86,19 +89,64 @@ const User = () => {
                 className="rounded-[52%]"
               />
               <button
-                className="bg-[#111] w-full hover:bg-[#2413ff] transition duration-150 border border-[#222] text-center p-2 rounded mt-[1rem] cursor-pointer"
+                className={`bg-[#111] flex justify-center items-center w-full hover:bg-[#2413ff] transition duration-150 border border-[#222] text-center p-2 rounded mt-[1rem] cursor-pointer ${
+                  isSuccess ? "motion-preset-confetti" : ""
+                }`}
                 onClick={async () => {
-                  const response = await userService.update_user({
-                    username: username,
-                    email: email,
-                    secret_word: secret_word,
-                  });
-
-                  sessionStorage.setItem("_sess", JSON.stringify(response));
+                  setIsSend(true);
+                  try {
+                    const response = await userService.update_user({
+                      username: username,
+                      email: email,
+                      secret_word: secret_word,
+                    });
+                    sessionStorage.setItem("_sess", JSON.stringify(response));
+                    setIsSuccess(true);
+                    setTimeout(() => {
+                      setIsSuccess(false);
+                    }, 4000);
+                  } catch {
+                  } finally {
+                    setIsSend(false);
+                  }
                 }}
               >
-                Сhange
+                {isSend ? (
+                  <svg
+                    className="animate-spin border-indigo-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 64 64"
+                    fill="none"
+                  >
+                    <g id="Group 1000003699">
+                      <circle
+                        id="Ellipse 715"
+                        cx="31.9989"
+                        cy="31.8809"
+                        r="24"
+                        stroke="#888"
+                        stroke-width="7"
+                      />
+                      <path
+                        id="Ellipse 716"
+                        d="M42.111 53.6434C44.9694 52.3156 47.5383 50.4378 49.6709 48.1172C51.8036 45.7967 53.4583 43.0787 54.5406 40.1187C55.6229 37.1586 56.1115 34.0143 55.9787 30.8654C55.8458 27.7165 55.094 24.6246 53.7662 21.7662C52.4384 18.9078 50.5606 16.339 48.24 14.2063C45.9194 12.0736 43.2015 10.4189 40.2414 9.33662C37.2814 8.25434 34.1371 7.76569 30.9882 7.89856C27.8393 8.03143 24.7473 8.78323 21.889 10.111"
+                        stroke="#fff"
+                        stroke-width="7"
+                        stroke-linecap="round"
+                      />
+                    </g>
+                  </svg>
+                ) : (
+                  "Сhange"
+                )}
               </button>
+              {isSuccess && (
+                <p className="flex justify-center text-[#10721a] mt-2 font-normal tracking-wide">
+                  The data has been updated
+                </p>
+              )}
             </div>
           </div>
         </div>

@@ -7,8 +7,6 @@ CREATE TABLE IF NOT EXISTS users (
   `email` VARCHAR(50),
   `email_upper` VARCHAR(50),
   `ip_address` VARCHAR(40) NOT NULL,
-  `latitude` VARCHAR(40) NOT NULL,
-  `longitude` VARCHAR(40) NOT NULL,
   `country` VARCHAR(70) NOT NULL,
   `regionName` VARCHAR(70) NOT NULL,
   `zip` VARCHAR(40) NOT NULL,

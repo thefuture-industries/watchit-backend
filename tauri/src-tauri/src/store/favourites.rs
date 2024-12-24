@@ -45,8 +45,13 @@ impl IFavourites for NewStore {
       "moviePoster": &favourite.movie_poster,
     });
 
-    let response = self.client.post(url).json(&body).send().await
-      .map_err(|e| format!("ERROR request {}", e))?;
+    let response = self.client.post(url).json(&body).send().await.map_err(|e| {
+      if e.to_string().contains("connect error") {
+        "error trying to connect: tcp connect error".to_string()
+      } else {
+        format!("ERROR request {}", e)
+      }
+    })?;
 
     match response.status() {
       reqwest::StatusCode::OK => Ok(String::from("Favourite added successfully")),
@@ -59,8 +64,13 @@ impl IFavourites for NewStore {
   // Получение избанных фильмов
   async fn get_favourites(&self, uuid: &str) -> std::result::Result<Vec<favourites::Favourites>, String> {
     let url = format!("{}favourites/{}", self.server_url, uuid);
-    let response = self.client.get(url).send().await
-      .map_err(|e| format!("ERROR request {}", e))?;
+    let response = self.client.get(url).send().await.map_err(|e| {
+      if e.to_string().contains("connect error") {
+        "error trying to connect: tcp connect error".to_string()
+      } else {
+        format!("ERROR request {}", e)
+      }
+    })?;
 
     match response.status() {
       reqwest::StatusCode::OK => {
@@ -83,8 +93,13 @@ impl IFavourites for NewStore {
       "movieId": movie_id,
     });
 
-    let response = self.client.delete(url).json(&body).send().await
-      .map_err(|e| format!("ERROR request {}", e))?;
+    let response = self.client.delete(url).json(&body).send().await.map_err(|e| {
+      if e.to_string().contains("connect error") {
+        "error trying to connect: tcp connect error".to_string()
+      } else {
+        format!("ERROR request {}", e)
+      }
+    })?;
 
     match response.status() {
       reqwest::StatusCode::OK => Ok(String::from("Favourite deleted successfully")),

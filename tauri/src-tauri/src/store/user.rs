@@ -52,8 +52,13 @@ impl IUser for NewStore {
       "zip": &user.zip
     });
 
-    let response = self.client.post(url).json(&body).send().await
-      .map_err(|e| format!("ERROR request: {}", e))?;
+    let response = self.client.post(url).json(&body).send().await.map_err(|e| {
+      if e.to_string().contains("connect error") {
+        "ERROR trying to connect: tcp connect error".to_string()
+      } else {
+        format!("ERROR request {}", e)
+      }
+    })?;
 
     // Обработка ошибки
     match response.status() {
@@ -106,8 +111,13 @@ impl IUser for NewStore {
       "secret_word": &user.secret_word,
     });
 
-    let response = self.client.put(url).json(&body).send().await
-      .map_err(|e| format!("ERROR request: {}", e))?;
+    let response = self.client.put(url).json(&body).send().await.map_err(|e| {
+      if e.to_string().contains("connect error") {
+        "error trying to connect: tcp connect error".to_string()
+      } else {
+        format!("error request {}", e)
+      }
+    })?;
 
     // Обработка ошибки
     match response.status() {

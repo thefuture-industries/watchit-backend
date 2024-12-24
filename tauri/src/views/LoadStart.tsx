@@ -2,6 +2,7 @@ import axios from "axios";
 import { KeyRound } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import StateRequest from "~/components/StateRequest";
 import userService from "~/services/user-service";
 import { UserAddPayload } from "~/types/user";
 
@@ -10,9 +11,21 @@ const LoadStart = () => {
   const [isHoverBtn, setIsHoverBtn] = useState<boolean>(false);
   const [secretWord, setSecretWord] = useState<string>("");
   const [isSend, setIsSend] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
+  const [statusCode, setStatusCode] = useState<number>(404);
+  const [error, setError] = useState<string>("");
 
   return (
     <>
+      {/* ERROR */}
+      {isError && (
+        <StateRequest
+          statusCode={statusCode}
+          message={error as string}
+          state={isError}
+          setState={setIsError}
+        />
+      )}
       <div>
         <div className="fixed">
           <video
@@ -31,11 +44,11 @@ const LoadStart = () => {
             <div className="flex justify-center items-center mb-8">
               <img
                 src="/src/assets/flicksfi_ico.png"
-                className="max-w-[3rem] opacity-[0.3]"
+                className="max-w-[2rem] opacity-[0.3]"
                 alt=""
               />
               <p className="opacity-[0.3] ml-3 tracking-wide text-[1.5rem]">
-                FlicksFI
+                flicksfi
               </p>
             </div>
             <p className="text-[1.8rem] mb-5">The secret word</p>
@@ -89,8 +102,14 @@ const LoadStart = () => {
                     typeof createdUser == "string" &&
                     createdUser.startsWith("ERROR")
                   ) {
+                    setIsError(true);
+                    setStatusCode(500);
+                    setError("error created/login user");
                     setIsSend(false);
                   } else {
+                    setIsError(true);
+                    setStatusCode(201);
+                    setError("user created/login");
                     sessionStorage.setItem(
                       "_sess",
                       JSON.stringify(createdUser)
@@ -98,6 +117,7 @@ const LoadStart = () => {
                     navigate("/");
                   }
                 } catch (error) {
+                  console.log("error");
                   if (axios.isCancel(error)) {
                     const data: UserAddPayload = {
                       secret_word: secretWord,
@@ -124,6 +144,9 @@ const LoadStart = () => {
                       navigate("/");
                     }
                   }
+                  setIsError(true);
+                  setStatusCode(500);
+                  setError(error as string);
                 } finally {
                   setIsSend(false);
                   clearTimeout(timeoutId);

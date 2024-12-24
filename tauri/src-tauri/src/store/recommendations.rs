@@ -44,8 +44,13 @@ impl IRecommendations for NewStore {
       "genre": &recom.genre,
     });
 
-    let response = self.client.post(url).json(&body).send().await
-      .map_err(|e| format!("ERROR request {}", e))?;
+    let response = self.client.post(url).json(&body).send().await.map_err(|e| {
+      if e.to_string().contains("connect error") {
+        "error trying to connect: tcp connect error".to_string()
+      } else {
+        format!("ERROR request {}", e)
+      }
+    })?;
 
     match response.status() {
       reqwest::StatusCode::OK => {
@@ -60,8 +65,13 @@ impl IRecommendations for NewStore {
   // Получение избанных фильмов
   async fn get_recommendations(&self, uuid: &str) -> std::result::Result<Vec<movie::MovieModel>, String> {
     let url = format!("{}recommendations/{}", self.server_url, uuid);
-    let response = self.client.get(url).send().await
-      .map_err(|e| format!("ERROR request {}", e))?;
+    let response = self.client.get(url).send().await.map_err(|e| {
+      if e.to_string().contains("connect error") {
+        "error trying to connect: tcp connect error".to_string()
+      } else {
+        format!("ERROR request {}", e)
+      }
+    })?;
 
     match response.status() {
       reqwest::StatusCode::OK => {

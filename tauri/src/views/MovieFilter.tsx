@@ -3,6 +3,7 @@ import Navigation from "~/components/Navigation";
 import movieService from "~/services/movie-service";
 import SearchResult from "./SearchResult";
 import { MovieModel } from "~/types/movie";
+import StateRequest from "~/components/StateRequest";
 
 const categorys = [
   "Action",
@@ -27,6 +28,8 @@ const categorys = [
 ];
 
 const MovieFilter = () => {
+  const [isError, setIsError] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
   const [searchPage, setSearchPage] = useState<boolean>(false);
   const [movies, setMovies] = useState<MovieModel[]>([]);
   const [genre, setGenre] = useState<string>("");
@@ -35,6 +38,16 @@ const MovieFilter = () => {
 
   return (
     <>
+      {/* ERROR */}
+      {isError && (
+        <StateRequest
+          message={error}
+          statusCode={500}
+          state={isError}
+          setState={setIsError}
+        />
+      )}
+
       {searchPage ? (
         <SearchResult movies={movies} videos={null} />
       ) : (
@@ -102,10 +115,16 @@ const MovieFilter = () => {
                   boxShadow: "inset 0px -7px 0px 0px rgba(0, 0, 0, 0.4)",
                 }}
                 onClick={async () => {
-                  await movieService.get(search, genre, date).then((movies) => {
-                    setMovies(movies);
-                    setSearchPage(true);
-                  });
+                  await movieService
+                    .get(search, genre, date)
+                    .then((movies) => {
+                      setMovies(movies);
+                      setSearchPage(true);
+                    })
+                    .catch((error) => {
+                      setIsError(true);
+                      setError(error as string);
+                    });
                 }}
               >
                 <p className="uppercase text-[17px] -mt-1">search</p>
