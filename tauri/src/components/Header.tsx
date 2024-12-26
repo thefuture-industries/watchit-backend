@@ -30,22 +30,6 @@ const Header: React.FC<{ onSearch: (query: string) => Promise<void> }> = ({
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        historyRef.current &&
-        !historyRef.current.contains(event.target as Node)
-      ) {
-        setIsOpenHistory(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [historyRef]);
-
-  useEffect(() => {
     const history = sessionStorage.getItem("sess_history__search");
 
     if (!history) {
@@ -72,6 +56,7 @@ const Header: React.FC<{ onSearch: (query: string) => Promise<void> }> = ({
                 onChange={(e) => setSearchInput(e.target.value)}
                 value={searchInput}
                 onFocus={() => setIsOpenHistory(true)}
+                onBlur={() => setIsOpenHistory(false)}
               />
               <Search
                 className="absolute top-[0.55rem] left-[0.6rem] text-[#999]"

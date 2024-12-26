@@ -24,7 +24,6 @@ const Movie = (prop: Props) => {
     const cleanup = lazyService.createImageObserver(
       imgRef,
       `${import.meta.env.VITE_SERVER_URL}/image/w500${prop.movies.poster_path}`,
-      // `https://image.tmdb.org/t/p/w500${prop.movies.poster_path}`,
       setPoster,
       setLoaded
     );

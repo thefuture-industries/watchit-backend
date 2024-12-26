@@ -15,7 +15,7 @@ const User = () => {
   const [statusCode, setStatusCode] = useState<number>(400);
   const [error, setError] = useState<string>("");
 
-  const [user, setUser] = useState<{
+  const [_, setUser] = useState<{
     uuid: string;
     username: string;
     email: string | null;

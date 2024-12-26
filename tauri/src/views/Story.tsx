@@ -10,19 +10,6 @@ const Story = () => {
   const [movies, setMovies] = useState<MovieModel[]>([]);
   const [plotInput, setPlotInput] = useState<string>("");
 
-  const flicks = `
- ________ ___       ___  ________  ___  __    ________  ________ ___
-|\  _____\\  \     |\  \|\   ____\|\  \|\  \ |\   ____\|\  _____\\  \
-\ \  \__/\ \  \    \ \  \ \  \___|\ \  \/  /|\ \  \___|\ \  \__/\ \  \
- \ \   __\\ \  \    \ \  \ \  \    \ \   ___  \ \_____  \ \   __\\ \  \
-  \ \  \_| \ \  \____\ \  \ \  \____\ \  \\ \  \|____|\  \ \  \_| \ \  \
-   \ \__\   \ \_______\ \__\ \_______\ \__\\ \__\____\_\  \ \__\   \ \__\
-    \|__|    \|_______|\|__|\|_______|\|__| \|__|\_________\|__|    \|__|
-                                                \|_________|
-  `;
-  const flicks_1 = `<>Such symbols are the names of films that are similar in plot<>`;
-  const flicks_2 = `<?>Use it when you're guessing what the movie might be called<?>`;
-
   return (
     <>
       {searchPage ? (
@@ -92,7 +79,6 @@ const Story = () => {
                 ) : (
                   <p className="text-[0.9rem]">Not an accurate search</p>
                 )}
-                {/* <p className="text-[0.9rem]">Not an accurate search</p> */}
               </div>
               <div
                 className="bg-[#111] w-[68vw] p-2 border border-[#333] rounded flex justify-center items-center cursor-pointer text-[#999] hover:bg-[#000] hover:text-[#fff] transition"
@@ -111,9 +97,6 @@ const Story = () => {
                 <p className="text-[1.2rem]">
                   The story or a short retelling of the film
                 </p>
-                {/* <p>-- There are several ways to search for movies by plot</p>
-                <p>{flicks_1}</p>
-                <p>{flicks_2}</p> */}
               </div>
             </div>
           </div>

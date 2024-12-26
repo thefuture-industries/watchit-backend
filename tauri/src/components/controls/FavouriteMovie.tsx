@@ -22,7 +22,6 @@ const FavouriteMovie = (prop: Props) => {
     const cleanup = lazyService.createImageObserver(
       imgRef,
       `${import.meta.env.VITE_SERVER_URL}/image/w500${prop.movie.moviePoster}`,
-      // `https://image.tmdb.org/t/p/w500${prop.movie.moviePoster}`,
       setPoster,
       setLoaded
     );
@@ -46,9 +45,6 @@ const FavouriteMovie = (prop: Props) => {
                   className={`${
                     isHovered ? "opacity-[0.3]" : "opacity-[1]"
                   } duration-150 rounded-xl object-cover w-[13.2rem] h-[18rem] pre-load`}
-                  // onError={() => {
-                  //   setPoster("/src/assets/default_image.jpg");
-                  // }}
                 />
                 <div
                   className={`absolute top-3 right-3 p-2 rounded-[50%] flex items-center justify-center cursor-pointer hover:text-[red] transition ${
