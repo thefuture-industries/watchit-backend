@@ -7,7 +7,7 @@ set uuids=51ee2a52-0618-4f94-bba8-13c433b4a164 e53eb127-df5e-4dfb-86e0-89c980512
 set requests_count=10000
 @REM Кол-во одновременных запросов
 set concurrent_requests=40
-@REM URL сервера
+@REM URL сервера dev version
 set base_url=http://localhost:8080/api/v1/favourites/
 
 set method=%1
