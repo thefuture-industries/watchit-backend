@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react";
-import Error from "~/components/Error";
 import Navigation from "~/components/Navigation";
+import StateRequest from "~/components/StateRequest";
 import userService from "~/services/user-service";
 
 const User = () => {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [secret_word, setSecretWord] = useState<string>("");
+  const [secret_word_old, setSecretWordOld] = useState<string>("");
   const [isSend, setIsSend] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
+
+  const [isError, setIsError] = useState<boolean>(false);
+  const [statusCode, setStatusCode] = useState<number>(400);
+  const [error, setError] = useState<string>("");
 
   const [user, setUser] = useState<{
     uuid: string;
@@ -30,6 +35,16 @@ const User = () => {
 
   return (
     <>
+      {/* ERROR/SUCCESS */}
+      {isError && (
+        <StateRequest
+          statusCode={statusCode}
+          message={error}
+          state={isError}
+          setState={setIsError}
+        />
+      )}
+
       <div className="container flex w-screen m-2">
         <div className="left">
           <Navigation />
@@ -69,6 +84,8 @@ const User = () => {
                     type="password"
                     className="w-full tracking-wide"
                     placeholder="The current secret word"
+                    value={secret_word_old}
+                    onChange={(e) => setSecretWordOld(e.target.value)}
                   />
                   <input
                     type="password"
@@ -99,13 +116,17 @@ const User = () => {
                       username: username,
                       email: email,
                       secret_word: secret_word,
+                      secret_word_old: secret_word_old,
                     });
                     sessionStorage.setItem("_sess", JSON.stringify(response));
                     setIsSuccess(true);
                     setTimeout(() => {
                       setIsSuccess(false);
                     }, 4000);
-                  } catch {
+                  } catch (error: any) {
+                    setIsError(true);
+                    setStatusCode(error.status);
+                    setError(error.error);
                   } finally {
                     setIsSend(false);
                   }

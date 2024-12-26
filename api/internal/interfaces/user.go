@@ -15,6 +15,9 @@ type IUser interface {
 	// Получения пользователя по ID
 	GetUserById(id int) (*types.User, error)
 
+	// Получения пользователя по IP
+	GetUserByIP(ip string) (*types.User, error)
+
 	// Получения пользователя по Email
 	GetUserByEmail(email string) (*types.User, error)
 

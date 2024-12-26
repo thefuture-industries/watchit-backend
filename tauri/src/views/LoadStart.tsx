@@ -89,8 +89,6 @@ const LoadStart = () => {
                   const data: UserAddPayload = {
                     secret_word: secretWord,
                     ip_address: response.data.query || "255.255.255.255",
-                    latitude: response.data.lat.toString() || "0",
-                    longitude: response.data.lon.toString() || "0",
                     country: response.data.country || "NONE",
                     region_name: response.data.regionName || "NONE",
                     zip: response.data.zip || "000000",
@@ -122,8 +120,6 @@ const LoadStart = () => {
                     const data: UserAddPayload = {
                       secret_word: secretWord,
                       ip_address: "255.255.255.255",
-                      latitude: "0",
-                      longitude: "0",
                       country: "NONE",
                       region_name: "NONE",
                       zip: "000000",

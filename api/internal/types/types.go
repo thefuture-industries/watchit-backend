@@ -16,8 +16,6 @@ type User struct {
 	Email         *string `json:"email"`
 	EmailUpper    *string `json:"email_upper"`
 	IPAddress     string  `json:"ip_address"`
-	Lat           string  `json:"latitude"`
-	Lon           string  `json:"longitude"`
 	Country       string  `json:"country"`
 	RegionName    string  `json:"regionName"`
 	Zip           string  `json:"zip"`
@@ -222,10 +220,11 @@ type LoginUserPayload struct {
 
 // Тип DTO для обновления данных пользователя
 type UserUpdate struct {
-	UUID       string  `json:"uuid"`
-	Username   *string `json:"username"`
-	Email      *string `json:"email"`
-	SecretWord *string `json:"secret_word"`
+	UUID          string  `json:"uuid"`
+	Username      *string `json:"username"`
+	Email         *string `json:"email"`
+	SecretWord    *string `json:"secret_word"`
+	SecretWordOld *string `json:"secret_word_old"`
 }
 
 // тип DTO от пользователя
@@ -234,8 +233,6 @@ type RegisterUserPayload struct {
 	UserName   string `json:"username"`
 	Email      string `json:"email"`
 	IPAddress  string `json:"ip_address" validate:"required"`
-	Lat        string `json:"latitude" validate:"required"`
-	Lon        string `json:"longitude" validate:"required"`
 	Country    string `json:"country" validate:"required"`
 	RegionName string `json:"regionName" validate:"required"`
 	Zip        string `json:"zip" validate:"required"`

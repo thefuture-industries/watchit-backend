@@ -59,7 +59,7 @@ class MovieService {
 
       return movies;
     } catch (err) {
-      return [];
+      throw err;
     }
   }
 

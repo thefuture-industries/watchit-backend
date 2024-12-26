@@ -1,3 +1,4 @@
+pub mod error;
 pub mod favourites;
 pub mod limiter;
 pub mod movie;

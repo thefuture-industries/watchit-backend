@@ -57,6 +57,7 @@ class UserService {
       username: user.username,
       email: user.email,
       secret_word: user.secret_word,
+      secret_word_old: user.secret_word_old,
     };
 
     const response: string = await invoke("update_user", {

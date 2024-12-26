@@ -1,4 +1,4 @@
-import { CircleCheck, CircleX, Info, X } from "lucide-react";
+import { CircleCheck, CircleX, Info } from "lucide-react";
 import { useEffect } from "react";
 
 interface Props {
@@ -15,7 +15,7 @@ const StateRequest = (prop: Props) => {
   useEffect(() => {
     setTimeout(() => {
       prop.setState(false);
-    }, 3000);
+    }, 4000);
   }, [prop.state]);
 
   return (

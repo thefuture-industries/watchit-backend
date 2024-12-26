@@ -7,8 +7,6 @@ export type UserModel = {
   username_upper: string;
   email: string;
   ip_address: string;
-  latitude: string;
-  longitude: string;
   country: string;
   region_name: string;
   zip: string;
@@ -18,8 +16,6 @@ export type UserModel = {
 export type UserAddPayload = {
   secret_word: string;
   ip_address: string;
-  latitude: string;
-  longitude: string;
   country: string;
   region_name: string;
   zip: string;
@@ -30,4 +26,5 @@ export type UserUpdatePayload = {
   username?: string;
   email?: string;
   secret_word?: string;
+  secret_word_old?: string;
 };

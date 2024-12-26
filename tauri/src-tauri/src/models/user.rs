@@ -34,12 +34,6 @@ pub struct UserModel {
     // IPAddress - ip address пользователей.
     pub ip_address: String,
 
-    // Lat - Ширина пользователь.
-    pub latitude: String,
-
-    // Lon - Долгота пользователь.
-    pub longitude: String,
-
     // Country - Страна пользователя.
     pub country: String,
 
@@ -76,8 +70,6 @@ pub struct IsUser {
 pub struct UserAddPayload {
     pub secret_word: String,
     pub ip_address: String,
-    pub latitude: String,
-    pub longitude: String,
     pub country: String,
     pub region_name: String,
     pub zip: String,
@@ -93,4 +85,6 @@ pub struct UserUpdatePayload {
     pub email: Option<String>,
     #[serde(rename = "secret_word", default)]
     pub secret_word: Option<String>,
+    #[serde(rename = "secret_word_old", default)]
+    pub secret_word_old: Option<String>,
 }

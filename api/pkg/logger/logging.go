@@ -40,7 +40,7 @@ func NewLogger(logger *zap.Logger) *Logger {
 const (
 	bucketName = "flicksfi-logs"
 	fileName   = "flicksfi-monitoring.log"
-	bufferSize = 1730000
+	bufferSize = 173
 )
 
 var buffer = make([]string, 0, bufferSize)

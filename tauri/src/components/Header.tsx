@@ -12,18 +12,38 @@ const Header: React.FC<{ onSearch: (query: string) => Promise<void> }> = ({
 
   const handleKeyDown = async (event: any) => {
     if (event.key === "Enter") {
-      const history = JSON.parse(
+      const history: string[] = JSON.parse(
         sessionStorage.getItem("sess_history__search") || "[]"
       );
 
       if (!history.includes(searchInput)) {
-        history.push(searchInput);
+        history.unshift(searchInput);
+      }
+
+      if (history.length > 7) {
+        history.slice(7);
       }
 
       sessionStorage.setItem("sess_history__search", JSON.stringify(history));
       await onSearch(searchInput);
     }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        historyRef.current &&
+        !historyRef.current.contains(event.target as Node)
+      ) {
+        setIsOpenHistory(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [historyRef]);
 
   useEffect(() => {
     const history = sessionStorage.getItem("sess_history__search");
@@ -52,7 +72,6 @@ const Header: React.FC<{ onSearch: (query: string) => Promise<void> }> = ({
                 onChange={(e) => setSearchInput(e.target.value)}
                 value={searchInput}
                 onFocus={() => setIsOpenHistory(true)}
-                onBlur={() => setIsOpenHistory(false)}
               />
               <Search
                 className="absolute top-[0.55rem] left-[0.6rem] text-[#999]"
@@ -86,7 +105,6 @@ const Header: React.FC<{ onSearch: (query: string) => Promise<void> }> = ({
                 className="bg-[transparent] hover:bg-[#111] transition rounded py-[0.4rem] px-[0.6rem] flex items-center cursor-pointer"
                 onClick={async () => {
                   await onSearch(el);
-                  console.log("CLICK" + el);
                 }}
               >
                 <ExternalLink size={18} color="#666" strokeWidth={1.2} />

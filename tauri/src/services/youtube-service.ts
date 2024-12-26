@@ -48,13 +48,17 @@ class YoutubeService {
     search: string,
     channel: string
   ): Promise<YoutubeModel[]> {
-    let videos: YoutubeModel[] = await invoke("get_youtube_videos", {
-      category: category,
-      search: search,
-      channel: channel,
-    });
+    try {
+      let videos: YoutubeModel[] = await invoke("get_youtube_videos", {
+        category: category,
+        search: search,
+        channel: channel,
+      });
 
-    return videos;
+      return videos;
+    } catch (err) {
+      throw err;
+    }
   }
 
   // Установка в массив видео

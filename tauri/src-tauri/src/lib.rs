@@ -1,6 +1,7 @@
 mod models;
 mod store;
 
+// use crate::models::error::ErrorResponse;
 use crate::store::favourites::IFavourites;
 use crate::store::movie::IMovie;
 use crate::store::recommendations::IRecommendations;
@@ -8,6 +9,7 @@ use crate::store::user::IUser;
 use crate::store::youtube::IYoutube;
 
 use models::{
+    error::ErrorResponse,
     favourites::{FavouriteAddPayload, Favourites},
     movie::MovieModel,
     recommendations::{RecommendationAddPayload, Recommendations},
@@ -24,13 +26,16 @@ use store::youtube;
 // Создлание команды для использования из React
 // Получение массива популярных фильмов
 #[tauri::command]
-fn get_popular_movies(total_page: &str) -> std::result::Result<Vec<MovieModel>, String> {
+fn get_popular_movies(total_page: &str) -> std::result::Result<Vec<MovieModel>, ErrorResponse> {
     let store = movie::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _movies = match rt.block_on(store.popular_movies(total_page)) {
         Ok(m) => return Ok(m),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
@@ -38,13 +43,16 @@ fn get_popular_movies(total_page: &str) -> std::result::Result<Vec<MovieModel>, 
 // Получение популярного видео youtube
 // -----------------------------------
 #[tauri::command]
-fn get_popular_video() -> std::result::Result<Vec<YoutubeModel>, String> {
+fn get_popular_video() -> std::result::Result<Vec<YoutubeModel>, ErrorResponse> {
     let mut store = youtube::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _videos = match rt.block_on(store.popular_youtube()) {
         Ok(v) => return Ok(v),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
@@ -56,13 +64,16 @@ fn get_youtube_videos(
     category: &str,
     search: &str,
     channel: &str,
-) -> std::result::Result<Vec<YoutubeModel>, String> {
+) -> std::result::Result<Vec<YoutubeModel>, ErrorResponse> {
     let store = youtube::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _videos = match rt.block_on(store.get_youtube_videos(category, search, channel)) {
         Ok(v) => return Ok(v),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
@@ -70,13 +81,16 @@ fn get_youtube_videos(
 // Получение изоюражений фильмов
 // -------------------------
 #[tauri::command]
-fn image_movie(img: &str) -> std::result::Result<Vec<u8>, String> {
+fn image_movie(img: &str) -> std::result::Result<Vec<u8>, ErrorResponse> {
     let store = movie::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _image = match rt.block_on(store.image_movie(img)) {
         Ok(v) => return Ok(v),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
@@ -84,13 +98,16 @@ fn image_movie(img: &str) -> std::result::Result<Vec<u8>, String> {
 // Поиск фильмов по title
 // ----------------------
 #[tauri::command]
-fn search_movies(s: &str) -> std::result::Result<Vec<MovieModel>, String> {
+fn search_movies(s: &str) -> std::result::Result<Vec<MovieModel>, ErrorResponse> {
     let store = movie::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _search_movies = match rt.block_on(store.search_movies(s)) {
         Ok(m) => return Ok(m),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
@@ -98,13 +115,16 @@ fn search_movies(s: &str) -> std::result::Result<Vec<MovieModel>, String> {
 // Получение деталий фильмов
 // -------------------------
 #[tauri::command]
-fn movie_details(id: i32) -> std::result::Result<MovieModel, String> {
+fn movie_details(id: i32) -> std::result::Result<MovieModel, ErrorResponse> {
     let store = movie::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _movie_detail = match rt.block_on(store.movie_details(id)) {
         Ok(md) => return Ok(md),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
@@ -116,13 +136,16 @@ fn similar_movies(
     genre_id: Vec<i32>,
     title: &str,
     overview: &str,
-) -> std::result::Result<Vec<MovieModel>, String> {
+) -> std::result::Result<Vec<MovieModel>, ErrorResponse> {
     let store = movie::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _movie_similar = match rt.block_on(store.similar_movies(genre_id, title, overview)) {
         Ok(ms) => return Ok(ms),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
@@ -134,13 +157,16 @@ fn get_movies(
     search: &str,
     genre: &str,
     date: &str,
-) -> std::result::Result<Vec<MovieModel>, String> {
+) -> std::result::Result<Vec<MovieModel>, ErrorResponse> {
     let store = movie::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _movies = match rt.block_on(store.get_movies(search, genre, date)) {
         Ok(m) => return Ok(m),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
@@ -152,27 +178,16 @@ fn get_plot_movies(
     uuid: &str,
     text: &str,
     lege: &str,
-) -> std::result::Result<Vec<MovieModel>, String> {
+) -> std::result::Result<Vec<MovieModel>, ErrorResponse> {
     let store = movie::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _movies = match rt.block_on(store.get_plot_movies(uuid, text, lege)) {
         Ok(m) => return Ok(m),
-        Err(e) => return Err(format!("{}", e)),
-    };
-}
-
-// --------------------------------------
-// Проверка на существования пользователя
-// --------------------------------------
-#[tauri::command]
-fn check_user(ip_address: &str, created_at: &str) -> std::result::Result<String, String> {
-    let store = user::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
-
-    let _response = match rt.block_on(store.check_user(ip_address, created_at)) {
-        Ok(res) => return Ok(res),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
@@ -180,13 +195,16 @@ fn check_user(ip_address: &str, created_at: &str) -> std::result::Result<String,
 // Создание пользователя
 // ---------------------
 #[tauri::command]
-fn add_user(user: UserAddPayload) -> std::result::Result<IsUser, String> {
+fn add_user(user: UserAddPayload) -> std::result::Result<IsUser, ErrorResponse> {
     let store = user::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _response = match rt.block_on(store.add_user(user)) {
         Ok(res) => return Ok(res),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
@@ -194,13 +212,16 @@ fn add_user(user: UserAddPayload) -> std::result::Result<IsUser, String> {
 // Обновление данных пользователя
 // ------------------------------
 #[tauri::command]
-fn update_user(user: UserUpdatePayload) -> std::result::Result<IsUser, String> {
+fn update_user(user: UserUpdatePayload) -> std::result::Result<IsUser, ErrorResponse> {
     let store = user::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _response = match rt.block_on(store.update_user(user)) {
         Ok(res) => return Ok(res),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
@@ -208,13 +229,16 @@ fn update_user(user: UserUpdatePayload) -> std::result::Result<IsUser, String> {
 // Добовление избанных фильмов
 // ---------------------------
 #[tauri::command]
-fn add_favourites(favourite: FavouriteAddPayload) -> std::result::Result<String, String> {
+fn add_favourites(favourite: FavouriteAddPayload) -> std::result::Result<String, ErrorResponse> {
     let store = favourites::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _response = match rt.block_on(store.add_favourites(favourite)) {
         Ok(r) => return Ok(r),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
@@ -222,13 +246,16 @@ fn add_favourites(favourite: FavouriteAddPayload) -> std::result::Result<String,
 // Получение избанных фильмов
 // ---------------------------
 #[tauri::command]
-fn get_favourites(uuid: &str) -> std::result::Result<Vec<Favourites>, String> {
+fn get_favourites(uuid: &str) -> std::result::Result<Vec<Favourites>, ErrorResponse> {
     let store = favourites::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _response = match rt.block_on(store.get_favourites(uuid)) {
         Ok(r) => return Ok(r),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
@@ -236,35 +263,46 @@ fn get_favourites(uuid: &str) -> std::result::Result<Vec<Favourites>, String> {
 // Удаление избанных фильмов
 // -------------------------
 #[tauri::command]
-fn delete_favourites(uuid: &str, movie_id: i32) -> std::result::Result<String, String> {
+fn delete_favourites(uuid: &str, movie_id: i32) -> std::result::Result<String, ErrorResponse> {
     let store = favourites::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _response = match rt.block_on(store.delete_favourites(uuid, movie_id)) {
         Ok(r) => return Ok(r),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
 #[tauri::command]
-fn add_recommendations(recom: RecommendationAddPayload) -> std::result::Result<String, String> {
+fn add_recommendations(
+    recom: RecommendationAddPayload,
+) -> std::result::Result<String, ErrorResponse> {
     let store = recommendations::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _response = match rt.block_on(store.add_recommendations(recom)) {
         Ok(r) => return Ok(r),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
 #[tauri::command]
-fn get_recommendations(uuid: &str) -> std::result::Result<Vec<MovieModel>, String> {
+fn get_recommendations(uuid: &str) -> std::result::Result<Vec<MovieModel>, ErrorResponse> {
     let store = recommendations::NewStore::new();
-    let rt = tokio::runtime::Runtime::new().map_err(|e| format!("{}", e))?;
+    let rt = tokio::runtime::Runtime::new().map_err(|e| ErrorResponse {
+        error: format!("{}", e),
+        status: 500,
+    })?;
 
     let _response = match rt.block_on(store.get_recommendations(uuid)) {
         Ok(r) => return Ok(r),
-        Err(e) => return Err(format!("{}", e)),
+        Err(e) => return Err(e),
     };
 }
 
@@ -303,7 +341,6 @@ pub fn run() {
             get_youtube_videos,
             // USER
             add_user,
-            check_user,
             update_user,
             // FAVOURITES
             add_favourites,

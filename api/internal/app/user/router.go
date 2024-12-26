@@ -105,7 +105,7 @@ func (h *Handler) handleAddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Шифромание секретного слова
+	// Шифрование секретного слова
 	encryptSecretWord, err := utils.Encrypt(payload.SecretWord)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
@@ -115,7 +115,6 @@ func (h *Handler) handleAddUser(w http.ResponseWriter, r *http.Request) {
 	// Получение пользователя
 	user, _ := h.service.GetUserBySecretWord(encryptSecretWord)
 	if user != nil {
-		fmt.Println("user", user)
 		if err := h.limiterService.UpdateLimits(user.UUID); err != nil {
 			utils.WriteError(w, http.StatusInternalServerError, err)
 			return
@@ -129,14 +128,19 @@ func (h *Handler) handleAddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Проверка на существование пользователя по IP
+	_, err = h.service.GetUserByIP(payload.IPAddress)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
 	// Создание пользователя
 	uuid := uuid.NewString()
 	if err := h.service.CreateUser(types.User{
 		UUID:       uuid,
 		SecretWord: encryptSecretWord,
 		IPAddress:  payload.IPAddress,
-		Lat:        payload.Lat,
-		Lon:        payload.Lon,
 		Country:    payload.Country,
 		RegionName: payload.RegionName,
 		Zip:        payload.Zip,
@@ -189,7 +193,7 @@ func (h Handler) handleUpdate(w http.ResponseWriter, r *http.Request) {
 
 	// Обновление данных пользователя
 	if err := h.service.UserUpdate(*payload); err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
 

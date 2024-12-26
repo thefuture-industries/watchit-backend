@@ -119,6 +119,7 @@ const MovieDetails = () => {
           setState={setIsError}
         />
       )}
+      
       <div className="my-5 ml-[5rem]">
         <div className="flex items-center justify-between">
           <MoveLeft

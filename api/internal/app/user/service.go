@@ -41,11 +41,12 @@ func (s *Service) GetUsers() ([]types.User, error) {
 			zap.Error(err))
 		return nil, fmt.Errorf("error execute query to db")
 	}
+	defer rows.Close()
 
 	var users []types.User
 	for rows.Next() {
 		var user types.User
-		err := rows.Scan(&user.ID, &user.UUID, &user.UserName, &user.UserNameUpper, &user.Email, &user.EmailUpper, &user.IPAddress, &user.Lat, &user.Lon, &user.Country, &user.RegionName, &user.Zip, &user.CreatedAt)
+		err := rows.Scan(&user.ID, &user.UUID, &user.UserName, &user.UserNameUpper, &user.Email, &user.EmailUpper, &user.IPAddress, &user.Country, &user.RegionName, &user.Zip, &user.CreatedAt)
 		if err != nil {
 			// Логирование ошибки
 			s.logger.Error("scan user",
@@ -81,7 +82,7 @@ func (s *Service) GetUserById(id int) (*types.User, error) {
 
 	// читаем из результата
 	u := new(types.User)
-	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Lat, &u.Lon, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
+	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -93,6 +94,48 @@ func (s *Service) GetUserById(id int) (*types.User, error) {
 		s.monitor.TrackError(err)
 		s.logger.Error("scan user",
 			zap.Int("userID", id),
+			zap.Error(err))
+
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+
+	// мониторинг времени запроса
+	s.monitor.TrackDBQuery(time.Since(queryStart))
+
+	// Отправка пользователя
+	return u, nil
+}
+
+// Получения пользователя по IP
+// ----------------------------
+func (s *Service) GetUserByIP(ip string) (*types.User, error) {
+	start := time.Now()
+	defer func() {
+		s.monitor.TrackRequest(time.Since(start))
+	}()
+
+	// определение контекста времени
+	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
+	defer cancel()
+
+	// Запрос к БД на вывод пользователя по ID
+	queryStart := time.Now()
+	row := s.db.QueryRowContext(ctx, "select * from users where ip_address = ? limit 1", ip)
+
+	// читаем из результата
+	u := new(types.User)
+	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("user not found")
+		}
+
+		// Логирование ошибки
+		s.monitor.TrackDBError()
+		s.monitor.TrackError(err)
+		s.logger.Error("scan user",
+			zap.String("ip", ip),
 			zap.Error(err))
 
 		return nil, fmt.Errorf("failed to get user: %w", err)
@@ -123,7 +166,7 @@ func (s *Service) GetUserBySecretWord(word string) (*types.User, error) {
 
 	// читаем из результата
 	u := new(types.User)
-	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Lat, &u.Lon, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
+	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -165,7 +208,7 @@ func (s *Service) GetUserByUUID(uuid string) (*types.User, error) {
 
 	// читаем из результата
 	u := new(types.User)
-	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Lat, &u.Lon, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
+	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -207,7 +250,7 @@ func (s *Service) GetUserByEmail(email string) (*types.User, error) {
 
 	// читаем из результата
 	u := new(types.User)
-	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Lat, &u.Lon, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
+	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -249,7 +292,7 @@ func (s *Service) CreateUser(user types.User) error {
 
 	// Запрос к БД на создания пользователя
 	queryStart := time.Now()
-	_, err := s.db.ExecContext(ctx, "insert into users (uuid, secret_word, username, username_upper, ip_address, latitude, longitude, country, regionName, zip, createdAt) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", user.UUID, user.SecretWord, username, strings.ToUpper(username), user.IPAddress, user.Lat, user.Lon, user.Country, user.RegionName, user.Zip, user.CreatedAt)
+	_, err := s.db.ExecContext(ctx, "insert into users (uuid, secret_word, username, username_upper, ip_address, country, regionName, zip, createdAt) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", user.UUID, user.SecretWord, username, strings.ToUpper(username), user.IPAddress, user.Country, user.RegionName, user.Zip, user.CreatedAt)
 	if err != nil {
 		// Логирование ошибки
 		s.monitor.TrackDBError()
@@ -292,7 +335,7 @@ func (s *Service) CheckUser(user types.LoginUserPayload) (*types.User, error) {
 	u := new(types.User)
 
 	// читаем из результата
-	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Lat, &u.Lon, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
+	err := row.Scan(&u.ID, &u.UUID, &u.SecretWord, &u.UserName, &u.UserNameUpper, &u.Email, &u.EmailUpper, &u.IPAddress, &u.Country, &u.RegionName, &u.Zip, &u.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("user not found")
@@ -337,6 +380,30 @@ func (s *Service) UserUpdate(user types.UserUpdate) error {
 
 	// Обновление secret_word
 	if user.SecretWord != nil && *user.SecretWord != "" {
+		// Шифруем секретное слово
+		encrypt, err := utils.Encrypt(*user.SecretWordOld)
+		if err != nil {
+			s.logger.Error("encrypt secret word", zap.Error(err))
+			s.monitor.TrackError(err)
+			return fmt.Errorf("failed to encrypt secret word: %w", err)
+		}
+
+		// Проверяем существование пользователя с таким секретным словом
+		u, err := s.GetUserBySecretWord(encrypt)
+		if err != nil {
+			s.logger.Error("Failed to get user by secret_word", zap.Error(err), zap.String("secret_word", encrypt))
+			s.monitor.TrackError(err)
+			return fmt.Errorf("failed to get user by secret_word: %w", err)
+		}
+
+		// Если пользователь не найден, то возвращаем ошибку
+		if u == nil {
+			s.logger.Error("secret word not found/incorrect", zap.String("secret_word", encrypt))
+			s.monitor.TrackError(err)
+			return fmt.Errorf("secret word not found/incorrect")
+		}
+
+		// Если все ок, то меняем секретное слово
 		encrypted_secret_word, err := utils.Encrypt(*user.SecretWord)
 		if err != nil {
 			s.logger.Error("encrypt secret word", zap.Error(err))

@@ -21,9 +21,7 @@ const FavouriteMovie = (prop: Props) => {
   useEffect(() => {
     const cleanup = lazyService.createImageObserver(
       imgRef,
-      `http://${import.meta.env.VITE_SERVER_URL}:8080/api/v1/image/w500${
-        prop.movie.moviePoster
-      }`,
+      `${import.meta.env.VITE_SERVER_URL}/image/w500${prop.movie.moviePoster}`,
       // `https://image.tmdb.org/t/p/w500${prop.movie.moviePoster}`,
       setPoster,
       setLoaded
