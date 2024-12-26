@@ -129,9 +129,9 @@ func (h *Handler) handleAddUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Проверка на существование пользователя по IP
-	_, err = h.service.GetUserByIP(payload.IPAddress)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
+	u, _ := h.service.GetUserByIP(payload.IPAddress)
+	if u != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user already exists"))
 		return
 	}
 
@@ -150,7 +150,7 @@ func (h *Handler) handleAddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, err := h.service.GetUserByUUID(uuid)
+	u, err = h.service.GetUserByUUID(uuid)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return

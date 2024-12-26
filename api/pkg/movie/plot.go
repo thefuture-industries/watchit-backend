@@ -164,8 +164,6 @@ func GIGA_CHAT_OVERVIEW(text string) ([]types.Movie, error) {
 		return []types.Movie{}, err
 	}
 
-	fmt.Println("Content " + gigaMovie.Choices[0].Message.Content)
-
 	// Читаем файл (gzip)
 	file, err := os.Open("pkg/movie/db/movies.json.gz")
 	if err != nil {
@@ -199,8 +197,6 @@ func GIGA_CHAT_OVERVIEW(text string) ([]types.Movie, error) {
 	if err != nil {
 		return []types.Movie{}, err
 	}
-
-	fmt.Println("Array is movie: " + contentMessage[0] + contentMessage[1] + contentMessage[2])
 
 	for _, movie := range movies {
 		for _, movieItem := range movie.Results {

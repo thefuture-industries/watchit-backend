@@ -128,7 +128,7 @@ func (s *Service) GetUserByIP(ip string) (*types.User, error) {
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("user not found")
+			return nil, nil
 		}
 
 		// Логирование ошибки
