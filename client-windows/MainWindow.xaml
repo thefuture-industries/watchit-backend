@@ -1,0 +1,34 @@
+﻿<Window x:Class="client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:client"
+        xmlns:components="clr-namespace:client.UI.Components"
+        xmlns:view="clr-namespace:client.View"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded"
+        Background="#000"
+        Title="FlicksFI" Height="750" Width="1125"
+        Icon="pack://application:,,,/Public/ico/ico-app.ico">
+
+    <Grid>
+        <components:SkeletonLoader Panel.ZIndex="2" x:Name="Loader" Visibility="Collapsed" />
+
+        <Grid Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0">
+                <components:Panel />
+            </Border>
+
+            <Border Grid.Column="1">
+                <Frame x:Name="FrameContent" NavigationUIVisibility="Hidden" Source="pack://application:,,,/View/Home.xaml" />
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

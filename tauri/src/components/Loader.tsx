@@ -41,7 +41,7 @@ const Loader = () => {
             </div>
 
             <div className="mt-6">
-              {itemNav.map((item, index) => (
+              {itemNav.map((_, index: number) => (
                 <div
                   key={index}
                   className="flex text-[#fff] items-center mt-3 p-2 rounded bg-[#222]"

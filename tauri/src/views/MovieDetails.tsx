@@ -88,10 +88,14 @@ const MovieDetails = () => {
 
         // Загрузка и отображение изображение фильма
         const img = new Image();
-        img.src = `https://image.tmdb.org/t/p/w500${movieDetails?.poster_path}`;
+        img.src = `${import.meta.env.VITE_SERVER_URL}/image/w500${
+          movieDetails?.poster_path
+        }`;
         img.onload = () => {
           setPoster(
-            `https://image.tmdb.org/t/p/w500${movieDetails?.poster_path}`
+            `${import.meta.env.VITE_SERVER_URL}/image/w500${
+              movieDetails?.poster_path
+            }`
           );
           setLoaded(true);
         };
@@ -119,7 +123,7 @@ const MovieDetails = () => {
           setState={setIsError}
         />
       )}
-      
+
       <div className="my-5 ml-[5rem]">
         <div className="flex items-center justify-between">
           <MoveLeft

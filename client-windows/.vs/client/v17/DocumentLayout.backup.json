@@ -1,0 +1,130 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|c:\\users\\artemiik\\documents\\git\\flicksfi\\client-windows\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\internal\\services\\movieservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|solutionrelative:internal\\services\\movieservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\models\\moviemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|solutionrelative:models\\moviemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\viewmodel\\moviemv.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|solutionrelative:viewmodel\\moviemv.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 272,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "MainWindow.xaml",
+              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\MainWindow.xaml",
+              "RelativeToolTip": "MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-01-05T11:32:22.13Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MovieModel.cs",
+              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\Models\\MovieModel.cs",
+              "RelativeDocumentMoniker": "Models\\MovieModel.cs",
+              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\Models\\MovieModel.cs",
+              "RelativeToolTip": "Models\\MovieModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-04T16:52:14.048Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MovieService.cs",
+              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\Internal\\Services\\MovieService.cs",
+              "RelativeDocumentMoniker": "Internal\\Services\\MovieService.cs",
+              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\Internal\\Services\\MovieService.cs",
+              "RelativeToolTip": "Internal\\Services\\MovieService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-04T10:27:43.804Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MovieMV.cs",
+              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\ViewModel\\MovieMV.cs",
+              "RelativeDocumentMoniker": "ViewModel\\MovieMV.cs",
+              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\ViewModel\\MovieMV.cs",
+              "RelativeToolTip": "ViewModel\\MovieMV.cs",
+              "ViewState": "AgIAACcAAAAAAAAAAAAgwDcAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-04T11:40:17.195Z"
+            }
+          ]
+        },
+        {
+          "DockedHeight": 272,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            }
+          ]
+        },
+        {
+          "DockedHeight": 272,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
+            }
+          ]
+        },
+        {
+          "DockedHeight": 272,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

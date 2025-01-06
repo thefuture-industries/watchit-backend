@@ -3,7 +3,6 @@ const home = lazy(() => import("./home"));
 const story = lazy(() => import("./story"));
 const movie_filter = lazy(() => import("./movie"));
 const youtube_filter = lazy(() => import("./youtube"));
-const search_result = lazy(() => import("./search_result"));
 const movie_details = lazy(() => import("./movie_details"));
 const favourites = lazy(() => import("./favourites"));
 const load = lazy(() => import("./load"));
@@ -15,7 +14,6 @@ export {
   movie_filter,
   youtube_filter,
   story,
-  search_result,
   movie_details,
   favourites,
   load,

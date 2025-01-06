@@ -24,6 +24,7 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "resources": ["../src/assets"],
     "icon": ["icons/flicksfi-light-none-ico.ico"]
   }
 }

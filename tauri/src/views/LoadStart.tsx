@@ -29,7 +29,7 @@ const LoadStart = () => {
       <div>
         <div className="fixed">
           <video
-            src="/src/assets/video-bg-sf09wjq.mp4"
+            src="tauri/src-tauri/target/release/_up_/src/assets/video-bg-sf09wjq.mp4"
             autoPlay
             muted
             loop
@@ -43,7 +43,7 @@ const LoadStart = () => {
           >
             <div className="flex justify-center items-center mb-8">
               <img
-                src="/src/assets/flicksfi_ico.png"
+                src="tauri/src-tauri/target/release/_up_/src/assets/flicksfi_ico.png"
                 className="max-w-[2rem] opacity-[0.3]"
                 alt=""
               />

@@ -57,14 +57,6 @@ const App = createBrowserRouter([
         ),
       },
       {
-        path: "search/result",
-        element: (
-          <Suspense fallback={<Loader />}>
-            <page.search_result />
-          </Suspense>
-        ),
-      },
-      {
         path: "movie/:id",
         element: (
           <Suspense fallback={<MovieDetailsSkeleton />}>
