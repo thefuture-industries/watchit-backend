@@ -30,7 +30,7 @@ namespace client.API
             var movies = await _cacheQuery.Get("/movies/popular");
             if (movies.IsError)
             {
-                this._exception.Error("Server Error", movies.Error);
+                this._exception.Error(movies.Error, "Server Error");
                 return null;
             }
 

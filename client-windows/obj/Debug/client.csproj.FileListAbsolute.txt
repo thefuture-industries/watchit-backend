@@ -213,3 +213,9 @@ C:\Users\Artemiik\Documents\git\flicksfi\client-windows\obj\Debug\client.csproj.
 C:\Users\Artemiik\Documents\git\flicksfi\client-windows\obj\Debug\client.csproj.Up2Date
 C:\Users\Artemiik\Documents\git\flicksfi\client-windows\obj\Debug\client.exe
 C:\Users\Artemiik\Documents\git\flicksfi\client-windows\obj\Debug\client.pdb
+C:\Users\Artemiik\Documents\git\flicksfi\client-windows\obj\Debug\StartedWindow.g.cs
+C:\Users\Artemiik\Documents\git\flicksfi\client-windows\obj\Debug\StartedWindow.baml
+C:\Users\Artemiik\Documents\git\flicksfi\client-windows\obj\Debug\Started.g.cs
+C:\Users\Artemiik\Documents\git\flicksfi\client-windows\obj\Debug\MainControl.g.cs
+C:\Users\Artemiik\Documents\git\flicksfi\client-windows\obj\Debug\MainControl.baml
+C:\Users\Artemiik\Documents\git\flicksfi\client-windows\obj\Debug\Started.baml

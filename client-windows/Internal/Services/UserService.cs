@@ -5,7 +5,6 @@ using System;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace client.Internal.Services
 {
@@ -26,7 +25,7 @@ namespace client.Internal.Services
         /// </summary>
         private readonly Config _config;
 
-        private string _uuid = null;
+        private UserDataModel _userData;
 
         public UserService()
         {
@@ -38,7 +37,7 @@ namespace client.Internal.Services
         /// <summary>
         /// Добовление/Вход пользователя
         /// </summary>
-        public async Task<string> Add(UserAddPayload user)
+        public async void Add(UserAddPayload user)
         {
             try
             {
@@ -48,19 +47,24 @@ namespace client.Internal.Services
                 var response = await this._client.PostAsync($"{this._config.ReturnConfig().SERVER_URL}/user/add", content);
                 response.EnsureSuccessStatusCode();
 
-                this._uuid = await response.Content.ReadAsStringAsync();
-                return await response.Content.ReadAsStringAsync();
+                UserDataModel user_data = JsonSerializer.Deserialize<UserDataModel>(await response.Content.ReadAsStringAsync());
+                this._userData = user_data;
             }
             catch (HttpRequestException ex)
             {
-                this._exception.Error("Network or HTTP Error", ex.Message);
-                return null;
+                this._exception.Error(ex.Message, "Network or HTTP Error");
+                return;
             }
             catch (Exception ex)
             {
-                this._exception.Error("Error server", ex.Message);
-                return null;
+                this._exception.Error(ex.Message, "Error server");
+                return;
             }
+        }
+
+        public UserDataModel GetUserData()
+        {
+            return this._userData;
         }
 
         /// <summary>
@@ -68,13 +72,13 @@ namespace client.Internal.Services
         /// </summary>
         public string GetUUID()
         {
-            return this._uuid;
+            return this._userData.UUID;
         }
 
         /// <summary>
         /// Обновление данных пользователя
         /// </summary>
-        public async Task<string> Update(UserUpdatePayload user)
+        public async void Update(UserUpdatePayload user)
         {
             try
             {
@@ -84,18 +88,18 @@ namespace client.Internal.Services
                 var response = await this._client.PutAsync($"{this._config.ReturnConfig().SERVER_URL}/user/update", content);
                 response.EnsureSuccessStatusCode();
 
-                this._uuid = await response.Content.ReadAsStringAsync();
-                return await response.Content.ReadAsStringAsync();
+                UserDataModel user_data = JsonSerializer.Deserialize<UserDataModel>(await response.Content.ReadAsStringAsync());
+                this._userData = user_data;
             }
             catch (HttpRequestException ex)
             {
-                this._exception.Error("Network or HTTP Error", ex.Message);
-                return null;
+                this._exception.Error(ex.Message, "Network or HTTP Error");
+                return;
             }
             catch (Exception ex)
             {
-                this._exception.Error("Error server", ex.Message);
-                return null;
+                this._exception.Error(ex.Message, "Error server");
+                return;
             }
         }
     }

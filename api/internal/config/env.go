@@ -51,12 +51,12 @@ func initConfig() Config {
 	// Данные config
 	return Config{
 		// database
-		PublicHost: getEnv("PUBLIC_HOST", "junction.proxy.rlwy.net"),
-		Port:       getEnv("PORT", "12274"),
+		PublicHost: getEnv("PUBLIC_HOST", "http://localhost"),
+		Port:       getEnv("PORT", "8080"),
 		DBUser:     getEnv("DB_USER", "root"), // DBU_USER
-		DBPassword: getEnv("DB_PASSWORD", "UZdhwpEcfmKvKunqKAjiEPEzDXGPoUyh"),
-		DBAddress:  fmt.Sprintf("%s:%s", getEnv("DB_HOST", "junction.proxy.rlwy.net"), getEnv("DB_PORT", "12274")),
-		DBName:     getEnv("DB_NAME", "railway"),
+		DBPassword: getEnv("DB_PASSWORD", "password"),
+		DBAddress:  fmt.Sprintf("%s:%s", getEnv("DB_HOST", "127.0.0.1"), getEnv("DB_PORT", "3306")),
+		DBName:     getEnv("DB_NAME", "flick_finder"),
 
 		// jwt
 		JWTExpirationInSeconds: getEnvAsInt("JWT_EXP", 3600*24*7),

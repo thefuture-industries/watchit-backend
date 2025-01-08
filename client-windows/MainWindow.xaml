@@ -14,9 +14,11 @@
         Icon="pack://application:,,,/Public/ico/ico-app.ico">
 
     <Grid>
-        <components:SkeletonLoader Panel.ZIndex="2" x:Name="Loader" Visibility="Collapsed" />
+        <!-- <components:SkeletonLoader Panel.ZIndex="2" x:Name="Loader" Visibility="Collapsed" /> -->
 
-        <Grid Margin="10">
+        <Frame x:Name="FrameIndex" NavigationUIVisibility="Hidden" Source="pack://application:,,,/Started.xaml" />
+
+        <!-- <Grid Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="300" />
                 <ColumnDefinition Width="*" />
@@ -29,6 +31,6 @@
             <Border Grid.Column="1">
                 <Frame x:Name="FrameContent" NavigationUIVisibility="Hidden" Source="pack://application:,,,/View/Home.xaml" />
             </Border>
-        </Grid>
+        </Grid> -->
     </Grid>
 </Window>

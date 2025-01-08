@@ -8,7 +8,7 @@ namespace client.Internal.Interfaces
         /// <summary>
         /// Добовление/Вход пользователя
         /// </summary>
-        Task<string> Add(UserAddPayload user);
+        void Add(UserAddPayload user);
 
         /// <summary>
         /// Получение uuid пользователя
@@ -16,8 +16,13 @@ namespace client.Internal.Interfaces
         string GetUUID();
 
         /// <summary>
+        /// Получение данных пользователя
+        /// </summary>
+        UserDataModel GetUserData();
+
+        /// <summary>
         /// Обновление данных пользователя
         /// </summary>
-        Task<string> Update(UserUpdatePayload user);
+        void Update(UserUpdatePayload user);
     }
 }

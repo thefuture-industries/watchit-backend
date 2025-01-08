@@ -52,12 +52,12 @@ namespace client.Internal.Services
             }
             catch (HttpRequestException ex)
             {
-                this._exception.Error("Network or HTTP Error", ex.Message);
+                this._exception.Error(ex.Message, "Network or HTTP Error");
                 return;
             }
             catch (Exception ex)
             {
-                this._exception.Error("Error server", ex.Message);
+                this._exception.Error(ex.Message, "Error server");
                 return;
             }
         }
@@ -78,12 +78,12 @@ namespace client.Internal.Services
             }
             catch (HttpRequestException ex)
             {
-                this._exception.Error("Network or HTTP Error", ex.Message);
+                this._exception.Error(ex.Message, "Network or HTTP Error");
                 return null;
             }
             catch (Exception ex)
             {
-                this._exception.Error("Error server", ex.Message);
+                this._exception.Error(ex.Message, "Error server");
                 return null;
             }
         }

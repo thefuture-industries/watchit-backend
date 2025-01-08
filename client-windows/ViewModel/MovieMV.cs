@@ -6,16 +6,25 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
+using System.Windows.Controls;
 
 namespace client.ViewModel
 {
     public class MovieMV : INotifyPropertyChanged
     {
+        /// <summary>
+        /// Работа с UI элементами
+        /// </summary>
         private readonly UIActions _action;
 
+        /// <summary>
+        /// Сервис для работы с фильмами
+        /// </summary>
         private readonly MovieService _movieService;
 
+        /// <summary>
+        /// Хранение фильмов
+        /// </summary>
         private ObservableCollection<MovieModel> _movies;
         public ObservableCollection<MovieModel> Movies
         {
@@ -27,10 +36,13 @@ namespace client.ViewModel
             }
         }
 
+        /// <summary>
+        /// Конструктор
+        /// </summary>
         public MovieMV()
         {
-            this._movieService = new MovieService();
             this._action = new UIActions(Application.Current.MainWindow as MainWindow);
+            this._movieService = new MovieService();
 
             Application.Current.Dispatcher.Invoke(() =>
             {

@@ -143,12 +143,20 @@
     <Compile Include="Internal\Services\MovieService.cs" />
     <Compile Include="Internal\Services\RecommendationService.cs" />
     <Compile Include="Internal\Services\UserService.cs" />
+    <Compile Include="MainControl.xaml.cs">
+      <DependentUpon>MainControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GeoIPModel.cs" />
     <Compile Include="Models\MenuItem.cs" />
     <Compile Include="Models\MovieModel.cs" />
     <Compile Include="Internal\Core\UIException.cs" />
     <Compile Include="Models\RecommendationAddPayload.cs" />
     <Compile Include="Models\UserAddPayload.cs" />
+    <Compile Include="Models\UserDataModel.cs" />
     <Compile Include="Models\UserUpdatePayload.cs" />
+    <Compile Include="Started.xaml.cs">
+      <DependentUpon>Started.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Components\MovieCard.xaml.cs">
       <DependentUpon>MovieCard.xaml</DependentUpon>
     </Compile>
@@ -159,10 +167,13 @@
       <DependentUpon>SkeletonLoader.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Styles\Controllers\ImageUriConvertor.cs" />
+    <Compile Include="UI\Styles\Controllers\InverseBooleanConverter.cs" />
+    <Compile Include="UI\Styles\Controllers\InverseOpacityConverter.cs" />
     <Compile Include="UI\Styles\Controllers\SelectedItemConvertor.cs" />
     <Compile Include="ViewModel\MovieMV.cs" />
     <Compile Include="ViewModel\MovieSearchVM.cs" />
     <Compile Include="ViewModel\PanelVM.cs" />
+    <Compile Include="ViewModel\StartedVM.cs" />
     <Compile Include="ViewModel\YoutubeSearchVM.cs" />
     <Compile Include="View\Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
@@ -173,6 +184,10 @@
     <Compile Include="View\YoutubeSearch.xaml.cs">
       <DependentUpon>YoutubeSearch.xaml</DependentUpon>
     </Compile>
+    <Page Include="MainControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -185,6 +200,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Started.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Components\MovieCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -284,6 +303,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Public\ico\ico-app.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Public\images\bg-flicksfi-start.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Public\images\bg.jpeg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

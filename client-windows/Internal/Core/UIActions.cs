@@ -1,25 +1,60 @@
-﻿using System;
+﻿using client.UI.Components;
+using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace client.Internal.Core
 {
     public class UIActions
     {
-        private readonly MainWindow _main_window;
+        private readonly MainWindow _main;
 
-        public UIActions(MainWindow mainWindow)
+        public UIActions(MainWindow main)
         {
-            this._main_window = mainWindow;
+            this._main = main;
         }
 
         public void SetFrameContent(string content_uri)
         {
-            this._main_window.FrameContent.Navigate(new System.Uri(content_uri, UriKind.Absolute));
+            if (this._main.FrameIndex.Content is MainControl mainControl)
+            {
+                mainControl.FrameContent.Navigate(new System.Uri(content_uri, UriKind.Absolute));
+            }
         }
 
-        public void LoaderVisibilityVisible() => this._main_window.Loader.Visibility = Visibility.Visible;
-        public void LoaderVisibilityCollapsed() => this._main_window.Loader.Visibility = Visibility.Collapsed;
+        public void SetFrameIndex(string content_uri)
+        {
+            this._main.FrameIndex.Navigate(new System.Uri(content_uri, UriKind.Absolute));
+        }
+
+        public void LoaderVisibilityVisible()
+        {
+            if (this._main.FrameIndex.Content is MainControl mainControl)
+            {
+                if (mainControl.FrameContent.Content is UserControl userControl)
+                {
+                    if (userControl.FindName("Loader") is SkeletonLoader skeletonLoader)
+                    {
+                        skeletonLoader.Visibility = Visibility.Visible;
+                    }
+                }
+            }
+        }
+
+        public void LoaderVisibilityCollapsed()
+        {
+            if (this._main.FrameIndex.Content is MainControl mainControl)
+            {
+                if (mainControl.FrameContent.Content is UserControl userControl)
+                {
+                    if (userControl.FindName("Loader") is SkeletonLoader skeletonLoader)
+                    {
+                        skeletonLoader.Visibility = Visibility.Collapsed;
+                    }
+                }
+            }
+        }
     }
 
     public class RelayCommand : ICommand

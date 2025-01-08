@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\Artemiik\Documents\git\flicksfi\client-windows\App.xaml
-10-1057555841
+12-430932030
 
-35-1085818772
+42-17755961
 143293087088
-MainWindow.xaml;UI\Components\MovieCard.xaml;UI\Components\Panel.xaml;UI\Components\SkeletonLoader.xaml;UI\Styles\AppStyles.xaml;UI\Styles\Colors.xaml;UI\Styles\Fonts.xaml;View\Home.xaml;View\MovieSearch.xaml;View\YoutubeSearch.xaml;
+MainControl.xaml;MainWindow.xaml;Started.xaml;UI\Components\MovieCard.xaml;UI\Components\Panel.xaml;UI\Components\SkeletonLoader.xaml;UI\Styles\AppStyles.xaml;UI\Styles\Colors.xaml;UI\Styles\Fonts.xaml;View\Home.xaml;View\MovieSearch.xaml;View\YoutubeSearch.xaml;
 
-False
+True
 

@@ -3,35 +3,43 @@
   "WorkspaceRootPath": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|c:\\users\\artemiik\\documents\\git\\flicksfi\\client-windows\\viewmodel\\startedvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|solutionrelative:viewmodel\\startedvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|c:\\users\\artemiik\\documents\\git\\flicksfi\\client-windows\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\internal\\services\\movieservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|solutionrelative:internal\\services\\movieservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|c:\\users\\artemiik\\documents\\git\\flicksfi\\client-windows\\internal\\core\\uiactions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|solutionrelative:internal\\core\\uiactions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\models\\moviemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|solutionrelative:models\\moviemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\viewmodel\\moviemv.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|c:\\users\\artemiik\\documents\\git\\flicksfi\\client-windows\\viewmodel\\moviemv.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|solutionrelative:viewmodel\\moviemv.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|c:\\users\\artemiik\\documents\\git\\flicksfi\\client-windows\\maincontrol.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|solutionrelative:maincontrol.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|c:\\users\\artemiik\\documents\\git\\flicksfi\\client-windows\\maincontrol.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|solutionrelative:maincontrol.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|c:\\users\\artemiik\\documents\\git\\flicksfi\\client-windows\\view\\home.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{045C8027-83C5-4B60-B834-F25ABF38A809}|client.csproj|solutionrelative:view\\home.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
   "DocumentGroupContainers": [
     {
-      "Orientation": 1,
+      "Orientation": 0,
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedHeight": 272,
-          "SelectedChildIndex": 4,
+          "DockedWidth": 258,
+          "SelectedChildIndex": 3,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
@@ -47,38 +55,40 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "StartedVM.cs",
+              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\ViewModel\\StartedVM.cs",
+              "RelativeDocumentMoniker": "ViewModel\\StartedVM.cs",
+              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\ViewModel\\StartedVM.cs*",
+              "RelativeToolTip": "ViewModel\\StartedVM.cs*",
+              "ViewState": "AgIAAGQAAAAAAAAAAAAxwIAAAABaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-08T16:53:23.591Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\MainWindow.xaml",
               "RelativeDocumentMoniker": "MainWindow.xaml",
-              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\MainWindow.xaml",
-              "RelativeToolTip": "MainWindow.xaml",
+              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\MainWindow.xaml*",
+              "RelativeToolTip": "MainWindow.xaml*",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-01-05T11:32:22.13Z",
+              "WhenOpened": "2025-01-08T16:45:32.336Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "MovieModel.cs",
-              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\Models\\MovieModel.cs",
-              "RelativeDocumentMoniker": "Models\\MovieModel.cs",
-              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\Models\\MovieModel.cs",
-              "RelativeToolTip": "Models\\MovieModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Title": "UIActions.cs",
+              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\Internal\\Core\\UIActions.cs",
+              "RelativeDocumentMoniker": "Internal\\Core\\UIActions.cs",
+              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\Internal\\Core\\UIActions.cs",
+              "RelativeToolTip": "Internal\\Core\\UIActions.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAzwCIAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-04T16:52:14.048Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "MovieService.cs",
-              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\Internal\\Services\\MovieService.cs",
-              "RelativeDocumentMoniker": "Internal\\Services\\MovieService.cs",
-              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\Internal\\Services\\MovieService.cs",
-              "RelativeToolTip": "Internal\\Services\\MovieService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAaAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-04T10:27:43.804Z"
+              "WhenOpened": "2025-01-08T16:19:44.452Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -88,14 +98,52 @@
               "RelativeDocumentMoniker": "ViewModel\\MovieMV.cs",
               "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\ViewModel\\MovieMV.cs",
               "RelativeToolTip": "ViewModel\\MovieMV.cs",
-              "ViewState": "AgIAACcAAAAAAAAAAAAgwDcAAAAPAAAAAAAAAA==",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAowC8AAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-04T11:40:17.195Z"
+              "WhenOpened": "2025-01-08T16:18:50.328Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Home.xaml",
+              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\View\\Home.xaml",
+              "RelativeDocumentMoniker": "View\\Home.xaml",
+              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\View\\Home.xaml",
+              "RelativeToolTip": "View\\Home.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-01-08T16:18:38.163Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "MainControl.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\MainControl.xaml.cs",
+              "RelativeDocumentMoniker": "MainControl.xaml.cs",
+              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\MainControl.xaml.cs",
+              "RelativeToolTip": "MainControl.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-08T16:05:20.71Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "MainControl.xaml",
+              "DocumentMoniker": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\MainControl.xaml",
+              "RelativeDocumentMoniker": "MainControl.xaml",
+              "ToolTip": "C:\\Users\\Artemiik\\Documents\\git\\flicksfi\\client-windows\\MainControl.xaml",
+              "RelativeToolTip": "MainControl.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-01-08T16:00:22.551Z",
+              "EditorCaption": ""
             }
           ]
         },
         {
-          "DockedHeight": 272,
+          "DockedWidth": 1449,
           "SelectedChildIndex": -1,
           "Children": [
             {
@@ -105,7 +153,7 @@
           ]
         },
         {
-          "DockedHeight": 272,
+          "DockedWidth": 268,
           "SelectedChildIndex": -1,
           "Children": [
             {
@@ -115,7 +163,7 @@
           ]
         },
         {
-          "DockedHeight": 272,
+          "DockedWidth": 55,
           "SelectedChildIndex": -1,
           "Children": [
             {

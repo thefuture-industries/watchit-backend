@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using client.ViewModel;
+using System.Windows;
 
 namespace client
 {
@@ -14,7 +15,6 @@ namespace client
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-
         }
     }
 }
