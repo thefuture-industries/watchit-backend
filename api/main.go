@@ -19,6 +19,13 @@ import (
 	"go.uber.org/zap"
 )
 
+// @title flicksfi API
+// @version 0.1.2
+// @description API service for working with the flicksfi application for fast movie and video search. tg [https://t.me/flicksfi]
+
+// @host localhost:8080
+// @BasePath /api/v1
+
 func main() {
 	// Инициализация логгера
 	logger, err := zap.NewProduction()
@@ -105,7 +112,7 @@ func main() {
 // --------------------
 func initStorage(db *sql.DB) {
 	// --------------------------------------------
-	// Если есть ошибка с БД, то вывести сообщениеdb
+	// Если есть ошибка с БД, то вывести сообщение
 	// ---------------------------------------------
 	err := db.Ping()
 	if err != nil {

@@ -14,7 +14,7 @@
         Icon="pack://application:,,,/Public/ico/ico-app.ico">
 
     <Grid>
-        <!-- <components:SkeletonLoader Panel.ZIndex="2" x:Name="Loader" Visibility="Collapsed" /> -->
+        <components:SkeletonLoader Panel.ZIndex="2" x:Name="Loader" Visibility="Collapsed" />
 
         <Frame x:Name="FrameIndex" NavigationUIVisibility="Hidden" Source="pack://application:,,,/Started.xaml" />
 

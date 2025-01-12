@@ -14,6 +14,8 @@ import (
 	"log"
 	"net/http"
 
+	_ "flicksfi/docs"
+
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
@@ -39,7 +41,15 @@ func (s *APIServer) Run() error {
 	router := mux.NewRouter()
 	subrouter := router.PathPrefix("/api/v1").Subrouter()
 
+	// Swagger UI
+	router.PathPrefix("/docs/").Handler(http.StripPrefix("/docs/", http.FileServer(http.Dir("./docs"))))
+	router.HandleFunc("/swagger", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./swagger.html")
+	})
+
+	// ---------------
 	// Создание logger
+	// ---------------
 	track := configuration.NewTrack()
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()

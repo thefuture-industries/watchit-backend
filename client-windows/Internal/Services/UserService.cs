@@ -18,36 +18,39 @@ namespace client.Internal.Services
         /// <summary>
         /// Создание клиента
         /// </summary>
-        private readonly HttpClient _client;
+        private readonly HttpClient _httpClient;
 
         /// <summary>
         /// Подключение класса конфига
         /// </summary>
         private readonly Config _config;
 
+        /// <summary>
+        /// Данные пользователя
+        /// </summary>
         private UserDataModel _userData;
 
         public UserService()
         {
             this._exception = new UIException();
-            this._client = new HttpClient();
+            this._httpClient = new HttpClient();
             this._config = new Config();
         }
 
         /// <summary>
         /// Добовление/Вход пользователя
         /// </summary>
-        public async void Add(UserAddPayload user)
+        public void Add(UserAddPayload user)
         {
             try
             {
                 string json = JsonSerializer.Serialize(user);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await this._client.PostAsync($"{this._config.ReturnConfig().SERVER_URL}/user/add", content);
+                var response = this._httpClient.PostAsync($"{this._config.ReturnConfig().SERVER_URL}/user/add", content).Result;
                 response.EnsureSuccessStatusCode();
 
-                UserDataModel user_data = JsonSerializer.Deserialize<UserDataModel>(await response.Content.ReadAsStringAsync());
+                UserDataModel user_data = JsonSerializer.Deserialize<UserDataModel>(response.Content.ReadAsStringAsync().Result);
                 this._userData = user_data;
             }
             catch (HttpRequestException ex)
@@ -85,7 +88,7 @@ namespace client.Internal.Services
                 string json = JsonSerializer.Serialize(user);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await this._client.PutAsync($"{this._config.ReturnConfig().SERVER_URL}/user/update", content);
+                var response = await this._httpClient.PutAsync($"{this._config.ReturnConfig().SERVER_URL}/user/update", content);
                 response.EnsureSuccessStatusCode();
 
                 UserDataModel user_data = JsonSerializer.Deserialize<UserDataModel>(await response.Content.ReadAsStringAsync());
@@ -100,7 +103,7 @@ namespace client.Internal.Services
             {
                 this._exception.Error(ex.Message, "Error server");
                 return;
-            }
+            }   
         }
     }
 }

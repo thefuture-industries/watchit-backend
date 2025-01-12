@@ -55,7 +55,19 @@ func (h Handler) RegisterRoutes(router *mux.Router) {
 
 var total_page int = 500
 
-// Получение видео с YouTube (20)
+// @Summary 20 videos from YouTube
+// @Tags video
+// @Description Getting videos from YouTube is a maximum of 20
+// @ID video-youtube-20
+// @Accept json
+// @Produce json
+// @Param categoryId query string false "Video category"
+// @Param s query string false "Video Search"
+// @Param y query string false "Video year"
+// @Param ch query string false "Video channel"
+// @Success 200 {object} []types.SearchResult
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /youtube/video [get]
 func (h Handler) handleYouTubeVideo(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
 	limiter := utils.DDosPropperty()
@@ -91,7 +103,15 @@ func (h Handler) handleYouTubeVideo(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, videos)
 }
 
-// Получаем самые популярные видео YouTube (10)
+// @Summary 10 popular YouTube videos
+// @Tags video
+// @Description Getting 10 popular videos from YouTube
+// @ID video-popular-youtube-10
+// @Accept json
+// @Produce json
+// @Success 200 {object} []types.SearchResult
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /youtube/video/popular [get]
 func (h Handler) handlePopularYouTubeVideo(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
 	limiter := utils.DDosPropperty()
@@ -109,7 +129,18 @@ func (h Handler) handlePopularYouTubeVideo(w http.ResponseWriter, r *http.Reques
 	utils.WriteJSON(w, http.StatusOK, popular)
 }
 
-// Получение фильмов (10) page = 0
+// @Summary movies by criteria
+// @Tags movie
+// @Description Getting 10 movies based on different criteria
+// @ID movie-criteria-10
+// @Accept json
+// @Produce json
+// @Param genre_id query string false "Movie genre"
+// @Param date query string false "The year of the film's release"
+// @Param s query string false "Movie Search"
+// @Success 200 {object} []types.Movie
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /movies [get]
 func (h Handler) handleMovies(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
 	limiter := utils.DDosPropperty()
@@ -146,7 +177,15 @@ func (h Handler) handleMovies(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, movies)
 }
 
-// Получение фотографии фильма
+// @Summary movie poster
+// @Tags movie
+// @Description Getting a movie poster
+// @ID movie-poster
+// @Produce image/jpeg
+// @Param img path string true "Movie poster"
+// @Success 200 {file} string ""
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /image/w500/{img} [get]
 func (h Handler) handleImageMovie(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
@@ -184,7 +223,17 @@ func (h Handler) handleImageMovie(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Получение фильмов по тексту (20) page = 0
+// @Summary A film based on the plot
+// @Tags movie
+// @Description Getting 100 movie's based on a user's story
+// @ID movie-plot-100
+// @Accept json
+// @Produce json
+// @Param DTO body types.TextMoviePayload true "Data for movies plot"
+// @Success 200 {object} []types.Movie
+// @Failure 400 {object} types.ErrorResponse "invalid payload"
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /text/movies [post]
 func (h Handler) handleMoviesText(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
 	limiter := utils.DDosPropperty()
@@ -269,7 +318,16 @@ func (h Handler) handleMoviesText(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Получение ТОП фильмов (20) page = 1
+// @Summary Popular movies
+// @Tags movie
+// @Description Getting 20 popular movies
+// @ID movie-popular-20
+// @Accept json
+// @Produce json
+// @Param page query string false "Movie Page"
+// @Success 200 {object} []types.Movie
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /movies/popular [get]
 func (h Handler) handlePopularFilms(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
 	limiter := utils.DDosPropperty()
@@ -306,7 +364,17 @@ func (h Handler) handlePopularFilms(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, movies)
 }
 
-// Получение информации о фильме по ID
+// @Summary Movie Details
+// @Tags movie
+// @Description Getting movie details by ID
+// @ID movie-details-id
+// @Accept json
+// @Produce json
+// @Param id path string true "Movie ID"
+// @Success 200 {object} types.Movie
+// @Failure 400 {object} types.ErrorResponse "Bad Request"
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /movie/{id} [get]
 func (h Handler) handleMovieDetails(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
 	limiter := utils.DDosPropperty()
@@ -341,7 +409,19 @@ func (h Handler) handleMovieDetails(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, movie)
 }
 
-// Получение похожих фильмов
+// @Summary Related Movies
+// @Tags movie
+// @Description Getting similar movies based on data <100
+// @ID movie-similar-<100
+// @Accept json
+// @Produce json
+// @Param genre_id query string false "The genre of the current movie"
+// @Param title query string false "The title of the current movie"
+// @Param overview query string false "Description of the current movie"
+// @Success 200 {object} []types.Movie
+// @Failure 400 {object} types.ErrorResponse "Bad Request"
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /movies/similar [get]
 func (h Handler) handleMovieSimilar(w http.ResponseWriter, r *http.Request) {
 	// Инициализация переменной для получения из URL параметров
 	query := r.URL.Query()

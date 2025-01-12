@@ -2,7 +2,12 @@
 using client.Internal.Services;
 using client.Models;
 using client.Services;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace client.API
@@ -19,52 +24,155 @@ namespace client.API
         /// </summary>
         private readonly CacheQuery _cacheQuery;
 
+        /// <summary>
+        /// Класс для отправки запросов
+        /// </summary>
+        private readonly HttpClient _httpClient;
+
+        /// <summary>
+        /// Класс конфиг приложения
+        /// </summary>
+        private readonly Config _config;
+
+        /// <summary>
+        /// Сервис для работы с пользователем
+        /// </summary>
+        private readonly IUserService _userService;
+
         public MovieService()
         {
             this._exception = new UIException();
             this._cacheQuery = new CacheQuery();
-        }
-
-        public async Task<List<MovieModel>> Get()
-        {
-            var movies = await _cacheQuery.Get("/movies/popular");
-            if (movies.IsError)
-            {
-                this._exception.Error(movies.Error, "Server Error");
-                return null;
-            }
-
-            var movieJSON = System.Text.Json.JsonSerializer.Serialize(movies.Result);
-
-            return System.Text.Json.JsonSerializer.Deserialize<List<MovieModel>>(movieJSON);
+            this._config = new Config();
+            this._userService = new UserService();
         }
 
         /// <summary>
         /// Получение фильмов по фильтрам
         /// </summary>
-        public Task<List<MovieModel>> GetByFilters(string search, string genre, string date)
+        public async Task<List<MovieModel>> GetByFilters(string search, string genre, string date)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var response = await this._httpClient.GetAsync($"{this._config.ReturnConfig().SERVER_URL}/movies?s={search}&genre_id={genre}&date={date}");
+                response.EnsureSuccessStatusCode();
+
+                return JsonSerializer.Deserialize<List<MovieModel>>(await response.Content.ReadAsStringAsync());
+            }
+            catch (HttpRequestException ex)
+            {
+                this._exception.Error(ex.Message, "Network or HTTP Error");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                this._exception.Error(ex.Message, "Server Error");
+                return null;
+            }
         }
 
-        public Task<List<MovieModel>> GetBySearch(string search)
+        /// <summary>
+        /// Поиск фильма по titla или overview (...)
+        /// </summary>
+        public async Task<List<MovieModel>> GetBySearch(string search)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var response = await this._httpClient.GetAsync($"{this._config.ReturnConfig().SERVER_URL}/movies?s={Uri.EscapeDataString(search)}");
+                response.EnsureSuccessStatusCode();
+
+                return JsonSerializer.Deserialize<List<MovieModel>>(await response.Content.ReadAsStringAsync());
+            }
+            catch (HttpRequestException ex)
+            {
+                this._exception.Error(ex.Message, "Network or HTTP Error");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                this._exception.Error(ex.Message, "Server Error");
+                return null;
+            }
         }
 
-        public Task<MovieModel> GetDetails(int id)
+        /// <summary>
+        /// Получние деталей фильма по ID
+        /// </summary>
+        public async Task<MovieModel> GetDetails(int id)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var response = await this._httpClient.GetAsync($"{this._config.ReturnConfig().SERVER_URL}/movie/{id}");
+                response.EnsureSuccessStatusCode();
+
+                return JsonSerializer.Deserialize<MovieModel>(await response.Content.ReadAsStringAsync());
+            }
+            catch (HttpRequestException ex)
+            {
+                this._exception.Error(ex.Message, "Network or HTTP Error");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                this._exception.Error(ex.Message, "Server Error");
+                return null;
+            }
         }
 
-        public Task<List<MovieModel>> GetPlot(string text, string lege)
+        /// <summary>
+        /// Получение похожих фильмов
+        /// </summary>
+        public async Task<List<MovieModel>> GetPlot(string text, string lege)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                string json = JsonSerializer.Serialize(new
+                {
+                    uuid = this._userService.GetUUID(),
+                    text = text,
+                    lege = lege
+                });
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await this._httpClient.PostAsync($"{this._config.ReturnConfig().SERVER_URL}/text/movies", content);
+                response.EnsureSuccessStatusCode();
+
+                return JsonSerializer.Deserialize<List<MovieModel>>(await response.Content.ReadAsStringAsync());
+            }
+            catch (HttpRequestException ex)
+            {
+                this._exception.Error(ex.Message, "Network or HTTP Error");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                this._exception.Error(ex.Message, "Server Error");
+                return null;
+            }
         }
 
-        public Task<List<MovieModel>> GetSimilar(int[] genre_ids, string title, string overview)
+        /// <summary>
+        /// Поиск фильмов по сюжету
+        /// </summary>
+        public async Task<List<MovieModel>> GetSimilar(int[] genre_ids, string title, string overview)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var response = await this._httpClient.GetAsync($"{this._config.ReturnConfig().SERVER_URL}/movies/similar?genre_id={string.Join(",", genre_ids.Select(x => x.ToString()))}&title={Uri.EscapeDataString(title)}&overview={Uri.EscapeDataString(overview)}");
+                response.EnsureSuccessStatusCode();
+
+                return JsonSerializer.Deserialize<List<MovieModel>>(await response.Content.ReadAsStringAsync());
+            }
+            catch (HttpRequestException ex)
+            {
+                this._exception.Error(ex.Message, "Network or HTTP Error");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                this._exception.Error(ex.Message, "Server Error");
+                return null;
+            }
         }
     }
 }

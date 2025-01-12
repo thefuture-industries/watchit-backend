@@ -175,6 +175,9 @@
     <Compile Include="ViewModel\PanelVM.cs" />
     <Compile Include="ViewModel\StartedVM.cs" />
     <Compile Include="ViewModel\YoutubeSearchVM.cs" />
+    <Compile Include="View\Favourite.xaml.cs">
+      <DependentUpon>Favourite.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
     </Compile>
@@ -225,6 +228,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Styles\Fonts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Favourite.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

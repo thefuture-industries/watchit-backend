@@ -266,3 +266,167 @@ type TextMoviePayload struct {
 	Text string `json:"text" validate:"required"`
 	Lege string `json:"lege" validate:"required"`
 }
+
+// SWAGGER
+// error server model
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
+// error server model
+type UserResponse struct {
+	UUID     string `json:"uuid"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
+// SearchResult: A search result contains information about a YouTube video,
+// channel, or playlist that matches the search parameters specified in an API
+// request. While a search result points to a uniquely identifiable resource,
+// like a video, it does not have its own persistent data.
+type SearchResult struct {
+	// Etag: Etag of this resource.
+	Etag string `json:"etag,omitempty"`
+	// Id: The id object contains information that can be used to uniquely identify
+	// the resource that matches the search request.
+	Id *ResourceId `json:"id,omitempty"`
+	// Kind: Identifies what kind of resource this is. Value: the fixed string
+	// "youtube#searchResult".
+	Kind string `json:"kind,omitempty"`
+	// Snippet: The snippet object contains basic details about a search result,
+	// such as its title or description. For example, if the search result is a
+	// video, then the title will be the video's title and the description will be
+	// the video's description.
+	Snippet *SearchResultSnippet `json:"snippet,omitempty"`
+	// ForceSendFields is a list of field names (e.g. "Etag") to unconditionally
+	// include in API requests. By default, fields with empty or default values are
+	// omitted from API requests. See
+	// https://pkg.go.dev/google.golang.org/api#hdr-ForceSendFields for more
+	// details.
+	ForceSendFields []string `json:"-"`
+	// NullFields is a list of field names (e.g. "Etag") to include in API requests
+	// with the JSON null value. By default, fields with empty values are omitted
+	// from API requests. See
+	// https://pkg.go.dev/google.golang.org/api#hdr-NullFields for more details.
+	NullFields []string `json:"-"`
+}
+
+// SearchResultSnippet: Basic details about a search result, including title,
+// description and thumbnails of the item referenced by the search result.
+type SearchResultSnippet struct {
+	// ChannelId: The value that YouTube uses to uniquely identify the channel that
+	// published the resource that the search result identifies.
+	ChannelId string `json:"channelId,omitempty"`
+	// ChannelTitle: The title of the channel that published the resource that the
+	// search result identifies.
+	ChannelTitle string `json:"channelTitle,omitempty"`
+	// Description: A description of the search result.
+	Description string `json:"description,omitempty"`
+	// LiveBroadcastContent: It indicates if the resource (video or channel) has
+	// upcoming/active live broadcast content. Or it's "none" if there is not any
+	// upcoming/active live broadcasts.
+	//
+	// Possible values:
+	//   "none"
+	//   "upcoming" - The live broadcast is upcoming.
+	//   "live" - The live broadcast is active.
+	//   "completed" - The live broadcast has been completed.
+	LiveBroadcastContent string `json:"liveBroadcastContent,omitempty"`
+	// PublishedAt: The creation date and time of the resource that the search
+	// result identifies.
+	PublishedAt string `json:"publishedAt,omitempty"`
+	// Thumbnails: A map of thumbnail images associated with the search result. For
+	// each object in the map, the key is the name of the thumbnail image, and the
+	// value is an object that contains other information about the thumbnail.
+	Thumbnails *ThumbnailDetails `json:"thumbnails,omitempty"`
+	// Title: The title of the search result.
+	Title string `json:"title,omitempty"`
+	// ForceSendFields is a list of field names (e.g. "ChannelId") to
+	// unconditionally include in API requests. By default, fields with empty or
+	// default values are omitted from API requests. See
+	// https://pkg.go.dev/google.golang.org/api#hdr-ForceSendFields for more
+	// details.
+	ForceSendFields []string `json:"-"`
+	// NullFields is a list of field names (e.g. "ChannelId") to include in API
+	// requests with the JSON null value. By default, fields with empty values are
+	// omitted from API requests. See
+	// https://pkg.go.dev/google.golang.org/api#hdr-NullFields for more details.
+	NullFields []string `json:"-"`
+}
+
+// ResourceId: A resource id is a generic reference that points to another
+// YouTube resource.
+type ResourceId struct {
+	// ChannelId: The ID that YouTube uses to uniquely identify the referred
+	// resource, if that resource is a channel. This property is only present if
+	// the resourceId.kind value is youtube#channel.
+	ChannelId string `json:"channelId,omitempty"`
+	// Kind: The type of the API resource.
+	Kind string `json:"kind,omitempty"`
+	// PlaylistId: The ID that YouTube uses to uniquely identify the referred
+	// resource, if that resource is a playlist. This property is only present if
+	// the resourceId.kind value is youtube#playlist.
+	PlaylistId string `json:"playlistId,omitempty"`
+	// VideoId: The ID that YouTube uses to uniquely identify the referred
+	// resource, if that resource is a video. This property is only present if the
+	// resourceId.kind value is youtube#video.
+	VideoId string `json:"videoId,omitempty"`
+	// ForceSendFields is a list of field names (e.g. "ChannelId") to
+	// unconditionally include in API requests. By default, fields with empty or
+	// default values are omitted from API requests. See
+	// https://pkg.go.dev/google.golang.org/api#hdr-ForceSendFields for more
+	// details.
+	ForceSendFields []string `json:"-"`
+	// NullFields is a list of field names (e.g. "ChannelId") to include in API
+	// requests with the JSON null value. By default, fields with empty values are
+	// omitted from API requests. See
+	// https://pkg.go.dev/google.golang.org/api#hdr-NullFields for more details.
+	NullFields []string `json:"-"`
+}
+
+// ThumbnailDetails: Internal representation of thumbnails for a YouTube
+// resource.
+type ThumbnailDetails struct {
+	// Default: The default image for this resource.
+	Default *Thumbnail `json:"default,omitempty"`
+	// High: The high quality image for this resource.
+	High *Thumbnail `json:"high,omitempty"`
+	// Maxres: The maximum resolution quality image for this resource.
+	Maxres *Thumbnail `json:"maxres,omitempty"`
+	// Medium: The medium quality image for this resource.
+	Medium *Thumbnail `json:"medium,omitempty"`
+	// Standard: The standard quality image for this resource.
+	Standard *Thumbnail `json:"standard,omitempty"`
+	// ForceSendFields is a list of field names (e.g. "Default") to unconditionally
+	// include in API requests. By default, fields with empty or default values are
+	// omitted from API requests. See
+	// https://pkg.go.dev/google.golang.org/api#hdr-ForceSendFields for more
+	// details.
+	ForceSendFields []string `json:"-"`
+	// NullFields is a list of field names (e.g. "Default") to include in API
+	// requests with the JSON null value. By default, fields with empty values are
+	// omitted from API requests. See
+	// https://pkg.go.dev/google.golang.org/api#hdr-NullFields for more details.
+	NullFields []string `json:"-"`
+}
+
+// Thumbnail: A thumbnail is an image representing a YouTube resource.
+type Thumbnail struct {
+	// Height: (Optional) Height of the thumbnail image.
+	Height int64 `json:"height,omitempty"`
+	// Url: The thumbnail image's URL.
+	Url string `json:"url,omitempty"`
+	// Width: (Optional) Width of the thumbnail image.
+	Width int64 `json:"width,omitempty"`
+	// ForceSendFields is a list of field names (e.g. "Height") to unconditionally
+	// include in API requests. By default, fields with empty or default values are
+	// omitted from API requests. See
+	// https://pkg.go.dev/google.golang.org/api#hdr-ForceSendFields for more
+	// details.
+	ForceSendFields []string `json:"-"`
+	// NullFields is a list of field names (e.g. "Height") to include in API
+	// requests with the JSON null value. By default, fields with empty values are
+	// omitted from API requests. See
+	// https://pkg.go.dev/google.golang.org/api#hdr-NullFields for more details.
+	NullFields []string `json:"-"`
+}

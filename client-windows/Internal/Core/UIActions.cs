@@ -28,33 +28,9 @@ namespace client.Internal.Core
             this._main.FrameIndex.Navigate(new System.Uri(content_uri, UriKind.Absolute));
         }
 
-        public void LoaderVisibilityVisible()
-        {
-            if (this._main.FrameIndex.Content is MainControl mainControl)
-            {
-                if (mainControl.FrameContent.Content is UserControl userControl)
-                {
-                    if (userControl.FindName("Loader") is SkeletonLoader skeletonLoader)
-                    {
-                        skeletonLoader.Visibility = Visibility.Visible;
-                    }
-                }
-            }
-        }
+        public void LoaderVisibilityVisible() => this._main.Loader.Visibility = Visibility.Visible;
 
-        public void LoaderVisibilityCollapsed()
-        {
-            if (this._main.FrameIndex.Content is MainControl mainControl)
-            {
-                if (mainControl.FrameContent.Content is UserControl userControl)
-                {
-                    if (userControl.FindName("Loader") is SkeletonLoader skeletonLoader)
-                    {
-                        skeletonLoader.Visibility = Visibility.Collapsed;
-                    }
-                }
-            }
-        }
+        public void LoaderVisibilityCollapsed() => this._main.Loader.Visibility = Visibility.Collapsed;
     }
 
     public class RelayCommand : ICommand

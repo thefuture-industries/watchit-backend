@@ -1,12 +1,12 @@
-﻿using client.API;
-using client.Internal.Core;
+﻿using client.Internal.Core;
+using client.Internal.Interfaces;
+using client.Internal.Services;
 using client.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace client.ViewModel
 {
@@ -18,9 +18,9 @@ namespace client.ViewModel
         private readonly UIActions _action;
 
         /// <summary>
-        /// Сервис для работы с фильмами
+        /// Сервис для работы с рекомендациями
         /// </summary>
-        private readonly MovieService _movieService;
+        private readonly IRecommendationService _recommendationService;
 
         /// <summary>
         /// Хранение фильмов
@@ -42,7 +42,7 @@ namespace client.ViewModel
         public MovieMV()
         {
             this._action = new UIActions(Application.Current.MainWindow as MainWindow);
-            this._movieService = new MovieService();
+            this._recommendationService = new RecommendationService();
 
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -51,7 +51,7 @@ namespace client.ViewModel
 
             Task.Run(async () =>
             {
-                var movies = await this._movieService.Get();
+                var movies = await this._recommendationService.Get();
                 Movies = new ObservableCollection<MovieModel>();
 
                 Application.Current.Dispatcher.Invoke(() =>

@@ -46,9 +46,17 @@ func (h Handler) handleGetStatistic(w http.ResponseWriter, r *http.Request) {
 	// }
 }
 
-// --------------------------------
-// Получение мониторинга приложения
-// --------------------------------
+// @Summary Monitoring app
+// @Tags admin
+// @Description Getting application monitoring - errors, average response time of the server and database
+// @ID admin-monitoring
+// @Accept json
+// @Produce json
+// @Param key query string true "The key to access monitoring data"
+// @Success 200 {object} types.MonitoringResponse
+// @Failure 403 {object} types.ErrorResponse "invalid key"
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /monitoring [get]
 func (h Handler) handleGetMonitoring(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	key := query.Get("key")

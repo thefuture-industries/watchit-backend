@@ -34,10 +34,16 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/favourites", h.handleFavouriteDelete).Methods("DELETE")
 }
 
-// --------------------------------
-// --------------------------------
-// Созранения избранного
-// --------------------------------
+// @Summary Adding Favorites
+// @Tags favourite
+// @Description Adding Favorites
+// @ID add-favourite
+// @Accept json
+// @Produce json
+// @Param DTO body types.FavouriteAddPayload true "Favorites data"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} types.ErrorResponse "Bad Request"
+// @Router /favourites [post]
 func (h Handler) handleFavouriteAdd(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
 	limiter := utils.DDosPropperty()
@@ -83,10 +89,17 @@ func (h Handler) handleFavouriteAdd(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, map[string]string{"message": "Favourite added successfully"})
 }
 
-// --------------------------------
-// --------------------------------
-// Получение избранных фильмов пользователя
-// --------------------------------
+// @Summary User Favourites
+// @Tags favourite
+// @Description Getting User Favourites
+// @ID uuid-favourite
+// @Accept json
+// @Produce json
+// @Param uuid path string true "User favourites by UUID"
+// @Success 200 {object} []types.Favourites
+// @Failure 400 {object} types.ErrorResponse "Bad Request"
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /favourites/{uuid} [get]
 func (h Handler) handleFavourites(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
 	limiter := utils.DDosPropperty()
@@ -108,10 +121,17 @@ func (h Handler) handleFavourites(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, favourites)
 }
 
-// ---------------------------------------
-// ---------------------------------------
-// Удаление избранных фильмов пользователя
-// ---------------------------------------
+// @Summary Delete Favourite
+// @Tags favourite
+// @Description Deleting a favorite movie
+// @ID delete-favourite
+// @Accept json
+// @Produce json
+// @Param DTO body types.FavouriteDeletePayload true "Data for deleting favourite"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} types.ErrorResponse "invalid payload"
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /favourites [delete]
 func (h Handler) handleFavouriteDelete(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
 	limiter := utils.DDosPropperty()

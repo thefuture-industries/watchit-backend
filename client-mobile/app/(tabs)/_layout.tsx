@@ -1,57 +1,69 @@
-import React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
-
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import { Tabs } from 'expo-router';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { Colors } from '@/constants/Colors';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
+  name: React.ComponentProps<typeof MaterialIcons>['name'];
   color: string;
 }) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+  return <MaterialIcons size={26} style={{ marginBottom: -3 }} {...props} />;
 }
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
-      }}>
+        tabBarStyle: {
+          backgroundColor: Colors.app.gray_background,
+          borderColor: Colors.app.border,
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
+          title: 'Home',
+          headerShown: false,
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="favourite"
+        options={{
+          title: 'Favourite',
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="favorite" color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="video"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Video',
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="video-library" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="movie"
+        options={{
+          title: 'Movie',
+          headerShown: false,
+          tabBarIcon: ({ color }) => <TabBarIcon name="movie" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="story"
+        options={{
+          title: 'Story',
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="short-text" color={color} />
+          ),
         }}
       />
     </Tabs>

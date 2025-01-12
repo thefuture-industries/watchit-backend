@@ -25,7 +25,7 @@ namespace client.Internal.Services
         /// <summary>
         /// Создание клиента
         /// </summary>
-        private readonly HttpClient _client;
+        private readonly HttpClient _httpClient;
 
         /// <summary>
         /// Подключение класса конфига
@@ -34,7 +34,7 @@ namespace client.Internal.Services
 
         public CacheQuery()
         {
-            this._client = new HttpClient();
+            this._httpClient = new HttpClient();
             this._config = new Config();
         }
 
@@ -60,7 +60,7 @@ namespace client.Internal.Services
 
             try
             {
-                var response = await this._client.GetAsync($"{this._config.ReturnConfig().SERVER_URL}{route}");
+                var response = await this._httpClient.GetAsync($"{this._config.ReturnConfig().SERVER_URL}{route}");
                 response.EnsureSuccessStatusCode();
 
                 var result = System.Text.Json.JsonSerializer.Deserialize<dynamic>(await response.Content.ReadAsStringAsync());

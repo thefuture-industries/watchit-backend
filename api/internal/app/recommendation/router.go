@@ -36,8 +36,18 @@ func (h Handler) RegisterRoutes(router *mux.Router) {
 
 var total_page int = 500
 
-// Получение рекомендация пользователя
-// -----------------------------------
+// @Summary Get recommendations
+// @Tags recommendation
+// @Description Get recommendations user by UUID
+// @ID get-recommendations
+// @Accept json
+// @Produce json
+// @Param uuid path string true "UUID user"
+// @Param page query string false "page"
+// @Success 200 {object} []types.Movie
+// @Failure 400 {object} types.ErrorResponse "Bad Request"
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /recommendations/{uuid} [get]
 func (h Handler) handleGetRecommendations(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
 	limiter := utils.DDosPropperty()
@@ -96,8 +106,17 @@ func (h Handler) handleGetRecommendations(w http.ResponseWriter, r *http.Request
 	utils.WriteJSON(w, http.StatusOK, movies)
 }
 
-// Запись рекомендаций
-// -------------------
+// @Summary Adding to recommendation
+// @Tags recommendation
+// @Description Adding to recommendation
+// @ID add-recommendations
+// @Accept json
+// @Produce json
+// @Param DTO body types.RecommendationAddPayload true "data"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} types.ErrorResponse "Bad Request"
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /recommendations [post]
 func (h Handler) handleAddRecommendations(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
 	limiter := utils.DDosPropperty()

@@ -26,62 +26,23 @@ func NewHandler(service interfaces.IUser, limiterService interfaces.ILimiter) *H
 }
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {
-	// Вход в аккаунт
-	router.HandleFunc("/user/check", h.handleCheckUser).Methods("POST")
-	// регестрация аккаунт
+	// регестрация/вход аккаунт
 	router.HandleFunc("/user/add", h.handleAddUser).Methods("POST")
 	// обновление данных аккаунт
 	router.HandleFunc("/user/update", h.handleUpdate).Methods("PUT")
 }
 
-// ----------------------
-// ----------------------
-// Проверка на наличие аккаунта
-// ----------------------
-func (h *Handler) handleCheckUser(w http.ResponseWriter, r *http.Request) {
-	// Проверка на кол-во запросов от пользователя
-	limiter := utils.DDosPropperty()
-	if limiter.Available() == 0 {
-		utils.WriteError(w, http.StatusTooManyRequests, fmt.Errorf("too many requests"))
-		return
-	}
-
-	// Получаем данные пользователя
-	var payload *types.LoginUserPayload
-
-	// Отправляем пользователю ошибку, что не все поля заполнены
-	if err := utils.ParseJSON(r, &payload); err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
-	}
-
-	// Валидация данных от пользователя
-	if err := utils.Validate.Struct(payload); err != nil {
-		errors := err.(validator.ValidationErrors)
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", errors))
-		return
-	}
-
-	// Проверка
-	u, err := h.service.CheckUser(*payload)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
-		return
-	}
-
-	if u.ID == 0 {
-		utils.WriteError(w, http.StatusForbidden, err)
-		return
-	}
-
-	data := fmt.Sprintf("%s:%s", u.IPAddress, u.CreatedAt)
-
-	utils.WriteJSON(w, http.StatusOK, data)
-}
-
-// ----------------------
-// ----------------------
-// Регестрация аккаунта
-// ----------------------
+// @Summary Adding user
+// @Tags user
+// @Description Adding user
+// @ID add-user
+// @Accept json
+// @Produce json
+// @Param DTO body types.User true "User data"
+// @Success 200 {object} types.UserResponse
+// @Failure 400 {object} types.ErrorResponse "Bad Request"
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /user/add [post]
 func (h *Handler) handleAddUser(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
 	limiter := utils.DDosPropperty()
@@ -164,10 +125,17 @@ func (h *Handler) handleAddUser(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// --------------------------------
-// --------------------------------
-// обновление данных аккаунт
-// --------------------------------
+// @Summary Updating user
+// @Tags user
+// @Description Updating user
+// @ID update-user
+// @Accept json
+// @Produce json
+// @Param DTO body types.UserUpdate true "User data"
+// @Success 200 {object} types.UserResponse
+// @Failure 400 {object} types.ErrorResponse "Bad Request"
+// @Failure 500 {object} types.ErrorResponse "Internal Server Error"
+// @Router /user/update [put]
 func (h Handler) handleUpdate(w http.ResponseWriter, r *http.Request) {
 	// Проверка на кол-во запросов от пользователя
 	limiter := utils.DDosPropperty()
