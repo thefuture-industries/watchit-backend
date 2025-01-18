@@ -289,10 +289,35 @@ func (s *Service) CreateUser(user types.User) error {
 	randomNumber := rand.Intn(9000) + 1000
 	username := fmt.Sprintf("Гость%d", randomNumber)
 
+	// Начало транзакции
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		s.monitor.TrackDBError()
+		s.monitor.TrackError(err)
+		s.logger.Error("transaction begin error",
+			zap.String("uuid", user.UUID),
+			zap.Error(err))
+
+		return fmt.Errorf("start transaction: %w", err)
+	}
+
+	// Функция отката при ошибке или панике
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			s.monitor.TrackDBError()
+			s.monitor.TrackError(fmt.Errorf("panic during transaction: %v", r))
+			s.logger.Error("transaction rolled back due to panic",
+				zap.String("uuid", user.UUID),
+				zap.Any("panic", r))
+		}
+	}()
+
 	// Запрос к БД на создания пользователя
 	queryStart := time.Now()
-	_, err := s.db.ExecContext(ctx, "insert into users (uuid, secret_word, username, username_upper, ip_address, country, regionName, zip, createdAt) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", user.UUID, user.SecretWord, username, strings.ToUpper(username), user.IPAddress, user.Country, user.RegionName, user.Zip, user.CreatedAt)
+	_, err = tx.ExecContext(ctx, "insert into users (uuid, secret_word, username, username_upper, ip_address, country, regionName, zip, createdAt) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", user.UUID, user.SecretWord, username, strings.ToUpper(username), user.IPAddress, user.Country, user.RegionName, user.Zip, user.CreatedAt)
 	if err != nil {
+		tx.Rollback()
 		// Логирование ошибки
 		s.monitor.TrackDBError()
 		s.monitor.TrackError(err)
@@ -304,8 +329,9 @@ func (s *Service) CreateUser(user types.User) error {
 	}
 
 	// Запрос к БД на создания лимитов
-	_, err = s.db.ExecContext(ctx, "insert into limiter (uuid, update_at) values (?, ?)", user.UUID, time.Now().Format("2006-01-02 15:04:05"))
+	_, err = tx.ExecContext(ctx, "insert into limiter (uuid, update_at) values (?, ?)", user.UUID, time.Now().Format("2006-01-02 15:04:05"))
 	if err != nil {
+		tx.Rollback()
 		// Логирование ошибки
 		s.monitor.TrackDBError()
 		s.monitor.TrackError(err)
@@ -314,6 +340,17 @@ func (s *Service) CreateUser(user types.User) error {
 			zap.Error(err))
 
 		return fmt.Errorf("iterate limiter: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		s.monitor.TrackDBError()
+		s.monitor.TrackError(err)
+		s.logger.Error("transaction commit error",
+			zap.String("uuid", user.UUID),
+			zap.Error(err))
+		return fmt.Errorf("commit transaction: %w", err)
 	}
 
 	// мониторинг времени запроса

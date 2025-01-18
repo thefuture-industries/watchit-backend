@@ -43,8 +43,8 @@ func (s *APIServer) Run() error {
 
 	// Swagger UI
 	router.PathPrefix("/docs/").Handler(http.StripPrefix("/docs/", http.FileServer(http.Dir("./docs"))))
-	router.HandleFunc("/api/adm", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./swagger.html")
+	router.HandleFunc("/adm/swagger", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./docs/swagger.html")
 	})
 
 	// ---------------
