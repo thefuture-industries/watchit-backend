@@ -1,0 +1,829 @@
+basePath: /api/v1
+definitions:
+  types.ErrorLog:
+    properties:
+      error:
+        type: string
+      method:
+        type: string
+      path:
+        type: string
+      timestamp:
+        type: string
+    type: object
+  types.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  types.FavouriteAddPayload:
+    properties:
+      movieId:
+        type: integer
+      moviePoster:
+        type: string
+      uuid:
+        type: string
+    required:
+    - movieId
+    - moviePoster
+    - uuid
+    type: object
+  types.FavouriteDeletePayload:
+    properties:
+      movieId:
+        type: integer
+      uuid:
+        type: string
+    required:
+    - movieId
+    - uuid
+    type: object
+  types.Favourites:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      movieId:
+        type: integer
+      moviePoster:
+        type: string
+      uuid:
+        type: string
+    type: object
+  types.MonitoringResponse:
+    properties:
+      database:
+        properties:
+          avg_latency_ms:
+            type: number
+          errors:
+            type: integer
+          total_queries:
+            type: integer
+        type: object
+      last_errors:
+        items:
+          $ref: '#/definitions/types.ErrorLog'
+        type: array
+      requests:
+        properties:
+          avg_latency_ms:
+            type: number
+          errors:
+            type: integer
+          success_rate:
+            type: number
+          total:
+            type: integer
+        type: object
+    type: object
+  types.Movie:
+    properties:
+      adult:
+        type: boolean
+      backdrop_path:
+        type: string
+      genre_ids:
+        items:
+          type: integer
+        type: array
+      id:
+        type: integer
+      original_language:
+        type: string
+      original_title:
+        type: string
+      overview:
+        type: string
+      popularity:
+        type: number
+      poster_path:
+        type: string
+      release_date:
+        type: string
+      title:
+        type: string
+      video:
+        type: boolean
+      vote_average:
+        type: number
+      vote_count:
+        type: integer
+    type: object
+  types.RecommendationAddPayload:
+    properties:
+      genre:
+        type: string
+      title:
+        type: string
+      uuid:
+        type: string
+    required:
+    - genre
+    - title
+    - uuid
+    type: object
+  types.ResourceId:
+    properties:
+      channelId:
+        description: |-
+          ChannelId: The ID that YouTube uses to uniquely identify the referred
+          resource, if that resource is a channel. This property is only present if
+          the resourceId.kind value is youtube#channel.
+        type: string
+      kind:
+        description: 'Kind: The type of the API resource.'
+        type: string
+      playlistId:
+        description: |-
+          PlaylistId: The ID that YouTube uses to uniquely identify the referred
+          resource, if that resource is a playlist. This property is only present if
+          the resourceId.kind value is youtube#playlist.
+        type: string
+      videoId:
+        description: |-
+          VideoId: The ID that YouTube uses to uniquely identify the referred
+          resource, if that resource is a video. This property is only present if the
+          resourceId.kind value is youtube#video.
+        type: string
+    type: object
+  types.SearchResult:
+    properties:
+      etag:
+        description: 'Etag: Etag of this resource.'
+        type: string
+      id:
+        allOf:
+        - $ref: '#/definitions/types.ResourceId'
+        description: |-
+          Id: The id object contains information that can be used to uniquely identify
+          the resource that matches the search request.
+      kind:
+        description: |-
+          Kind: Identifies what kind of resource this is. Value: the fixed string
+          "youtube#searchResult".
+        type: string
+      snippet:
+        allOf:
+        - $ref: '#/definitions/types.SearchResultSnippet'
+        description: |-
+          Snippet: The snippet object contains basic details about a search result,
+          such as its title or description. For example, if the search result is a
+          video, then the title will be the video's title and the description will be
+          the video's description.
+    type: object
+  types.SearchResultSnippet:
+    properties:
+      channelId:
+        description: |-
+          ChannelId: The value that YouTube uses to uniquely identify the channel that
+          published the resource that the search result identifies.
+        type: string
+      channelTitle:
+        description: |-
+          ChannelTitle: The title of the channel that published the resource that the
+          search result identifies.
+        type: string
+      description:
+        description: 'Description: A description of the search result.'
+        type: string
+      liveBroadcastContent:
+        description: |-
+          LiveBroadcastContent: It indicates if the resource (video or channel) has
+          upcoming/active live broadcast content. Or it's "none" if there is not any
+          upcoming/active live broadcasts.
+
+          Possible values:
+            "none"
+            "upcoming" - The live broadcast is upcoming.
+            "live" - The live broadcast is active.
+            "completed" - The live broadcast has been completed.
+        type: string
+      publishedAt:
+        description: |-
+          PublishedAt: The creation date and time of the resource that the search
+          result identifies.
+        type: string
+      thumbnails:
+        allOf:
+        - $ref: '#/definitions/types.ThumbnailDetails'
+        description: |-
+          Thumbnails: A map of thumbnail images associated with the search result. For
+          each object in the map, the key is the name of the thumbnail image, and the
+          value is an object that contains other information about the thumbnail.
+      title:
+        description: 'Title: The title of the search result.'
+        type: string
+    type: object
+  types.TextMoviePayload:
+    properties:
+      lege:
+        type: string
+      text:
+        type: string
+      uuid:
+        type: string
+    required:
+    - lege
+    - text
+    - uuid
+    type: object
+  types.Thumbnail:
+    properties:
+      height:
+        description: 'Height: (Optional) Height of the thumbnail image.'
+        type: integer
+      url:
+        description: 'Url: The thumbnail image''s URL.'
+        type: string
+      width:
+        description: 'Width: (Optional) Width of the thumbnail image.'
+        type: integer
+    type: object
+  types.ThumbnailDetails:
+    properties:
+      default:
+        allOf:
+        - $ref: '#/definitions/types.Thumbnail'
+        description: 'Default: The default image for this resource.'
+      high:
+        allOf:
+        - $ref: '#/definitions/types.Thumbnail'
+        description: 'High: The high quality image for this resource.'
+      maxres:
+        allOf:
+        - $ref: '#/definitions/types.Thumbnail'
+        description: 'Maxres: The maximum resolution quality image for this resource.'
+      medium:
+        allOf:
+        - $ref: '#/definitions/types.Thumbnail'
+        description: 'Medium: The medium quality image for this resource.'
+      standard:
+        allOf:
+        - $ref: '#/definitions/types.Thumbnail'
+        description: 'Standard: The standard quality image for this resource.'
+    type: object
+  types.User:
+    properties:
+      country:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      email_upper:
+        type: string
+      id:
+        type: integer
+      ip_address:
+        type: string
+      regionName:
+        type: string
+      secret_word:
+        type: string
+      username:
+        type: string
+      username_upper:
+        type: string
+      uuid:
+        type: string
+      zip:
+        type: string
+    type: object
+  types.UserResponse:
+    properties:
+      email:
+        type: string
+      username:
+        type: string
+      uuid:
+        type: string
+    type: object
+  types.UserUpdate:
+    properties:
+      email:
+        type: string
+      secret_word:
+        type: string
+      secret_word_old:
+        type: string
+      username:
+        type: string
+      uuid:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API service for working with the flicksfi application for fast movie
+    and video search. tg [https://t.me/flicksfi]
+  title: flicksfi API
+  version: 0.1.2
+paths:
+  /favourites:
+    delete:
+      consumes:
+      - application/json
+      description: Deleting a favorite movie
+      operationId: delete-favourite
+      parameters:
+      - description: Data for deleting favourite
+        in: body
+        name: DTO
+        required: true
+        schema:
+          $ref: '#/definitions/types.FavouriteDeletePayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: invalid payload
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: Delete Favourite
+      tags:
+      - favourite
+    post:
+      consumes:
+      - application/json
+      description: Adding Favorites
+      operationId: add-favourite
+      parameters:
+      - description: Favorites data
+        in: body
+        name: DTO
+        required: true
+        schema:
+          $ref: '#/definitions/types.FavouriteAddPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: Adding Favorites
+      tags:
+      - favourite
+  /favourites/{uuid}:
+    get:
+      consumes:
+      - application/json
+      description: Getting User Favourites
+      operationId: uuid-favourite
+      parameters:
+      - description: User favourites by UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Favourites'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: User Favourites
+      tags:
+      - favourite
+  /image/w500/{img}:
+    get:
+      description: Getting a movie poster
+      operationId: movie-poster
+      parameters:
+      - description: Movie poster
+        in: path
+        name: img
+        required: true
+        type: string
+      produces:
+      - image/jpeg
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: movie poster
+      tags:
+      - movie
+  /monitoring:
+    get:
+      consumes:
+      - application/json
+      description: Getting application monitoring - errors, average response time
+        of the server and database
+      operationId: admin-monitoring
+      parameters:
+      - description: The key to access monitoring data
+        in: query
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.MonitoringResponse'
+        "403":
+          description: invalid key
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: Monitoring app
+      tags:
+      - admin
+  /movie/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Getting movie details by ID
+      operationId: movie-details-id
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Movie'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: Movie Details
+      tags:
+      - movie
+  /movies:
+    get:
+      consumes:
+      - application/json
+      description: Getting 10 movies based on different criteria
+      operationId: movie-criteria-10
+      parameters:
+      - description: Movie genre
+        in: query
+        name: genre_id
+        type: string
+      - description: The year of the film's release
+        in: query
+        name: date
+        type: string
+      - description: Movie Search
+        in: query
+        name: s
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: movies by criteria
+      tags:
+      - movie
+  /movies/popular:
+    get:
+      consumes:
+      - application/json
+      description: Getting 20 popular movies
+      operationId: movie-popular-20
+      parameters:
+      - description: Movie Page
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: Popular movies
+      tags:
+      - movie
+  /movies/similar:
+    get:
+      consumes:
+      - application/json
+      description: Getting similar movies based on data <100
+      operationId: movie-similar-<100
+      parameters:
+      - description: The genre of the current movie
+        in: query
+        name: genre_id
+        type: string
+      - description: The title of the current movie
+        in: query
+        name: title
+        type: string
+      - description: Description of the current movie
+        in: query
+        name: overview
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: Related Movies
+      tags:
+      - movie
+  /recommendations:
+    post:
+      consumes:
+      - application/json
+      description: Adding to recommendation
+      operationId: add-recommendations
+      parameters:
+      - description: data
+        in: body
+        name: DTO
+        required: true
+        schema:
+          $ref: '#/definitions/types.RecommendationAddPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: Adding to recommendation
+      tags:
+      - recommendation
+  /recommendations/{uuid}:
+    get:
+      consumes:
+      - application/json
+      description: Get recommendations user by UUID
+      operationId: get-recommendations
+      parameters:
+      - description: UUID user
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: Get recommendations
+      tags:
+      - recommendation
+  /text/movies:
+    post:
+      consumes:
+      - application/json
+      description: Getting 100 movie's based on a user's story
+      operationId: movie-plot-100
+      parameters:
+      - description: Data for movies plot
+        in: body
+        name: DTO
+        required: true
+        schema:
+          $ref: '#/definitions/types.TextMoviePayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "400":
+          description: invalid payload
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: A film based on the plot
+      tags:
+      - movie
+  /user/add:
+    post:
+      consumes:
+      - application/json
+      description: Adding user
+      operationId: add-user
+      parameters:
+      - description: User data
+        in: body
+        name: DTO
+        required: true
+        schema:
+          $ref: '#/definitions/types.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: Adding user
+      tags:
+      - user
+  /user/update:
+    put:
+      consumes:
+      - application/json
+      description: Updating user
+      operationId: update-user
+      parameters:
+      - description: User data
+        in: body
+        name: DTO
+        required: true
+        schema:
+          $ref: '#/definitions/types.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: Updating user
+      tags:
+      - user
+  /youtube/video:
+    get:
+      consumes:
+      - application/json
+      description: Getting videos from YouTube is a maximum of 20
+      operationId: video-youtube-20
+      parameters:
+      - description: Video category
+        in: query
+        name: categoryId
+        type: string
+      - description: Video Search
+        in: query
+        name: s
+        type: string
+      - description: Video year
+        in: query
+        name: "y"
+        type: string
+      - description: Video channel
+        in: query
+        name: ch
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.SearchResult'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: 20 videos from YouTube
+      tags:
+      - video
+  /youtube/video/popular:
+    get:
+      consumes:
+      - application/json
+      description: Getting 10 popular videos from YouTube
+      operationId: video-popular-youtube-10
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.SearchResult'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.ErrorResponse'
+      summary: 10 popular YouTube videos
+      tags:
+      - video
+swagger: "2.0"
