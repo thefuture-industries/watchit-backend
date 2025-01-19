@@ -1,32 +1,22 @@
------ENGLISH VERSION-----
-
-# The change log
-
-All notable changes in this project will be documented here.
-
 ## [v0.1.2] -- 18/01/2025
 
 ### Added
 
-1. Added a transaction during user registration.
-2. Added ssl protocol (security/crt;csr;key)
+- **transaction:** Added a transaction during user registration. ([b8c8218](https://github.com/Artymiik/flicksfi/commit/b8c821843b638d81c8fb7dae042280dbf7372a3a)), closes [#8](https://github.com/Artymiik/flicksfi/issues/8)
+
+- **security:** Added ssl protocol (security/crt;csr;key) ([cd036e0](https://github.com/Artymiik/flicksfi/commit/cd036e09dfdc0e17c90c660bed3cc8ae80856fec))
 
 ### Fixed
 
 ### Changed
 
------RUSSIAN VERSION-----
-
-# Журнал изменений
-
-Все заметные изменения в этом проекте будут документированы здесь.
-
 ## [v0.1.2] -- 18/01/2025
 
 ### Добавлено
 
-1. Добавлена транзакция при регистрации пользователя.
-2. Добавлен протокод ssl (security/crt;csr;key)
+- **транзакции:** Добавлена транзакция при регистрации пользователя. ([b8c8218](https://github.com/Artymiik/flicksfi/commit/b8c821843b638d81c8fb7dae042280dbf7372a3a)), closes [#8](https://github.com/Artymiik/flicksfi/issues/8)
+
+- **безопастность:** Добавлен протокод ssl (security/crt;csr;key) ([cd036e0](https://github.com/Artymiik/flicksfi/commit/cd036e09dfdc0e17c90c660bed3cc8ae80856fec))
 
 ### Исправлено
 

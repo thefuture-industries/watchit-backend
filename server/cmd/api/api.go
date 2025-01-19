@@ -10,7 +10,7 @@ import (
 	"flicksfi/internal/app/limiter"
 	"flicksfi/internal/app/recommendation"
 	"flicksfi/internal/app/user"
-	logging "flicksfi/pkg/logger"
+	logging "flicksfi/packages/logger"
 	"log"
 	"net/http"
 

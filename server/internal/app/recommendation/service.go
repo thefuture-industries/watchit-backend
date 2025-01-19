@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"flicksfi/cmd/configuration"
 	"flicksfi/internal/types"
-	"flicksfi/pkg/movie"
+	"flicksfi/packages/movie"
 	"fmt"
 	"sort"
 	"strconv"

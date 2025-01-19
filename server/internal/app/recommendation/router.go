@@ -4,7 +4,7 @@ import (
 	"flicksfi/internal/interfaces"
 	"flicksfi/internal/types"
 	"flicksfi/internal/utils"
-	"flicksfi/pkg/movie"
+	"flicksfi/packages/movie"
 	"fmt"
 	"math/rand"
 	"net/http"

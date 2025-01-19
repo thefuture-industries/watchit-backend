@@ -4,7 +4,7 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"flicksfi/internal/types"
-	"flicksfi/pkg"
+	"flicksfi/packages"
 	"fmt"
 	"io"
 	"os"
