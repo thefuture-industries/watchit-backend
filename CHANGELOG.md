@@ -1,4 +1,4 @@
-# [v0.1.2] -- 18/01/2025
+## [v0.1.2](https://github.com/Artymiik/flicksfi/commit/b8c821843b638d81c8fb7dae042280dbf7372a3a) (18/01/2025)
 
 ### Added
 
@@ -10,7 +10,7 @@
 
 ### Changed
 
-# [v0.1.2] -- 18/01/2025
+## [v0.1.2](https://github.com/Artymiik/flicksfi/commit/b8c821843b638d81c8fb7dae042280dbf7372a3a) (18/01/2025)
 
 ### Добавлено
 
