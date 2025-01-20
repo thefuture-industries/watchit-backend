@@ -79,26 +79,50 @@
 				/>
 
 				<!-- Выбор метода (GET, POST, PUT, DELETE) -->
-				<label
-					for="method-select"
-					class="block mb-2 mt-5 text-sm font-medium dark:text-gray-300"
-					>Метод</label
-				>
-				<select
-					id="method-select"
-					name="method"
-					onchange="toggleFileInput()"
-					class="text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-					required
-				>
-					<option value="" disabled selected>
-						Выберите метод...
-					</option>
-					<option value="GET">GET</option>
-					<option value="POST">POST</option>
-					<option value="PUT">PUT</option>
-					<option value="DELETE">DELETE</option>
-				</select>
+				<div class="flex items-center justify-between">
+					<div style="min-width: 30vw">
+						<label
+							for="method-select"
+							class="block mb-2 mt-5 text-sm font-medium dark:text-gray-300"
+							>Метод</label
+						>
+						<select
+							id="method-select"
+							name="method"
+							onchange="toggleFileInput()"
+							class="text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+							required
+						>
+							<option value="" disabled selected>
+								Выберите метод...
+							</option>
+							<option value="GET">GET</option>
+							<option value="POST">POST</option>
+							<option value="PUT">PUT</option>
+							<option value="DELETE">DELETE</option>
+						</select>
+					</div>
+					<div style="min-width: 30vw">
+						<label
+							for="method-select"
+							class="block mb-2 mt-5 text-sm font-medium dark:text-gray-300"
+							>Протокол</label
+						>
+						<select
+							id="method-select"
+							name="method"
+							onchange="toggleFileInput()"
+							class="text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+							required
+						>
+							<option value="" disabled selected>
+								Выберите метод...
+							</option>
+							<option value="http://">HTTP</option>
+							<option value="https://">HTTPS</option>
+						</select>
+					</div>
+				</div>
 
 				<!-- Загрузка файла (если выбран метод POST) -->
 				<div class="file-input" id="file-input">
