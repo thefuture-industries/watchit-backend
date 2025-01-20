@@ -78,7 +78,7 @@ func (s *Service) GetUserById(id int) (*types.User, error) {
 
 	// Запрос к БД на вывод пользователя по ID
 	queryStart := time.Now()
-	row := s.db.QueryRowContext(ctx, "select * from users where id = ? limit 1", id)
+	row := s.db.QueryRowContext(ctx, "select * from users where id = $1 limit 1", id)
 
 	// читаем из результата
 	u := new(types.User)
@@ -120,7 +120,7 @@ func (s *Service) GetUserByIP(ip string) (*types.User, error) {
 
 	// Запрос к БД на вывод пользователя по ID
 	queryStart := time.Now()
-	row := s.db.QueryRowContext(ctx, "select * from users where ip_address = ? limit 1", ip)
+	row := s.db.QueryRowContext(ctx, "select * from users where ip_address = $1 limit 1", ip)
 
 	// читаем из результата
 	u := new(types.User)
@@ -161,7 +161,7 @@ func (s *Service) GetUserBySecretWord(word string) (*types.User, error) {
 
 	// Запрос к БД на вывод пользователя по ID
 	queryStart := time.Now()
-	row := s.db.QueryRowContext(ctx, "select * from users where secret_word = ? limit 1", word)
+	row := s.db.QueryRowContext(ctx, "select * from users where secret_word = $1 limit 1", word)
 
 	// читаем из результата
 	u := new(types.User)
@@ -203,7 +203,7 @@ func (s *Service) GetUserByUUID(uuid string) (*types.User, error) {
 
 	// Запрос к БД на вывод пользователя по ID
 	queryStart := time.Now()
-	row := s.db.QueryRowContext(ctx, "select * from users where uuid = ?", uuid)
+	row := s.db.QueryRowContext(ctx, "select * from users where uuid = $1", uuid)
 
 	// читаем из результата
 	u := new(types.User)
@@ -245,7 +245,7 @@ func (s *Service) GetUserByEmail(email string) (*types.User, error) {
 
 	// Запрос к БД на вывод пользователя по Email
 	queryStart := time.Now()
-	row := s.db.QueryRowContext(ctx, "select * from users where email = ?", email)
+	row := s.db.QueryRowContext(ctx, "select * from users where email = $1", email)
 
 	// читаем из результата
 	u := new(types.User)
@@ -315,7 +315,7 @@ func (s *Service) CreateUser(user types.User) error {
 
 	// Запрос к БД на создания пользователя
 	queryStart := time.Now()
-	_, err = tx.ExecContext(ctx, "insert into users (uuid, secret_word, username, username_upper, ip_address, country, regionName, zip, createdAt) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", user.UUID, user.SecretWord, username, strings.ToUpper(username), user.IPAddress, user.Country, user.RegionName, user.Zip, user.CreatedAt)
+	_, err = tx.ExecContext(ctx, "insert into users (uuid, secret_word, username, username_upper, ip_address, country, regionName, zip, createdAt) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)", user.UUID, user.SecretWord, username, strings.ToUpper(username), user.IPAddress, user.Country, user.RegionName, user.Zip, user.CreatedAt)
 	if err != nil {
 		tx.Rollback()
 		// Логирование ошибки
@@ -329,7 +329,7 @@ func (s *Service) CreateUser(user types.User) error {
 	}
 
 	// Запрос к БД на создания лимитов
-	_, err = tx.ExecContext(ctx, "insert into limiter (uuid, update_at) values (?, ?)", user.UUID, time.Now().Format("2006-01-02 15:04:05"))
+	_, err = tx.ExecContext(ctx, "insert into limiter (uuid, update_at) values ($1, $2)", user.UUID, time.Now().Format("2006-01-02 15:04:05"))
 	if err != nil {
 		tx.Rollback()
 		// Логирование ошибки
@@ -367,7 +367,7 @@ func (s *Service) CheckUser(user types.LoginUserPayload) (*types.User, error) {
 	defer cancel()
 
 	// Запрос к БД на вывод пользователя по ID
-	row := s.db.QueryRowContext(ctx, "select * from users where uuid = ?", user.UUID)
+	row := s.db.QueryRowContext(ctx, "select * from users where uuid = $1", user.UUID)
 	u := new(types.User)
 
 	// читаем из результата
@@ -399,19 +399,26 @@ func (s *Service) UserUpdate(user types.UserUpdate) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
 	defer cancel()
 
-	preparing_query := "update users set "
+	queryBuilder := strings.Builder{}
+	queryBuilder.WriteString("update users set ")
+	// preparing_query := "update users set "
 	params := []interface{}{}
+	paramIndex := 1
 
 	// Обновление username
 	if user.Username != nil && *user.Username != "" {
-		preparing_query += "username = ?, username_upper = ?, "
+		queryBuilder.WriteString(fmt.Sprintf("username = $%d, username_upper = $%d, ", paramIndex, paramIndex+1))
+		// preparing_query += "username = $1, username_upper = $2, "
 		params = append(params, *user.Username, strings.ToUpper(*user.Username))
+		paramIndex += 2
 	}
 
 	// Обновление email
 	if user.Email != nil && *user.Email != "" {
-		preparing_query += "email = ?, email_upper = ?, "
+		queryBuilder.WriteString(fmt.Sprintf("email = $%d, email_upper = $%d, ", paramIndex, paramIndex+1))
+		// preparing_query += "email = $3, email_upper = $4, "
 		params = append(params, *user.Email, strings.ToUpper(*user.Email))
+		paramIndex += 2
 	}
 
 	// Обновление secret_word
@@ -447,17 +454,25 @@ func (s *Service) UserUpdate(user types.UserUpdate) error {
 			return fmt.Errorf("failed to encrypt secret word: %w", err)
 		}
 
-		preparing_query += "secret_word = ?, "
+		queryBuilder.WriteString(fmt.Sprintf("secret_word = $%d, ", paramIndex))
+		// preparing_query += "secret_word = ?, "
 		params = append(params, encrypted_secret_word)
+		paramIndex++
 	}
 
 	// Удаляем последнюю запятую и пробел
-	preparing_query = preparing_query[:len(preparing_query)-2]
-	preparing_query += " where uuid = ?"
+	// preparing_query = preparing_query[:len(preparing_query)-2]
+	// preparing_query += " where uuid = ?"
+	query := queryBuilder.String()
+	if query[len(query)-1:] == ", " {
+		query = query[:len(query)-2]
+	}
+
+	query += fmt.Sprintf(" where uuid = $%d", paramIndex)
 	params = append(params, user.UUID)
 
 	queryStart := time.Now()
-	_, err := s.db.ExecContext(ctx, preparing_query, params...)
+	_, err := s.db.ExecContext(ctx, query, params...)
 	if err != nil {
 		s.monitor.TrackDBError()
 		s.monitor.TrackError(err)

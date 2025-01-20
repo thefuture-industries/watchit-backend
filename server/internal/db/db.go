@@ -5,13 +5,13 @@ import (
 	"log"
 	"time"
 
-	"github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 )
 
 // Настройка и создание БД
 // -----------------------
-func NewMySQLStorage(cfg mysql.Config) (*sql.DB, error) {
-	db, err := sql.Open("mysql", cfg.FormatDSN()) // cfg.FormatDSN()
+func NewPostgreSQLStorage(cfg string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", cfg)
 	if err != nil {
 		log.Fatal(err)
 	}

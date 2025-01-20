@@ -39,7 +39,7 @@ func (s *Service) CheckFavourites(uuid string, movieID int) error {
 
 	// Запрос к БД
 	queryStart := time.Now()
-	row := s.db.QueryRowContext(ctx, "select * from favourites where uuid = ? and movieId = ?", uuid, movieID)
+	row := s.db.QueryRowContext(ctx, "select * from favourites where uuid = $1 and movieId = $2", uuid, movieID)
 	favourite := new(types.Favourites)
 
 	// читаем из результата
@@ -80,7 +80,7 @@ func (s *Service) AddFavourite(favourite types.FavouriteAddPayload) error {
 
 	// Запрос к БД на создания пользователя
 	queryStart := time.Now()
-	_, err := s.db.ExecContext(ctx, "insert into favourites (uuid, movieId, moviePoster, createdAt) values (?, ?, ?, ?)", favourite.UUID, favourite.MovieID, favourite.MoviePoster, time.Now().Format("2006-01-02 15:04:05"))
+	_, err := s.db.ExecContext(ctx, "insert into favourites (uuid, movieId, moviePoster, createdAt) values ($1, $2, $3, $4)", favourite.UUID, favourite.MovieID, favourite.MoviePoster, time.Now().Format("2006-01-02 15:04:05"))
 
 	// Обработка ошибки
 	if err != nil {
@@ -113,7 +113,7 @@ func (s *Service) Favourites(uuid string) ([]types.Favourites, error) {
 
 	// Запрос к БД
 	queryStart := time.Now()
-	rows, err := s.db.QueryContext(ctx, "select * from favourites where uuid = ?", uuid)
+	rows, err := s.db.QueryContext(ctx, "select * from favourites where uuid = $1", uuid)
 	if err != nil {
 		// Логирование ошибки
 		s.monitor.TrackDBError()
@@ -166,7 +166,7 @@ func (s *Service) DeleteFavourite(payload types.FavouriteDeletePayload) error {
 
 	// Запрос к БД
 	queryStart := time.Now()
-	_, err := s.db.ExecContext(ctx, "delete from favourites where uuid = ? and movieId = ?", payload.UUID, payload.MovieID)
+	_, err := s.db.ExecContext(ctx, "delete from favourites where uuid = $1 and movieId = $2", payload.UUID, payload.MovieID)
 	if err != nil {
 		// Логирование ошибки
 		s.monitor.TrackDBError()

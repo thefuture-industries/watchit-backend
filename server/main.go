@@ -7,15 +7,14 @@ import (
 	"flicksfi/cmd/configuration"
 	"flicksfi/internal/config"
 	"flicksfi/internal/db"
-	"log"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/go-sql-driver/mysql"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 )
@@ -38,15 +37,7 @@ func main() {
 	// ----------------------------
 	// Найстрока и подключение к бд
 	// ----------------------------
-	db, err := db.NewMySQLStorage(mysql.Config{
-		User:                 config.Envs.DBUser,
-		Passwd:               config.Envs.DBPassword,
-		Addr:                 config.Envs.DBAddress,
-		DBName:               config.Envs.DBName,
-		Net:                  "tcp",
-		AllowNativePasswords: true,
-		ParseTime:            true,
-	})
+	db, err := db.NewPostgreSQLStorage("user=" + config.Envs.DBUser + " password=" + config.Envs.DBPassword + " host=" + config.Envs.DBHost + " dbname=" + config.Envs.DBName + " sslmode=disable")
 
 	// Проверка ошибки БД
 	if err != nil {

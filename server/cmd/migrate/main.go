@@ -7,10 +7,9 @@ import (
 
 	"flicksfi/internal/db"
 
-	mysqlCfg "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 
-	"github.com/golang-migrate/migrate/v4/database/mysql"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
@@ -21,15 +20,7 @@ func main() {
 	// ----------------------
 	// Найстрока и подключение к бд
 	// ----------------------
-	db, err := db.NewMySQLStorage(mysqlCfg.Config{
-		User:                 config.Envs.DBUser,
-		Passwd:               config.Envs.DBPassword,
-		Addr:                 config.Envs.DBAddress,
-		DBName:               config.Envs.DBName,
-		Net:                  "tcp",
-		AllowNativePasswords: true,
-		ParseTime:            true,
-	})
+	db, err := db.NewPostgreSQLStorage("user=" + config.Envs.DBUser + " password=" + config.Envs.DBPassword + " host=" + config.Envs.DBHost + " dbname=" + config.Envs.DBName + " sslmode=disable")
 
 	// Вывод ошибки с БД
 	if err != nil {
@@ -37,7 +28,7 @@ func main() {
 	}
 
 	// Драйвер для миграции с MySQL
-	driver, err := mysql.WithInstance(db, &mysql.Config{})
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}

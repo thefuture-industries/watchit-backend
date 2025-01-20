@@ -15,6 +15,7 @@ type Config struct {
 	DBUser     string
 	DBPassword string
 	DBAddress  string
+	DBHost     string
 	DBName     string
 
 	// jwt
@@ -53,10 +54,11 @@ func initConfig() Config {
 		// database
 		PublicHost: getEnv("PUBLIC_HOST", "http://localhost"),
 		Port:       getEnv("PORT", "8080"),
-		DBUser:     getEnv("DB_USER", "root"), // DBU_USER
+		DBUser:     getEnv("DB_USER", "postgres"), // DBU_USER
 		DBPassword: getEnv("DB_PASSWORD", "password"),
-		DBAddress:  fmt.Sprintf("%s:%s", getEnv("DB_HOST", "127.0.0.1"), getEnv("DB_PORT", "3306")),
-		DBName:     getEnv("DB_NAME", "flick_finder"),
+		DBAddress:  fmt.Sprintf("%s:%s", getEnv("DB_HOST", "localhost"), getEnv("DB_PORT", "5432")),
+		DBHost:     getEnv("DB_HOST", "localhost"),
+		DBName:     getEnv("DB_NAME", "flicksfi"),
 
 		// jwt
 		JWTExpirationInSeconds: getEnvAsInt("JWT_EXP", 3600*24*7),

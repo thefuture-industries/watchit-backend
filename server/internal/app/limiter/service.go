@@ -40,7 +40,7 @@ func (s *Service) GetLimits(uuid string) (*types.Limiter, error) {
 
 	// запрос к БД
 	queryStart := time.Now()
-	row := s.db.QueryRowContext(ctx, "select * from limiter where uuid = ? limit 1", uuid)
+	row := s.db.QueryRowContext(ctx, "select * from limiter where uuid = $1 limit 1", uuid)
 
 	// читаем из результата
 	limiter := new(types.Limiter)
@@ -80,7 +80,7 @@ func (s *Service) ReducingLimitText(uuid string) error {
 
 	// запрос к БД
 	queryStart := time.Now()
-	_, err := s.db.ExecContext(ctx, "update limiter set text_limit = text_limit - 1 set update_at = ? where uuid = ?", time.Now().Format("2006-01-02 15:04:05"), uuid)
+	_, err := s.db.ExecContext(ctx, "update limiter set text_limit = text_limit - 1 set update_at = $1 where uuid = $2", time.Now().Format("2006-01-02 15:04:05"), uuid)
 	if err != nil {
 		// Логирование ошибки
 		s.monitor.TrackDBError()
@@ -113,7 +113,7 @@ func (s *Service) UpdateLimits(uuid string) error {
 	// Получение лимитов
 	var status string
 	queryStart := time.Now()
-	err := s.db.QueryRowContext(ctx, "select case when timestampdiff(hour, update_at, now()) >= 24 then '1' else '0' end as status from limiter where uuid = ?", uuid).Scan(&status)
+	err := s.db.QueryRowContext(ctx, "SELECT CASE WHEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - update_at)) / 3600 >= 24 THEN '1' ELSE '0' END AS status FROM limiter WHERE uuid = $1", uuid).Scan(&status)
 	if err != nil {
 		// Логирование ошибки
 		s.monitor.TrackDBError()
@@ -138,7 +138,7 @@ func (s *Service) UpdateLimits(uuid string) error {
 		return nil
 	}
 
-	_, err = s.db.ExecContext(ctx, "update limiter set text_limit = 2, youtube_limit = 3, update_at = ? where uuid = ?", time.Now().Format("2006-01-02 15:04:05"), uuid)
+	_, err = s.db.ExecContext(ctx, "update limiter set text_limit = 2, youtube_limit = 3, update_at = $1 where uuid = $2", time.Now().Format("2006-01-02 15:04:05"), uuid)
 	if err != nil {
 		// Логирование ошибки
 		s.monitor.TrackDBError()

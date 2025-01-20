@@ -1,9 +1,8 @@
 CREATE TABLE IF NOT EXISTS api_keys (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `uuid` VARCHAR(255) NOT NULL,
-  `api_key` VARCHAR(60) NOT NULL,
-  `createdAt` VARCHAR(50) NOT NULL,
+  id SERIAL PRIMARY KEY,
+  uuid VARCHAR(255) NOT NULL,
+  api_key VARCHAR(60) NOT NULL,
+  createdAt VARCHAR(50) NOT NULL,
 
-  PRIMARY KEY (id),
-  UNIQUE KEY (api_key)
+  UNIQUE (api_key)
 );

@@ -6,9 +6,13 @@
 
 - **security:** Added ssl protocol (security/crt;csr;key) ([cd036e0](https://github.com/Artymiik/flicksfi/commit/cd036e09dfdc0e17c90c660bed3cc8ae80856fec))
 
-### Fixed
-
 ### Changed
+
+- **database:** The MySQL database has been changed to PostgreSQL. ([b8c8218](https://github.com/Artymiik/flicksfi/commit/b8c821843b638d81c8fb7dae042280dbf7372a3a)), closes [#8](https://github.com/Artymiik/flicksfi/issues/8)
+
+### Added
+
+- **UI testing:** Added testing worker.js ([cd036e0](https://github.com/Artymiik/flicksfi/commit/cd036e09dfdc0e17c90c660bed3cc8ae80856fec))
 
 ## [v0.1.2](https://github.com/Artymiik/flicksfi/commit/b8c821843b638d81c8fb7dae042280dbf7372a3a) (18/01/2025)
 
@@ -18,6 +22,12 @@
 
 - **безопастность:** Добавлен протокод ssl (security/crt;csr;key) ([cd036e0](https://github.com/Artymiik/flicksfi/commit/cd036e09dfdc0e17c90c660bed3cc8ae80856fec))
 
-### Исправлено
+## [v0.1.2](https://github.com/Artymiik/flicksfi/commit/b8c821843b638d81c8fb7dae042280dbf7372a3a) (20/01/2025)
 
 ### Изменено
+
+- **база данных:** Изменена база данных MySQL на PostgreSQL. ([b8c8218](https://github.com/Artymiik/flicksfi/commit/b8c821843b638d81c8fb7dae042280dbf7372a3a)), closes [#8](https://github.com/Artymiik/flicksfi/issues/8)
+
+### Добавлено
+
+- **ui тестирование:** Добавлено тестирование worker.js ([cd036e0](https://github.com/Artymiik/flicksfi/commit/cd036e09dfdc0e17c90c660bed3cc8ae80856fec))

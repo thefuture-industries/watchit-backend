@@ -1,10 +1,9 @@
 CREATE TABLE IF NOT EXISTS limiter (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `uuid` VARCHAR(255) NOT NULL,
-  `text_limit` INT NOT NULL DEFAULT 2,
-  `youtube_limit` INT NOT NULL DEFAULT 3,
-  `update_at` VARCHAR(255) NOT NULL,
+  id SERIAL PRIMARY KEY,
+  uuid VARCHAR(255) NOT NULL,
+  text_limit INT NOT NULL DEFAULT 2,
+  youtube_limit INT NOT NULL DEFAULT 3,
+  update_at VARCHAR(255) NOT NULL,
 
-  PRIMARY KEY (id),
-  UNIQUE KEY (uuid)
+  UNIQUE (uuid)
 );

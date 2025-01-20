@@ -5,7 +5,7 @@
 # Технологический стек
 
 • Golang: v1.23.0
-• MySQL
+• PostgreSQL
 • Swagger (OpenAPI)
 
 # Запуск сервера

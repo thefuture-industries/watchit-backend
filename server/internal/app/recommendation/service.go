@@ -50,7 +50,7 @@ func (s *Service) GetRecommendation(uuid string) ([]types.Recommendations, error
 
 	// Запрос к БД на получения рекомендаций
 	queryStart := time.Now()
-	rows, err := s.db.QueryContext(ctx, "select * from recommendations where uuid = ? limit ?", uuid, 100)
+	rows, err := s.db.QueryContext(ctx, "select * from recommendations where uuid = $1 limit $2", uuid, 100)
 	// Обработка ошибки
 	if err != nil {
 		// Мониторинг ошибки
@@ -113,7 +113,7 @@ func (s *Service) AddRecommendation(recommendation types.RecommendationAddPayloa
 
 	// Запрос к БД на создания пользователя
 	queryStart := time.Now()
-	_, err := s.db.ExecContext(ctx, "insert into recommendations (uuid, title, genre) values (?, ?, ?)", recommendation.UUID, recommendation.Title, recommendation.Genre)
+	_, err := s.db.ExecContext(ctx, "insert into recommendations (uuid, title, genre) values ($1, $2, $3)", recommendation.UUID, recommendation.Title, recommendation.Genre)
 
 	// Обработка ошибки
 	if err != nil {
@@ -144,7 +144,7 @@ func (s *Service) IsRecommendation(uuid, title string) (bool, error) {
 
 	// Запрос к БД на проверку существования рекомендаций
 	queryStart := time.Now()
-	row := s.db.QueryRowContext(ctx, "select * from recommendations where uuid = ? and title = ?", uuid, title)
+	row := s.db.QueryRowContext(ctx, "select * from recommendations where uuid = $1 and title = $2", uuid, title)
 	var recom types.Recommendations
 
 	err := row.Scan(&recom.ID, &recom.UUID, &recom.Title, &recom.Genre)

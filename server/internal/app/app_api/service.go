@@ -48,7 +48,7 @@ func (s *Service) InsertAPIKEY(api_key string, uuid string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
 	defer cancel()
 
-	_, err := s.db.ExecContext(ctx, "insert into api_keys (uuid, api_key, createdAt) values(?, ?, ?)", uuid, api_key, time.Now().Format("2006-01-02 15:04:05"))
+	_, err := s.db.ExecContext(ctx, "insert into api_keys (uuid, api_key, createdAt) values($1, $2, $3)", uuid, api_key, time.Now().Format("2006-01-02 15:04:05"))
 	if err != nil {
 		// Логирование ошибки
 		s.logger.Error("database error",
