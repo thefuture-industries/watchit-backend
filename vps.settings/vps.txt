@@ -1,0 +1,21 @@
+Создание виртуальной машины (free tier)
+Ссылка: https://console.cloud.ru/projects/f4401bf5-9824-4e49-936f-d7ebd9a82555/spa/svp/virtual-machines?customerId=9160a28c-62de-4f26-b515-6894c1ab8710
+
+146,88 ₽ в месяц
+0,20 ₽ в час
+
+Название: vm-flicksfi
+Образ: Ubuntu 22.04
+
+User: artemiik-admin
+
+Публичный ключ: Yes | ssh-server-flicksfi
+Пароль: !art|flicksfi1F
+Имя хоста: vm-flicksfi
+
+CONNECT:
+ssh artemiik-admin@213.171.27.70
+
+--- GitHUB Clone ---
+Title ssh key: vps-flicksfi
+Key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHluRM0WAFwwjW15N4gKenBwtnHVxyyPIzrf3gqJqoyT artemvlasiv1909@gmail.com
