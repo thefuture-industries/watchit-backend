@@ -16,6 +16,12 @@ User: artemiik-admin
 CONNECT:
 ssh artemiik-admin@213.171.27.70
 
+folder main server: /opt/main-server/server
+
 --- GitHUB Clone ---
 Title ssh key: vps-flicksfi
 Key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHluRM0WAFwwjW15N4gKenBwtnHVxyyPIzrf3gqJqoyT artemvlasiv1909@gmail.com
+
+--- PSQL USER ---
+user: admin_flicksfi
+password: ADMIN_flicksfi!

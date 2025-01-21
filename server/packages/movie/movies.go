@@ -48,7 +48,7 @@ func GetMovies(parametrs map[string]string) ([]types.Movie, error) {
 	// var limit int = 10
 
 	// Читаем файл (gzip)
-	file, err := os.Open("pkg/movie/db/movies.json.gz")
+	file, err := os.Open("packages/movie/db/movies.json.gz")
 	if err != nil {
 		return nil, fmt.Errorf("error open file")
 	}
@@ -132,7 +132,7 @@ func GetMovies(parametrs map[string]string) ([]types.Movie, error) {
 // ------------------------------
 func MovieDetails(id int) (types.Movie, error) {
 	// Читаем файл (gzip)
-	file, err := os.Open("pkg/movie/db/movies.json.gz")
+	file, err := os.Open("packages/movie/db/movies.json.gz")
 	if err != nil {
 		return types.Movie{}, fmt.Errorf("error open file")
 	}
@@ -175,7 +175,7 @@ func MovieDetails(id int) (types.Movie, error) {
 
 func GetMovieByGenre(genre int, limit int) ([]types.Movie, error) {
 	// Читаем файл (gzip)
-	file, err := os.Open("pkg/movie/db/movies.json.gz")
+	file, err := os.Open("packages/movie/db/movies.json.gz")
 	if err != nil {
 		return nil, fmt.Errorf("error open file")
 	}

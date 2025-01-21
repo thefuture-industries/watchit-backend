@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -139,6 +141,10 @@ func (l *Logger) LoggerMiddleware(next http.Handler) http.Handler {
 func (l *Logger) AddLogBuffer(log string) error {
 	buffer = append(buffer, log)
 
+	// Записываем лог в файл
+	// Для продакшен или разработки
+	l.productionLogging(log)
+
 	if len(buffer) >= bufferSize {
 		l.FlushBuffer(buffer)
 		buffer = buffer[:0]
@@ -238,4 +244,32 @@ func (rw *responseWriter) Write(b []byte) (int, error) {
 	size, err := rw.ResponseWriter.Write(b)
 	rw.size += int64(size)
 	return size, err
+}
+
+// Запись логов в папку logs/app.log
+// ---------------------------------------
+func (l *Logger) productionLogging(log string) {
+	APP_DIR := filepath.Join("logs", "app")
+
+	// Проверка на существование и создание папки
+	err := os.MkdirAll(APP_DIR, 0755)
+	if err != nil {
+		l.logger.Error("error creating app directory: %v", zap.Error(err))
+		return // Важно выйти, если папка не создана
+	}
+
+	// Открытие или создание файла
+	appLogFile, err := os.OpenFile(filepath.Join(APP_DIR, "app.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		l.logger.Error("failed to open app log file: %v", zap.Error(err))
+		return // Важно выйти, если файл не открыт
+	}
+	defer appLogFile.Close()
+
+	// Запись данных в файл
+	_, err = appLogFile.WriteString(log)
+	if err != nil {
+		l.logger.Error("error writing to log file: %v", zap.Error(err))
+		return // Важно выйти, если не смогли записать
+	}
 }

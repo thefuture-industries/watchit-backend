@@ -16,6 +16,12 @@
 
 - **UI testing:** Added testing worker.js ([5e75bb9](https://github.com/Artymiik/flicksfi/commit/cd036e09dfdc0e17c90c660bed3cc8ae80856fec))
 
+## [v0.1.2](https://github.com/Artymiik/flicksfi/commit/94ffe70e78b4a2812912fb727104239e8b75349c) (20/01/2025)
+
+### Added
+
+- **setting up a VPS server:** A VPS server was purchased and configured. ([94ffe70](https://github.com/Artymiik/flicksfi/commit/94ffe70e78b4a2812912fb727104239e8b75349c))
+
 ## [v0.1.2](https://github.com/Artymiik/flicksfi/commit/b8c821843b638d81c8fb7dae042280dbf7372a3a) (18/01/2025)
 
 ### Добавлено
@@ -33,3 +39,9 @@
 ### Добавлено
 
 - **ui тестирование:** Добавлено тестирование worker.js ([5e75bb9](https://github.com/Artymiik/flicksfi/commit/5e75bb95fc105b732f85df0a463d746712955008))
+
+## [v0.1.2](https://github.com/Artymiik/flicksfi/commit/94ffe70e78b4a2812912fb727104239e8b75349c) (20/01/2025)
+
+### Добавлено
+
+- **настройка vps сервера:** Куплен vps сервер и настроен. ([94ffe70](https://github.com/Artymiik/flicksfi/commit/94ffe70e78b4a2812912fb727104239e8b75349c))

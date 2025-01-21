@@ -15,7 +15,7 @@ import (
 // -------------------------------------
 func PopularMovie(page int) ([]types.Movie, error) {
 	// Читаем файл (gzip)
-	file, err := os.Open("pkg/movie/db/movies.json.gz")
+	file, err := os.Open("packages/movie/db/movies.json.gz")
 	if err != nil {
 		return nil, fmt.Errorf("error open file")
 	}
