@@ -1,0 +1,19 @@
+@startuml comments.database
+class Comments {
+    -id : int
+    +userID : int
+    +movieID : int
+    +comment : string
+    +likes : int
+    +createdAt : string
+}
+@enduml
+
+'component WebApplication {
+'    component WebServer
+'    component ApiServer
+'}
+
+'WebApplication -down-> ApiServer
+'ApiServer --> DatabaseServer : Connect
+'ApiServer --> MessageQueue

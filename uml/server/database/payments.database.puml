@@ -1,0 +1,10 @@
+@startuml payments.database
+class Payments {
+    -id : int
+    +userId : string
+    +card : string
+    +card_end : string
+    +total : decimal
+    +created_at : string
+}
+@enduml

@@ -39,3 +39,6 @@
 127.0.0.1:51414 - - [20/Jan/2025:21:31:56 +0500] "HTTP/1.1 GET /api/v1/movies/popular" 200 13460 "insomnia/10.1.1" 280.8572ms
 192.168.0.5:52313 - - [21/Jan/2025:12:20:17 +0500] "HTTP/1.1 GET /api/v1/movies/popular" 200 12802 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.0" 145.0453ms
 192.168.0.5:52318 - - [21/Jan/2025:12:20:32 +0500] "HTTP/1.1 GET /api/v1/movies/popular" 200 12558 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.0" 140.2961ms
+[::1]:52119 - - [25/Jan/2025:22:17:32 +0500] "HTTP/1.1 GET /adm/swagger" 200 613 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.0" 48.001ms
+[::1]:52119 - - [25/Jan/2025:22:17:33 +0500] "HTTP/1.1 GET /docs/swagger.json" 304 0 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.0" 903.2µs
+[::1]:52183 - - [25/Jan/2025:22:19:07 +0500] "HTTP/1.1 POST /api/v1/favourites" 200 43 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.0" 22.7448ms

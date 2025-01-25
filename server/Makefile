@@ -1,11 +1,16 @@
+BATCH_FILE_TEST := tests/main.start.test.bat
+
 build:
-	@go build -o bin/flick_finder main.go
+	@go build -o bin/flicksfi main.go
 
 test:
 	@go test -v ./...
 
 run: build
-	@./bin/flick_finder
+	@./bin/flicksfi
+
+run-to-test:
+	@cmd /c "$(CURDIR)/$(BATCH_FILE_TEST)"
 
 migration:
 	@migrate create -ext sql -dir cmd/migrate/migrations $(filter-out $@,$(MAKECMDGOALS))
