@@ -22,6 +22,12 @@
 
 - **setting up a VPS server:** A VPS server was purchased and configured. ([94ffe70](https://github.com/Artymiik/flicksfi/commit/94ffe70e78b4a2812912fb727104239e8b75349c))
 
+## [v0.1.2](https://github.com/Artymiik/flicksfi/commit/5e98e3b675936bf01cbe345c0c9151acb8da5057) (25/01/2025)
+
+### Added
+
+- **uml files:** Added uml files to uml/server/database to understand the database structure. ([5e98e3b](https://github.com/Artymiik/flicksfi/commit/5e98e3b675936bf01cbe345c0c9151acb8da5057))
+
 ## [v0.1.2](https://github.com/Artymiik/flicksfi/commit/b8c821843b638d81c8fb7dae042280dbf7372a3a) (18/01/2025)
 
 ### Добавлено
@@ -45,3 +51,9 @@
 ### Добавлено
 
 - **настройка vps сервера:** Куплен vps сервер и настроен. ([94ffe70](https://github.com/Artymiik/flicksfi/commit/94ffe70e78b4a2812912fb727104239e8b75349c))
+
+## [v0.1.2](https://github.com/Artymiik/flicksfi/commit/5e98e3b675936bf01cbe345c0c9151acb8da5057) (25/01/2025)
+
+### Добавлено
+
+- **uml файлы:** Добавил в uml/server/database файлы uml для понимания структуры базы данных. ([5e98e3b](https://github.com/Artymiik/flicksfi/commit/5e98e3b675936bf01cbe345c0c9151acb8da5057))
