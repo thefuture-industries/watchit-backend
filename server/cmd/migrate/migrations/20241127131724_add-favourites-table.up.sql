@@ -1,7 +1,0 @@
-CREATE TABLE IF NOT EXISTS favourites (
-  id SERIAL PRIMARY KEY,
-  uuid VARCHAR(255) NOT NULL,
-  movieId INT NOT NULL,
-  moviePoster VARCHAR(255) NOT NULL,
-  createdAt VARCHAR(50) NOT NULL
-);

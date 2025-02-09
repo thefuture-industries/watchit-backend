@@ -1,9 +1,0 @@
-CREATE TABLE IF NOT EXISTS limiter (
-  id SERIAL PRIMARY KEY,
-  uuid VARCHAR(255) NOT NULL,
-  text_limit INT NOT NULL DEFAULT 2,
-  youtube_limit INT NOT NULL DEFAULT 3,
-  update_at VARCHAR(255) NOT NULL,
-
-  UNIQUE (uuid)
-);

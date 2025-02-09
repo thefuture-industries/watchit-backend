@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS recommendations (
+  id SERIAL PRIMARY KEY,
+  uuid VARCHAR(255) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  genre VARCHAR(255) NOT NULL
+);

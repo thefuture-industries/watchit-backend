@@ -1,9 +1,0 @@
-@startuml favourites.database
-class Favourites {
-    -id : int
-    +uuid : string
-    +movieId : int
-    +moviePoster : string
-    +createdAt : string
-}
-@enduml

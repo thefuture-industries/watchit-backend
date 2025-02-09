@@ -1,8 +1,0 @@
-@startuml recommendations.database
-class Recommendations {
-    -id : int
-    +uuid : string
-    +title : string
-    -genre : string
-}
-@enduml

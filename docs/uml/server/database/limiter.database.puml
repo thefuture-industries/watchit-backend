@@ -1,0 +1,22 @@
+@startuml limiter.database
+component Limiter {
+    class v012 {
+        -id : int
+        +uuid : string
+        -text_limit : int
+        -video_limit : int
+        -account_limit : int
+        +update_at : string
+    }
+
+    class v011 {
+        -id : int
+        +uuid : string
+        -text_limit : int
+        -youtube_limit : int
+        +update_at : string
+    }
+
+    v011 --> v012 : Remake
+}
+@enduml
