@@ -9,7 +9,11 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <pthread.h>
-#include "include/services_config.c"
+
+#include "networking/services_paths.h"
+#include "networking/route_handler.h"
+#include "ip_filter/ip.h"
+#include "utiling/logger.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -83,6 +87,10 @@ void *handle_client(void *arg) {
     int client_sock = *((int *)arg);
     free(arg);
 
+    // Получаем IP клиента (устройство)
+    char clientIP[INET_ADDRSTRLEN];
+    get_client_ip(client_sock, clientIP, sizeof(clientIP));
+
     char buffer[BUF_SIZE];
     int received = recv(client_sock, buffer, BUF_SIZE - 1, 0);
     if (received <= 0) {
@@ -91,16 +99,23 @@ void *handle_client(void *arg) {
     }
     buffer[received] = '\0';
 
+    // Преобразуем запрос: меняем префикс "/api/v1/hash" на "/micro"
+    char modified_request[BUF_SIZE];
+    transform_request(buffer, modified_request, BUF_SIZE);
+
     char method[16], url[256], protocol[16];
     if (sscanf(buffer, "%15s %255s %15s", method, url, protocol) != 3) {
         char *error_msg = "HTTP/1.1 400 Bad Request\r\n\r\n";
         send(client_sock, error_msg, strlen(error_msg), 0);
+        log_request(clientIP, "UNKNOWN", "UNKNOWN", "400", error_msg);
+        log_error("Bad Request: Unable to parse the request.");
         closesocket(client_sock);
         pthread_exit(NULL);
     }
 
-    printf("Запрос: %s %s %s\n", method, url, protocol);
+    printf("Request: %s %s %s\n", method, url, protocol);
 
+    const char *status = "200 (Forwarded)";
     if (strstr(url, "/user/") != NULL) {
         Backend selected;
         pthread_mutex_lock(&rr_mutex);
@@ -108,11 +123,39 @@ void *handle_client(void *arg) {
         user_rr_index = (user_rr_index + 1) % user_backend_count;
         pthread_mutex_unlock(&rr_mutex);
 
-        printf("Пересылаем запрос в микросервис user на %s:%d\n", selected.ip, selected.port);
-        forward_to_backend(client_sock, selected.ip, selected.port, buffer, received);
+        printf("We forward the request to the microservice user to %s:%d\n", selected.ip, selected.port);
+        char message[256];
+        sprintf(message, "We forward the request to the microservice user to %s:%d\n", selected.ip, selected.port);
+        log_request(clientIP, method, url, status, message);
+        forward_to_backend(client_sock, selected.ip, selected.port, modified_request, strlen(modified_request));
+    } else if (strstr(url, "/blog/") != NULL) {
+        Backend selected;
+        pthread_mutex_lock(&rr_mutex);
+        selected = blog_backends[blog_rr_index];
+        blog_rr_index = (blog_rr_index + 1) % blog_backend_count;
+        pthread_mutex_unlock(&rr_mutex);
+
+        printf("We are forwarding the request to the blog microservice to %s:%d\n", selected.ip, selected.port);
+        char message[256];
+        sprintf(message, "We forward the request to the microservice blog to %s:%d\n", selected.ip, selected.port);
+        log_request(clientIP, method, url, status, message);
+        forward_to_backend(client_sock, selected.ip, selected.port, modified_request, strlen(modified_request));
+    } else if (strstr(url, "/movie/") != NULL) {
+        Backend selected;
+        pthread_mutex_lock(&rr_mutex);
+        selected = movie_backends[movie_rr_index];
+        movie_rr_index = (movie_rr_index + 1) % movie_backend_count;
+        pthread_mutex_unlock(&rr_mutex);
+
+        printf("We are forwarding the request to the movie microservice to %s:%d\n", selected.ip, selected.port);
+        char message[256];
+        sprintf(message, "We forward the request to the microservice movie to %s:%d\n", selected.ip, selected.port);
+        log_request(clientIP, method, url, status, message);
+        forward_to_backend(client_sock, selected.ip, selected.port, modified_request, strlen(modified_request));
     } else {
         char *not_found = "HTTP/1.1 404 Not Found\r\n\r\n";
         send(client_sock, not_found, strlen(not_found), 0);
+        log_request(clientIP, method, url, status, not_found);
     }
 
     closesocket(client_sock);
@@ -172,7 +215,7 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    printf("Многопоточный сервер слушает порт %d...\n", LISTEN_PORT);
+    printf("The multithreaded server listens on the port %d...\n", LISTEN_PORT);
 
     while (1) {
         struct sockaddr_in client_addr;

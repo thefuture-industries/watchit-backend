@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/Artemiik/Documents/git/flicksfi/servers/gateway-service",
-      "program": "c:/Users/Artemiik/Documents/git/flicksfi/servers/gateway-service/build/Debug/outDebug",
+      "cwd": "c:/Users/Artemiik/Documents/git/flicksfi/servers/gateway-service/core/config",
+      "program": "c:/Users/Artemiik/Documents/git/flicksfi/servers/gateway-service/core/config/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
