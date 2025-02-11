@@ -28,9 +28,9 @@ func WriteJSON(w http.ResponseWriter, status int, v any) error {
 	return json.NewEncoder(w).Encode(map[string]any{"message": v})
 }
 
-// ------------------------
-// Функция обработки ошибок
-// ------------------------
+// --------------------------------
+// Функция обработки ошибок сервера
+// --------------------------------
 func WriteError(w http.ResponseWriter, status int, err error) {
 	WriteJSON(w, status, map[string]string{"error": err.Error()})
 }
