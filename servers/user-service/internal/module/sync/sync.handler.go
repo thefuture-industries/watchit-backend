@@ -3,16 +3,14 @@
 //  *  Licensed under the MIT License. See License.txt in the project root for license information.
 //  *--------------------------------------------------------------------------------------------*
 
-package auth
+package sync
 
 import (
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"go-user-service/internal/common/utils"
 )
 
-func RegisterRoutes(router *mux.Router) {
-	authRouter := router.PathPrefix("/auth").Subrouter()
-
-	authRouter.HandleFunc("/signin", SigninHandler).Methods(http.MethodPost)
+func SyncHandler(w http.ResponseWriter, r *http.Request) {
+	utils.WriteJSON(w, http.StatusOK, "Syncing is active")
 }

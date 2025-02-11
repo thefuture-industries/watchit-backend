@@ -1,3 +1,8 @@
+// *---------------------------------------------------------------------------------------------
+//  *  Copyright (c). All rights reserved.
+//  *  Licensed under the MIT License. See License.txt in the project root for license information.
+//  *--------------------------------------------------------------------------------------------*
+
 package database
 
 import (
@@ -23,4 +28,3 @@ func ConnectDB(dsn string) {
 func GetDB() *gorm.DB {
 	return db
 }
-

@@ -1,3 +1,8 @@
+// *---------------------------------------------------------------------------------------------
+//  *  Copyright (c). All rights reserved.
+//  *  Licensed under the MIT License. See License.txt in the project root for license information.
+//  *--------------------------------------------------------------------------------------------*
+
 package api
 
 import (
@@ -13,6 +18,7 @@ import (
 
 	"go-user-service/internal/common/packages"
 	"go-user-service/internal/module/auth"
+	"go-user-service/internal/module/sync"
 )
 
 type APIServer struct {
@@ -56,7 +62,7 @@ func (s *APIServer) Run() error {
 		if err != nil {
 			fmt.Printf("%v", err)
 		}
-		
+
 		fmt.Fprintln(w, htmlContent)
 	})
 
@@ -64,6 +70,7 @@ func (s *APIServer) Run() error {
 	// ROUTERS PATHS
 	// -------------
 	auth.RegisterRoutes(subrouter)
+	sync.RegisterRoutes(subrouter)
 
 	// ------------------
 	// Логирование server

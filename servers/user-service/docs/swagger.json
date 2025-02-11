@@ -1,209 +1,220 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "description": "API service for working with the flicksfi application for fast movie and video search. tg [https://t.me/flicksfi]",
-        "title": "user microservice API",
-        "contact": {},
-        "version": "0.1.2"
-    },
-    "host": "localhost:8001",
-    "basePath": "/micro/user",
-    "paths": {
-        "/auth/signup": {
-            "post": {
-                "description": "Adding user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "Adding user",
-                "operationId": "add-user",
-                "parameters": [
-                    {
-                        "description": "User data",
-                        "name": "DTO",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/types.UserResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/types.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/types.ErrorResponse"
-                        }
-                    }
-                }
+  "swagger": "2.0",
+  "info": {
+    "description": "API service for working with the flicksfi application for fast movie and video search. tg [https://t.me/flicksfi]",
+    "title": "user microservice API",
+    "contact": {},
+    "version": "0.1.2"
+  },
+  "host": "localhost:8001",
+  "basePath": "/micro/user",
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "description": "Adding user",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["user"],
+        "summary": "Adding user",
+        "operationId": "add-user",
+        "parameters": [
+          {
+            "description": "User data",
+            "name": "DTO",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/types.User"
             }
-        },
-        "/auth/update": {
-            "put": {
-                "description": "Updating user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "Updating user",
-                "operationId": "update-user",
-                "parameters": [
-                    {
-                        "description": "User data",
-                        "name": "DTO",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.UserUpdate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/types.UserResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/types.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/types.ErrorResponse"
-                        }
-                    }
-                }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/types.UserResponse"
             }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/types.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/types.ErrorResponse"
+            }
+          }
         }
+      }
     },
-    "definitions": {
-        "types.ErrorLog": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                },
-                "method": {
-                    "type": "string"
-                },
-                "path": {
-                    "type": "string"
-                },
-                "timestamp": {
-                    "type": "string"
+    "/sync": {
+      "get": {
+        "description": "Server Synchronization",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["user"],
+        "summary": "Server Synchronization",
+        "operationId": "sync-server",
+        "responses": {
+          "200": {
+            "description": "Syncing is active",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
                 }
+              }
             }
-        },
-        "types.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.User": {
-            "type": "object",
-            "properties": {
-                "country": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "email_upper": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "ip_address": {
-                    "type": "string"
-                },
-                "regionName": {
-                    "type": "string"
-                },
-                "secret_word": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                },
-                "username_upper": {
-                    "type": "string"
-                },
-                "uuid": {
-                    "type": "string"
-                },
-                "zip": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.UserResponse": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.UserUpdate": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "secret_word": {
-                    "type": "string"
-                },
-                "secret_word_old": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
+          }
         }
+      }
+    },
+    "/auth/update": {
+      "put": {
+        "description": "Updating user",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["user"],
+        "summary": "Updating user",
+        "operationId": "update-user",
+        "parameters": [
+          {
+            "description": "User data",
+            "name": "DTO",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/types.UserUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/types.UserResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/types.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/types.ErrorResponse"
+            }
+          }
+        }
+      }
     }
+  },
+  "definitions": {
+    "types.ErrorLog": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string"
+        }
+      }
+    },
+    "types.ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "types.User": {
+      "type": "object",
+      "properties": {
+        "country": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "email_upper": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "ip_address": {
+          "type": "string"
+        },
+        "regionName": {
+          "type": "string"
+        },
+        "secret_word": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "username_upper": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        }
+      }
+    },
+    "types.UserResponse": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      }
+    },
+    "types.UserUpdate": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "secret_word": {
+          "type": "string"
+        },
+        "secret_word_old": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      }
+    }
+  }
 }
