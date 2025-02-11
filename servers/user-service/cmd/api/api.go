@@ -51,7 +51,6 @@ func (s *APIServer) Run() error {
 		if err != nil {
 			fmt.Printf("%v", err)
 		}
-
 		fmt.Fprintln(w, htmlContent)
 	})
 
