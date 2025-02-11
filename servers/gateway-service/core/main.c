@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <pthread.h>
@@ -15,10 +16,13 @@
 #include "security/suspicious_checker.h"
 #include "ip_filter/ip.h"
 #include "utiling/logger.h"
+#include "config/config.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
-#define LISTEN_PORT 8080
+// Declare the variable without initialization
+char* listen_port;
+char* listen_addr;
 #define BUF_SIZE 8192
 
 // Declare the mutex
@@ -198,6 +202,9 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
+    listen_port = get_config("listen_port");
+    listen_addr = get_config("listen_addr");
+
     pthread_mutex_init(&rr_mutex, NULL);
 
     int server_sock;
@@ -219,12 +226,20 @@ int main() {
     }
 
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(LISTEN_PORT);
-    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(atoi(listen_port));
+    // server_addr.sin_addr.s_addr = INADDR_ANY;
+
+    if (inet_pton(AF_INET, listen_addr, &server_addr.sin_addr) <= 0) {
+        perror("Invalid listen_addr");
+        WSACleanup();
+        exit(EXIT_FAILURE);
+    }
+
     memset(server_addr.sin_zero, 0, sizeof(server_addr.sin_zero));
 
     if (bind(server_sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
-        perror("bind");
+        int err = WSAGetLastError();
+        fprintf(stderr, "bind failed with error: %d\n", err);
         closesocket(server_sock);
         WSACleanup();
         exit(EXIT_FAILURE);
@@ -237,7 +252,7 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    printf("The multithreaded server listens on the port %d...\n", LISTEN_PORT);
+    printf("The multithreaded server listens on the port %s...\n", listen_port);
 
     while (1) {
         struct sockaddr_in client_addr;

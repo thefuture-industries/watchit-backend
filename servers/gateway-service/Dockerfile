@@ -6,4 +6,4 @@ COPY server.exe .
 
 EXPOSE 8080
 
-CMD ["server.exe"]
+CMD ["gateway-server.exe"]
