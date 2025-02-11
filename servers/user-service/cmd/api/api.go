@@ -1,9 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/MarceloPetrucio/go-scalar-api-reference"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
@@ -11,6 +13,7 @@ import (
 
 	// "go-user-service/internal/common/packages/logging"
 	"go-user-service/internal/common/packages"
+	"go-user-service/internal/module/auth"
 )
 
 type APIServer struct {
@@ -32,7 +35,27 @@ func (s *APIServer) Run() error {
 	// -----------------------------------
 
 	router := mux.NewRouter()
-	// subrouter := router.PathPrefix("/micro/user").Subrouter()
+	subrouter := router.PathPrefix("/micro/user").Subrouter()
+
+	// Scalar
+	router.PathPrefix("/docs/").Handler(http.StripPrefix("/docs/", http.FileServer(http.Dir("./docs"))))
+	router.HandleFunc("/adm/doc", func(w http.ResponseWriter, r *http.Request) {
+		htmlContent, err := scalar.ApiReferenceHTML(&scalar.Options{
+			SpecURL: "/docs/swagger.json",
+			CustomOptions: scalar.CustomOptions{
+				PageTitle: "Simple API",
+			},
+			DarkMode: true,
+		})
+
+		if err != nil {
+			fmt.Printf("%v", err)
+		}
+
+		fmt.Fprintln(w, htmlContent)
+	})
+
+	auth.RegisterRoutes(subrouter)
 
 	// ------------------
 	// Логирование server

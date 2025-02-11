@@ -35,7 +35,7 @@ func main() {
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
 	// Создаем и запускаем основной сервер
-	server := api.NewAPIServer(":8080", db)
+	server := api.NewAPIServer(":8001", db)
 	go func() {
 		fmt.Println(`    _______      __        _____    ___    ____  ____
    / __/ (_)____/ /_______/ __(_)  /   |  / __ \/  _/
