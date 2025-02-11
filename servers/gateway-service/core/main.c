@@ -96,6 +96,7 @@ void *handle_client(void *arg) {
     if (check_ip_rate(clientIP)) {
         char *banned_message = "HTTP/1.1 403 Forbidden\r\n\r\nIP banned";
         send(client_sock, banned_message, strlen(banned_message), 0);
+        printf("HTTP/1.1 403 Forbidden\r\n\r\nIP banned");
         log_request(clientIP, "BLOCKED", "N/A", "403", "IP banned");
         log_security("IP banned");
         closesocket(client_sock);
@@ -114,6 +115,7 @@ void *handle_client(void *arg) {
     if (is_request_suspicious(buffer)) {
         char *forbidden_msg = "HTTP/1.1 403 Forbidden\r\n\r\nSuspicious activity detected";
         send(client_sock, forbidden_msg, strlen(forbidden_msg), 0);
+        printf("HTTP/1.1 403 Forbidden\r\n\r\nSuspicious activity detected");
         log_security("Suspicious activity detected");
         closesocket(client_sock);
         pthread_exit(NULL);

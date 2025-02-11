@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c). All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 #ifndef SUSPICIOUS_CHECKER_H
 #define SUSPICIOUS_CHECKER_H
 
