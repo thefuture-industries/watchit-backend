@@ -12,6 +12,7 @@
 
 #include "networking/services_paths.h"
 #include "networking/route_handler.h"
+#include "security/suspicious_checker.h"
 #include "ip_filter/ip.h"
 #include "utiling/logger.h"
 
@@ -91,6 +92,16 @@ void *handle_client(void *arg) {
     char clientIP[INET_ADDRSTRLEN];
     get_client_ip(client_sock, clientIP, sizeof(clientIP));
 
+    // Проверяем частоту запросов с данного IP
+    if (check_ip_rate(clientIP)) {
+        char *banned_message = "HTTP/1.1 403 Forbidden\r\n\r\nIP banned";
+        send(client_sock, banned_message, strlen(banned_message), 0);
+        log_request(clientIP, "BLOCKED", "N/A", "403", "IP banned");
+        log_security("IP banned");
+        closesocket(client_sock);
+        pthread_exit(NULL);
+    }
+
     char buffer[BUF_SIZE];
     int received = recv(client_sock, buffer, BUF_SIZE - 1, 0);
     if (received <= 0) {
@@ -98,6 +109,15 @@ void *handle_client(void *arg) {
         pthread_exit(NULL);
     }
     buffer[received] = '\0';
+
+    // Если в запросе (либо URL, либо тело) обнаружен подозрительный текст, закрываем соединение
+    if (is_request_suspicious(buffer)) {
+        char *forbidden_msg = "HTTP/1.1 403 Forbidden\r\n\r\nSuspicious activity detected";
+        send(client_sock, forbidden_msg, strlen(forbidden_msg), 0);
+        log_security("Suspicious activity detected");
+        closesocket(client_sock);
+        pthread_exit(NULL);
+    }
 
     // Преобразуем запрос: меняем префикс "/api/v1/hash" на "/micro"
     char modified_request[BUF_SIZE];
@@ -125,7 +145,7 @@ void *handle_client(void *arg) {
 
         printf("We forward the request to the microservice user to %s:%d\n", selected.ip, selected.port);
         char message[256];
-        sprintf(message, "We forward the request to the microservice user to %s:%d\n", selected.ip, selected.port);
+        sprintf(message, "We forward the request to the microservice user to %s:%d", selected.ip, selected.port);
         log_request(clientIP, method, url, status, message);
         forward_to_backend(client_sock, selected.ip, selected.port, modified_request, strlen(modified_request));
     } else if (strstr(url, "/blog/") != NULL) {
@@ -137,7 +157,7 @@ void *handle_client(void *arg) {
 
         printf("We are forwarding the request to the blog microservice to %s:%d\n", selected.ip, selected.port);
         char message[256];
-        sprintf(message, "We forward the request to the microservice blog to %s:%d\n", selected.ip, selected.port);
+        sprintf(message, "We forward the request to the microservice blog to %s:%d", selected.ip, selected.port);
         log_request(clientIP, method, url, status, message);
         forward_to_backend(client_sock, selected.ip, selected.port, modified_request, strlen(modified_request));
     } else if (strstr(url, "/movie/") != NULL) {
@@ -149,7 +169,7 @@ void *handle_client(void *arg) {
 
         printf("We are forwarding the request to the movie microservice to %s:%d\n", selected.ip, selected.port);
         char message[256];
-        sprintf(message, "We forward the request to the microservice movie to %s:%d\n", selected.ip, selected.port);
+        sprintf(message, "We forward the request to the microservice movie to %s:%d", selected.ip, selected.port);
         log_request(clientIP, method, url, status, message);
         forward_to_backend(client_sock, selected.ip, selected.port, modified_request, strlen(modified_request));
     } else {

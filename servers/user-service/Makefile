@@ -1,11 +1,11 @@
 build:
-	@go build -o bin/flicksfi main.go
+	@go build -o bin/user-service main.go
 
 test:
 	@go test -v ./...
 
 run: build
-	@./bin/flicksfi
+	@./bin/user-service
 
 run-to-test:
 	@cmd /c "$(CURDIR)/$(BATCH_FILE_TEST)"

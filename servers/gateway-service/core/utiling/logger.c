@@ -12,6 +12,7 @@
 #define LOG_DIR "logs"
 #define LOG_FILE "logs/server.log"
 #define ERROR_LOG_FILE "logs/error.log"
+#define SECURITY_LOG_FILE "logs/security.log"
 
 // Функция создаёт папку, если её не существует
 static void ensure_log_dir_exists() {
@@ -32,7 +33,7 @@ void log_request(const char *device, const char *method, const char *url, const 
     char time_str[64];
     strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", tm_info);
 
-    fprintf(fp, "[%s] Device: %s | Method: %s | URL: %s | Status: %s | Message: %s",
+    fprintf(fp, "[%s] Device: %s | Method: %s | URL: %s | Status: %s | Message: %s\n",
             time_str,
             device,
             method,
@@ -52,5 +53,18 @@ void log_error(const char *message) {
     char time_str[64];
     strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", tm_info);
     fprintf(fp, "[%s] ERROR: %s\n", time_str, message);
+    fclose(fp);
+}
+
+void log_security(const char *message) {
+    ensure_log_dir_exists();
+    FILE *fp = fopen(SECURITY_LOG_FILE, "a");
+    if (!fp) return;
+
+    time_t now = time(NULL);
+    struct tm *tm_info = localtime(&now);
+    char time_str[64];
+    strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", tm_info);
+    fprintf(fp, "[%s] SECURITY: %s\n", time_str, message);
     fclose(fp);
 }

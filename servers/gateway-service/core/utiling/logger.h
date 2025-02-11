@@ -18,4 +18,7 @@ void log_request(const char *device, const char *method, const char *url, const 
 // Записывает сообщение об ошибке в лог-файл
 void log_error(const char *message);
 
+// Записывает сообщение об безопастности в лог-файл
+void log_security(const char *message);
+
 #endif
