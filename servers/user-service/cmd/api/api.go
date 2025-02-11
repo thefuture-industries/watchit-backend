@@ -11,7 +11,6 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
-	// "go-user-service/internal/common/packages/logging"
 	"go-user-service/internal/common/packages"
 	"go-user-service/internal/module/auth"
 )
@@ -37,13 +36,19 @@ func (s *APIServer) Run() error {
 	router := mux.NewRouter()
 	subrouter := router.PathPrefix("/micro/user").Subrouter()
 
+	// ------
 	// Scalar
-	router.PathPrefix("/docs/").Handler(http.StripPrefix("/docs/", http.FileServer(http.Dir("./docs"))))
-	router.HandleFunc("/adm/doc", func(w http.ResponseWriter, r *http.Request) {
+	// ------
+	subrouter.PathPrefix("/docs/").Handler(http.StripPrefix("/docs/", http.FileServer(http.Dir("./docs"))))
+	subrouter.HandleFunc("/docs", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./docs/swagger.json")
+	})
+
+	subrouter.HandleFunc("/adm/doc", func(w http.ResponseWriter, r *http.Request) {
 		htmlContent, err := scalar.ApiReferenceHTML(&scalar.Options{
-			SpecURL: "/docs/swagger.json",
+			SpecURL: "http://localhost:8001/micro/user/docs",
 			CustomOptions: scalar.CustomOptions{
-				PageTitle: "Simple API",
+				PageTitle: "User Microservice",
 			},
 			DarkMode: true,
 		})
@@ -51,9 +56,13 @@ func (s *APIServer) Run() error {
 		if err != nil {
 			fmt.Printf("%v", err)
 		}
+		
 		fmt.Fprintln(w, htmlContent)
 	})
 
+	// -------------
+	// ROUTERS PATHS
+	// -------------
 	auth.RegisterRoutes(subrouter)
 
 	// ------------------
