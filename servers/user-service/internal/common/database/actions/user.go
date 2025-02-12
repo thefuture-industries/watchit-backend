@@ -10,7 +10,7 @@ import (
 	"go-user-service/internal/common/database"
 )
 
-func CreateUser(user *database.User) error {
+func CreateUser(user *database.Users) error {
 	create := database.GetDB().Create(user)
 
 	if create.Error != nil {
@@ -20,8 +20,8 @@ func CreateUser(user *database.User) error {
 	return nil
 }
 
-func GetUserByID(id uint) (*database.User, error) {
-	var user database.User
+func GetUserByID(id uint) (*database.Users, error) {
+	var user database.Users
 	result := database.GetDB().First(&user, id)
 
 	if result.Error != nil {
@@ -31,8 +31,8 @@ func GetUserByID(id uint) (*database.User, error) {
 	return &user, nil
 }
 
-func GetUserByEmail(email string) (*database.User, error) {
-	var user database.User
+func GetUserByEmail(email string) (*database.Users, error) {
+	var user database.Users
 	result := database.GetDB().First(&user, email)
 
 	if result.Error != nil {
@@ -42,8 +42,8 @@ func GetUserByEmail(email string) (*database.User, error) {
 	return &user, nil
 }
 
-func GetUserByUUID(uuid string) (*database.User, error) {
-	var user database.User
+func GetUserByUUID(uuid string) (*database.Users, error) {
+	var user database.Users
 	result := database.GetDB().First(&user, uuid)
 
 	if result.Error != nil {
@@ -53,8 +53,8 @@ func GetUserByUUID(uuid string) (*database.User, error) {
 	return &user, nil
 }
 
-func GetUserByUsername(username string) (*database.User, error) {
-	var user database.User
+func GetUserByUsername(username string) (*database.Users, error) {
+	var user database.Users
 	result := database.GetDB().First(&user, username)
 
 	if result.Error != nil {
