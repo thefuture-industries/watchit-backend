@@ -5,7 +5,9 @@
 
 #include "route_handler.h"
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
+#include <ctype.h>
 
 void transform_request(const char *orig_req, char *new_req, size_t new_req_size) {
     // Находим конец первой строки (оканчивается на "\r\n")
@@ -26,9 +28,9 @@ void transform_request(const char *orig_req, char *new_req, size_t new_req_size)
         return;
     }
 
-    // Если URL начинается с "/api/v1/hash", заменяем этот префикс на "/micro"
+    // Если URL начинается с "/api/v1", заменяем этот префикс на "/micro"
     char new_url[256];
-    const char *old_prefix = "/api/v1/hash";
+    const char *old_prefix = "/api/v1";
     const char *micro_prefix = "/micro";
     size_t old_prefix_len = strlen(old_prefix);
     if (strncmp(url, old_prefix, old_prefix_len) == 0) {
@@ -44,5 +46,34 @@ void transform_request(const char *orig_req, char *new_req, size_t new_req_size)
 
     // Формируем полный преобразованный запрос: новая первая строка + оставшиеся заголовки
     const char *headers = orig_req + first_line_len;
-    snprintf(new_req, new_req_size, "%s%s", new_first_line, headers);
+
+    // Копируем заголовки до первого вхождения Host:
+    char temp_headers[2048];  // Буфер для хранения временных заголовков
+    char *temp_ptr = temp_headers;
+    const char *current_pos = headers;
+    bool found_host = false;
+
+    while (*current_pos) {
+        if (strncasecmp(current_pos, "Host:", 5) == 0) {
+            // Пропагаем заголовок Host
+            current_pos += 6;  // Пропускаем "Host:"
+            while (*current_pos != '\n') {
+                current_pos++;
+            }
+            current_pos++;     // Переход к следующему заголовку
+        } else {
+            // Копируем текущую часть заголовков в temp_headers
+            while (*current_pos != '\n') {
+                *temp_ptr++ = *current_pos++;
+            }
+            *temp_ptr++ = '\n';  // Добавляем символ новой строки
+            current_pos++;       // Переход к следующему заголовку
+        }
+    }
+    *temp_ptr = '\0';  // Завершаем строку нулевым символом
+
+    // Добавляем новый заголовок Host: localhost:8001
+    strcat(temp_headers, "Host: localhost:8001\r\n");
+
+    snprintf(new_req, new_req_size, "%s%s", new_first_line, temp_headers);
 }

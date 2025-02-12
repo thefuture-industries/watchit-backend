@@ -9,7 +9,7 @@
 #include <stddef.h>
 
 // Функция выполняет преобразование HTTP-запроса.
-// Если в первой строке URL начинается с "/api/v1/hash", она заменяется на "/micro".
+// Если в первой строке URL начинается с "/api/v1", она заменяется на "/micro".
 void transform_request(const char *orig_req, char *new_req, size_t new_req_size);
 
 #endif

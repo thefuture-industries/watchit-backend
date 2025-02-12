@@ -4,9 +4,7 @@ component Users {
         -id : int
         +uuid : string
         +username : string
-        +username_upper : string
         +email : string
-        +email_upper : string
         -ip_address : string
         -country : string
         +createdAt : string

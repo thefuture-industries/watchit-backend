@@ -14,6 +14,7 @@
 #include "networking/services_paths.h"
 #include "networking/route_handler.h"
 #include "security/suspicious_checker.h"
+#include "networking/headers.h"
 #include "ip_filter/ip.h"
 #include "utiling/logger.h"
 #include "config/config.h"
@@ -23,7 +24,9 @@
 // Declare the variable without initialization
 char* listen_port;
 char* listen_addr;
+
 #define BUF_SIZE 8192
+#define MAX_REQUEST_SIZE 4096
 
 // Declare the mutex
 pthread_mutex_t rr_mutex;
@@ -31,9 +34,65 @@ pthread_mutex_t rr_mutex;
 /*
  * Функция forward_to_backend() - пересылает запрос на backend‑сервер
  */
-int forward_to_backend(int client_sock, const char* backend_ip, int backend_port, const char* request, int request_len) {
+// int forward_to_backend(int client_sock, const char* backend_ip, int backend_port, const char* request, int request_len) {
+//     int backend_sock;
+//     struct sockaddr_in backend_addr;
+
+//     backend_sock = socket(AF_INET, SOCK_STREAM, 0);
+//     if (backend_sock < 0) {
+//         perror("socket");
+//         return -1;
+//     }
+
+//     memset(&backend_addr, 0, sizeof(backend_addr));
+//     backend_addr.sin_family = AF_INET;
+//     backend_addr.sin_port = htons(backend_port);
+//     if (inet_pton(AF_INET, backend_ip, &backend_addr.sin_addr) <= 0) {
+//         perror("inet_pton");
+//         closesocket(backend_sock);
+//         return -1;
+//     }
+
+//     if (connect(backend_sock, (struct sockaddr *)&backend_addr, sizeof(backend_addr)) < 0) {
+//         perror("connect");
+//         closesocket(backend_sock);
+//         return -1;
+//     }
+
+//     int sent = 0;
+//     while (sent < request_len) {
+//         int n = send(backend_sock, request + sent, request_len - sent, 0);
+//         if (n < 0) {
+//             perror("send");
+//             closesocket(backend_sock);
+//             return -1;
+//         }
+//         sent += n;
+//     }
+
+//     char backend_buf[BUF_SIZE];
+//     int r;
+//     while ((r = recv(backend_sock, backend_buf, BUF_SIZE, 0)) > 0) {
+//         int total_sent = 0;
+//         while (total_sent < r) {
+//             int n = send(client_sock, backend_buf + total_sent, r - total_sent, 0);
+//             if (n < 0) {
+//                 perror("send to client");
+//                 break;
+//             }
+//             total_sent += n;
+//         }
+//     }
+
+//     closesocket(backend_sock);
+//     return 0;
+// }
+
+int forward_to_backend(int client_sock, const char *backend_ip, int backend_port, const char *request, int request_len) {
     int backend_sock;
     struct sockaddr_in backend_addr;
+
+    printf("Request: %s\n", request);
 
     backend_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (backend_sock < 0) {
@@ -46,42 +105,31 @@ int forward_to_backend(int client_sock, const char* backend_ip, int backend_port
     backend_addr.sin_port = htons(backend_port);
     if (inet_pton(AF_INET, backend_ip, &backend_addr.sin_addr) <= 0) {
         perror("inet_pton");
-        closesocket(backend_sock);
+        close(backend_sock);
         return -1;
     }
 
     if (connect(backend_sock, (struct sockaddr *)&backend_addr, sizeof(backend_addr)) < 0) {
         perror("connect");
-        closesocket(backend_sock);
+        close(backend_sock);
         return -1;
     }
 
-    int sent = 0;
-    while (sent < request_len) {
-        int n = send(backend_sock, request + sent, request_len - sent, 0);
-        if (n < 0) {
-            perror("send");
-            closesocket(backend_sock);
-            return -1;
-        }
-        sent += n;
+    // Отправляем запрос на бэкенд-сервер
+    if (send(backend_sock, request, strlen(request), 0) == -1) {
+        perror("send");
+        close(backend_sock);
+        return -1;
     }
 
-    char backend_buf[BUF_SIZE];
-    int r;
-    while ((r = recv(backend_sock, backend_buf, BUF_SIZE, 0)) > 0) {
-        int total_sent = 0;
-        while (total_sent < r) {
-            int n = send(client_sock, backend_buf + total_sent, r - total_sent, 0);
-            if (n < 0) {
-                perror("send to client");
-                break;
-            }
-            total_sent += n;
-        }
+    // Получаем ответ от бэкенда и передаем его клиенту
+    char response[MAX_REQUEST_SIZE];
+    ssize_t bytes_received;
+    while ((bytes_received = recv(backend_sock, response, MAX_REQUEST_SIZE, 0)) > 0) {
+        send(client_sock, response, bytes_received, 0);
     }
 
-    closesocket(backend_sock);
+    close(backend_sock);
     return 0;
 }
 
@@ -125,7 +173,7 @@ void *handle_client(void *arg) {
         pthread_exit(NULL);
     }
 
-    // Преобразуем запрос: меняем префикс "/api/v1/hash" на "/micro"
+    // Преобразуем запрос: меняем префикс "/api/v1" на "/micro"
     char modified_request[BUF_SIZE];
     transform_request(buffer, modified_request, BUF_SIZE);
 

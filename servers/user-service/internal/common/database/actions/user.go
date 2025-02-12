@@ -25,7 +25,41 @@ func GetUserByID(id uint) (*database.User, error) {
 	result := database.GetDB().First(&user, id)
 
 	if result.Error != nil {
-		return nil, fmt.Errorf("failed to get user by id: %w", result.Error)
+		return nil, fmt.Errorf("the user was not found")
 	}
+
+	return &user, nil
+}
+
+func GetUserByEmail(email string) (*database.User, error) {
+	var user database.User
+	result := database.GetDB().First(&user, email)
+
+	if result.Error != nil {
+		return nil, fmt.Errorf("the user was not found")
+	}
+
+	return &user, nil
+}
+
+func GetUserByUUID(uuid string) (*database.User, error) {
+	var user database.User
+	result := database.GetDB().First(&user, uuid)
+
+	if result.Error != nil {
+		return nil, fmt.Errorf("the user was not found")
+	}
+
+	return &user, nil
+}
+
+func GetUserByUsername(username string) (*database.User, error) {
+	var user database.User
+	result := database.GetDB().First(&user, username)
+
+	if result.Error != nil {
+		return nil, fmt.Errorf("the user was not found")
+	}
+
 	return &user, nil
 }
