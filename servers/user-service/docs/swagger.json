@@ -30,19 +30,13 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "the user has been successfully created!",
             "schema": {
               "$ref": "#/definitions/types.UserResponse"
             }
           },
           "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/types.ErrorResponse"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
+            "description": "such an email has already been registered",
             "schema": {
               "$ref": "#/definitions/types.ErrorResponse"
             }
@@ -144,40 +138,16 @@
     "types.User": {
       "type": "object",
       "properties": {
-        "country": {
+        "username": {
           "type": "string"
         },
-        "createdAt": {
+        "pin_code": {
           "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "email_upper": {
-          "type": "string"
-        },
-        "id": {
-          "type": "integer"
         },
         "ip_address": {
           "type": "string"
         },
-        "regionName": {
-          "type": "string"
-        },
-        "secret_word": {
-          "type": "string"
-        },
-        "username": {
-          "type": "string"
-        },
-        "username_upper": {
-          "type": "string"
-        },
-        "uuid": {
-          "type": "string"
-        },
-        "zip": {
+        "country": {
           "type": "string"
         }
       }

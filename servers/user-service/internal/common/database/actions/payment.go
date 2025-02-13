@@ -6,8 +6,11 @@
 package actions
 
 import (
+	"errors"
 	"fmt"
 	"go-user-service/internal/common/database"
+
+	"gorm.io/gorm"
 )
 
 func CreatePayment(payment *database.Payments) error {
@@ -22,10 +25,14 @@ func CreatePayment(payment *database.Payments) error {
 
 func GetPaymentsByUUID(uuid string) ([]*database.Payments, error) {
 	var payments []*database.Payments
-	result := database.GetDB().Find(&payments, uuid)
+	result := database.GetDB().Where("uuid = ?", uuid).First(&payments)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
 
 	if result.Error != nil {
-		return nil, fmt.Errorf("the payment was not found")
+		return nil, fmt.Errorf("an unexpected error occurred while getting the user")
 	}
 
 	return payments, nil

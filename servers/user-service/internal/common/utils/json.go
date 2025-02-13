@@ -32,5 +32,5 @@ func WriteJSON(w http.ResponseWriter, status int, v any) error {
 // Функция обработки ошибок сервера
 // --------------------------------
 func WriteError(w http.ResponseWriter, status int, err error) {
-	WriteJSON(w, status, map[string]string{"error": err.Error()})
+	WriteJSON(w, status, err.Error())
 }

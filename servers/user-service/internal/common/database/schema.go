@@ -6,23 +6,24 @@
 package database
 
 import (
+	"database/sql"
+
 	"gorm.io/gorm"
 )
 
 type Users struct {
 	gorm.Model
-	ID        uint   `gorm:"primaryKey"`
-	UUID      string `gorm:"unique;size:255;not null"`
-	Username  string `gorm:"unique;size:20;not null"`
-	Email     string `gorm:"unique;size:100;not null"`
-	IPAddress string `gorm:"size:15;not null"`
-	Country   string `gorm:"size:50;not null"`
-	CreatedAt string `gorm:"size:255;not null"`
+	UUID         string         `gorm:"unique;size:255;not null"`
+	Username     string         `gorm:"unique;size:20;not null"`
+	Email        sql.NullString `gorm:"unique;type:varchar(100);default:null"`
+	PINCODE      string         `gorm:"size:50;not null"`
+	IPAddress    string         `gorm:"size:15;not null"`
+	Country      string         `gorm:"size:50;not null"`
+	Subscription bool           `gorm:"default:false;not null"`
 }
 
 type Payments struct {
 	gorm.Model
-	ID        uint    `gorm:"primaryKey"`
 	UUID      string  `gorm:"unique;size:255;not null"`
 	Email     string  `gorm:"size:100;not null"`
 	Card      string  `gorm:"size:50;not null"`

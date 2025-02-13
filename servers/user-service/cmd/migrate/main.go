@@ -28,7 +28,7 @@ func main() {
 		{
 			ID: "20230101_create_tables",
 			Migrate: func(tx *gorm.DB) error {
-				return tx.AutoMigrate(&database.User{}, &database.Payments{})
+				return tx.AutoMigrate(&database.Users{}, &database.Payments{})
 			},
 			Rollback: func(tx *gorm.DB) error {
 				if err := tx.Migrator().DropTable("users"); err != nil {

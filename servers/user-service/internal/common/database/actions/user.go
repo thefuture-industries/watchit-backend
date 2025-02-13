@@ -6,8 +6,11 @@
 package actions
 
 import (
+	"errors"
 	"fmt"
 	"go-user-service/internal/common/database"
+
+	"gorm.io/gorm"
 )
 
 func CreateUser(user *database.Users) error {
@@ -22,10 +25,14 @@ func CreateUser(user *database.Users) error {
 
 func GetUserByID(id uint) (*database.Users, error) {
 	var user database.Users
-	result := database.GetDB().First(&user, id)
+	result := database.GetDB().Where("id = ?", id).First(&user)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
 
 	if result.Error != nil {
-		return nil, fmt.Errorf("the user was not found")
+		return nil, fmt.Errorf("an unexpected error occurred while getting the user")
 	}
 
 	return &user, nil
@@ -33,10 +40,14 @@ func GetUserByID(id uint) (*database.Users, error) {
 
 func GetUserByEmail(email string) (*database.Users, error) {
 	var user database.Users
-	result := database.GetDB().First(&user, email)
+	result := database.GetDB().Where("email = ?", email).First(&user)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
 
 	if result.Error != nil {
-		return nil, fmt.Errorf("the user was not found")
+		return nil, fmt.Errorf("an unexpected error occurred while getting the user")
 	}
 
 	return &user, nil
@@ -44,10 +55,14 @@ func GetUserByEmail(email string) (*database.Users, error) {
 
 func GetUserByUUID(uuid string) (*database.Users, error) {
 	var user database.Users
-	result := database.GetDB().First(&user, uuid)
+	result := database.GetDB().Where("uuid = ?", uuid).First(&user)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
 
 	if result.Error != nil {
-		return nil, fmt.Errorf("the user was not found")
+		return nil, fmt.Errorf("an unexpected error occurred while getting the user")
 	}
 
 	return &user, nil
@@ -55,10 +70,14 @@ func GetUserByUUID(uuid string) (*database.Users, error) {
 
 func GetUserByUsername(username string) (*database.Users, error) {
 	var user database.Users
-	result := database.GetDB().First(&user, username)
+	result := database.GetDB().Where("username = ?", username).First(&user)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
 
 	if result.Error != nil {
-		return nil, fmt.Errorf("the user was not found")
+		return nil, fmt.Errorf("an unexpected error occurred while getting the user")
 	}
 
 	return &user, nil

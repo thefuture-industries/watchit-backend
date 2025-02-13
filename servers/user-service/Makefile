@@ -16,4 +16,4 @@ migrate-up:
 	@go run cmd/migrate/main.go
 
 migrate-down:
-	@go run cmd/migrate/main.go down
+	@go run cmd/migrate/main-down.go
