@@ -18,6 +18,7 @@ func Encrypt(plaintext string) (string, error) {
 	key = os.Getenv("SUPER_SECRET_KEY")
 	iv = os.Getenv("IV")
 
+	
 	// Создание блока шифрования AES
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
