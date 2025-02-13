@@ -12,8 +12,8 @@
 | Transpiler   | Babel / TypeScript / Golag / C# |
 | Markup       | React Native / WPF              |
 | CSS          | Tailwind                        |
-| Router       | gorilla                         |
+| Router       | gorilla/mux                     |
 | Client Tests | Batchfiles                      |
-| DB           | MySQL                           |
+| DB           | PostgreSQL                      |
 | Auth         | Yes                             |
 | etc          | etc                             |
