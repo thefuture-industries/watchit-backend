@@ -9,7 +9,7 @@
 #include <string.h>
 #include <ctype.h>
 
-void transform_request(const char *orig_req, char *new_req, size_t new_req_size) {
+void transform_request(const char *orig_req, char *new_req, size_t new_req_size, const char *backend_ip, int backend_port) {
     // Находим конец первой строки (оканчивается на "\r\n")
     const char *eol = strstr(orig_req, "\r\n");
     if (!eol) {
@@ -55,7 +55,7 @@ void transform_request(const char *orig_req, char *new_req, size_t new_req_size)
 
     while (*current_pos) {
         if (strncasecmp(current_pos, "Host:", 5) == 0) {
-            // Пропагаем заголовок Host
+            // Пропускаем заголовок Host
             current_pos += 6;  // Пропускаем "Host:"
             while (*current_pos != '\n') {
                 current_pos++;
@@ -72,8 +72,9 @@ void transform_request(const char *orig_req, char *new_req, size_t new_req_size)
     }
     *temp_ptr = '\0';  // Завершаем строку нулевым символом
 
-    // Добавляем новый заголовок Host: localhost:8001
-    strcat(temp_headers, "Host: localhost:8001\r\n");
+    // char host_header[256];
+    // snprintf(host_header, sizeof(host_header), "Host: %s:%d\r\n", backend_ip, backend_port);
+    // strcat(temp_headers, host_header);
 
     snprintf(new_req, new_req_size, "%s%s", new_first_line, temp_headers);
 }

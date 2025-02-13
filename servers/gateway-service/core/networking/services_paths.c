@@ -20,7 +20,7 @@ int user_rr_index = 0;
 // Настройки для blog-service
 Backend blog_backends_uri[] = {
     {"127.0.0.1", 8011},
-    {"127.0.0.1", 8011},
+    {"127.0.0.1", 8012},
 };
 Backend* blog_backends = blog_backends_uri;
 int blog_backend_count = sizeof(blog_backends_uri) / sizeof(blog_backends_uri[0]);

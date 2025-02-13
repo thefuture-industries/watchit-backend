@@ -34,65 +34,10 @@ pthread_mutex_t rr_mutex;
 /*
  * Функция forward_to_backend() - пересылает запрос на backend‑сервер
  */
-// int forward_to_backend(int client_sock, const char* backend_ip, int backend_port, const char* request, int request_len) {
-//     int backend_sock;
-//     struct sockaddr_in backend_addr;
-
-//     backend_sock = socket(AF_INET, SOCK_STREAM, 0);
-//     if (backend_sock < 0) {
-//         perror("socket");
-//         return -1;
-//     }
-
-//     memset(&backend_addr, 0, sizeof(backend_addr));
-//     backend_addr.sin_family = AF_INET;
-//     backend_addr.sin_port = htons(backend_port);
-//     if (inet_pton(AF_INET, backend_ip, &backend_addr.sin_addr) <= 0) {
-//         perror("inet_pton");
-//         closesocket(backend_sock);
-//         return -1;
-//     }
-
-//     if (connect(backend_sock, (struct sockaddr *)&backend_addr, sizeof(backend_addr)) < 0) {
-//         perror("connect");
-//         closesocket(backend_sock);
-//         return -1;
-//     }
-
-//     int sent = 0;
-//     while (sent < request_len) {
-//         int n = send(backend_sock, request + sent, request_len - sent, 0);
-//         if (n < 0) {
-//             perror("send");
-//             closesocket(backend_sock);
-//             return -1;
-//         }
-//         sent += n;
-//     }
-
-//     char backend_buf[BUF_SIZE];
-//     int r;
-//     while ((r = recv(backend_sock, backend_buf, BUF_SIZE, 0)) > 0) {
-//         int total_sent = 0;
-//         while (total_sent < r) {
-//             int n = send(client_sock, backend_buf + total_sent, r - total_sent, 0);
-//             if (n < 0) {
-//                 perror("send to client");
-//                 break;
-//             }
-//             total_sent += n;
-//         }
-//     }
-
-//     closesocket(backend_sock);
-//     return 0;
-// }
-
-int forward_to_backend(int client_sock, const char *backend_ip, int backend_port, const char *request, int request_len) {
+int forward_to_backend(int client_sock, const char *backend_ip, int backend_port, const char *method, const char *path, const char *request) {
     int backend_sock;
     struct sockaddr_in backend_addr;
-
-    printf("Request: %s\n", request);
+    char url[256];
 
     backend_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (backend_sock < 0) {
@@ -115,8 +60,18 @@ int forward_to_backend(int client_sock, const char *backend_ip, int backend_port
         return -1;
     }
 
+    // Формируем HTTP-запрос
+    char http_request[MAX_REQUEST_SIZE];
+    snprintf(http_request, sizeof(http_request), "%s %s HTTP/1.1\r\nHost: %s:%d\r\n\r\n",
+             method, path, backend_ip, backend_port);
+
+    //  snprintf(http_request, sizeof(http_request), "GET /micro/user/sync HTTP/1.1\r\nHost: localhost:8001\r\n\r\n%s",
+    //  request);
+
+    printf(http_request);
+
     // Отправляем запрос на бэкенд-сервер
-    if (send(backend_sock, request, strlen(request), 0) == -1) {
+    if (send(backend_sock, http_request, strlen(http_request), 0) == -1) {
         perror("send");
         close(backend_sock);
         return -1;
@@ -173,10 +128,6 @@ void *handle_client(void *arg) {
         pthread_exit(NULL);
     }
 
-    // Преобразуем запрос: меняем префикс "/api/v1" на "/micro"
-    char modified_request[BUF_SIZE];
-    transform_request(buffer, modified_request, BUF_SIZE);
-
     char method[16], url[256], protocol[16];
     if (sscanf(buffer, "%15s %255s %15s", method, url, protocol) != 3) {
         char *error_msg = "HTTP/1.1 400 Bad Request\r\n\r\n";
@@ -197,11 +148,26 @@ void *handle_client(void *arg) {
         user_rr_index = (user_rr_index + 1) % user_backend_count;
         pthread_mutex_unlock(&rr_mutex);
 
+        // Преобразуем запрос: меняем префикс "/api/v1" на "/micro"
+        char modified_request[BUF_SIZE];
+        transform_request(buffer, modified_request, BUF_SIZE, selected.ip, selected.port);
+
+        char new_url[256];
+        const char *old_prefix = "/api/v1";
+        const char *micro_prefix = "/micro";
+        size_t old_prefix_len = strlen(old_prefix);
+        if (strncmp(url, old_prefix, old_prefix_len) == 0) {
+            snprintf(new_url, sizeof(new_url), "%s%s", micro_prefix, url + old_prefix_len);
+        } else {
+            strncpy(new_url, url, sizeof(new_url));
+            new_url[sizeof(new_url) - 1] = '\0';
+        }
+
         printf("We forward the request to the microservice user to %s:%d\n", selected.ip, selected.port);
         char message[256];
         sprintf(message, "We forward the request to the microservice user to %s:%d", selected.ip, selected.port);
         log_request(clientIP, method, url, status, message);
-        forward_to_backend(client_sock, selected.ip, selected.port, modified_request, strlen(modified_request));
+        forward_to_backend(client_sock, selected.ip, selected.port, method, new_url, modified_request);
     } else if (strstr(url, "/blog/") != NULL) {
         Backend selected;
         pthread_mutex_lock(&rr_mutex);
@@ -209,11 +175,26 @@ void *handle_client(void *arg) {
         blog_rr_index = (blog_rr_index + 1) % blog_backend_count;
         pthread_mutex_unlock(&rr_mutex);
 
+        // Преобразуем запрос: меняем префикс "/api/v1" на "/micro"
+        char modified_request[BUF_SIZE];
+        transform_request(buffer, modified_request, BUF_SIZE, selected.ip, selected.port);
+
+        char new_url[256];
+        const char *old_prefix = "/api/v1";
+        const char *micro_prefix = "/micro";
+        size_t old_prefix_len = strlen(old_prefix);
+        if (strncmp(url, old_prefix, old_prefix_len) == 0) {
+            snprintf(new_url, sizeof(new_url), "%s%s", micro_prefix, url + old_prefix_len);
+        } else {
+            strncpy(new_url, url, sizeof(new_url));
+            new_url[sizeof(new_url) - 1] = '\0';
+        }
+
         printf("We are forwarding the request to the blog microservice to %s:%d\n", selected.ip, selected.port);
         char message[256];
         sprintf(message, "We forward the request to the microservice blog to %s:%d", selected.ip, selected.port);
         log_request(clientIP, method, url, status, message);
-        forward_to_backend(client_sock, selected.ip, selected.port, modified_request, strlen(modified_request));
+        forward_to_backend(client_sock, selected.ip, selected.port, method, modified_request, modified_request);
     } else if (strstr(url, "/movie/") != NULL) {
         Backend selected;
         pthread_mutex_lock(&rr_mutex);
@@ -221,11 +202,26 @@ void *handle_client(void *arg) {
         movie_rr_index = (movie_rr_index + 1) % movie_backend_count;
         pthread_mutex_unlock(&rr_mutex);
 
+        // Преобразуем запрос: меняем префикс "/api/v1" на "/micro"
+        char modified_request[BUF_SIZE];
+        transform_request(buffer, modified_request, BUF_SIZE, selected.ip, selected.port);
+
+        char new_url[256];
+        const char *old_prefix = "/api/v1";
+        const char *micro_prefix = "/micro";
+        size_t old_prefix_len = strlen(old_prefix);
+        if (strncmp(url, old_prefix, old_prefix_len) == 0) {
+            snprintf(new_url, sizeof(new_url), "%s%s", micro_prefix, url + old_prefix_len);
+        } else {
+            strncpy(new_url, url, sizeof(new_url));
+            new_url[sizeof(new_url) - 1] = '\0';
+        }
+
         printf("We are forwarding the request to the movie microservice to %s:%d\n", selected.ip, selected.port);
         char message[256];
         sprintf(message, "We forward the request to the microservice movie to %s:%d", selected.ip, selected.port);
         log_request(clientIP, method, url, status, message);
-        forward_to_backend(client_sock, selected.ip, selected.port, modified_request, strlen(modified_request));
+        forward_to_backend(client_sock, selected.ip, selected.port, method, modified_request, modified_request);
     } else {
         char *not_found = "HTTP/1.1 404 Not Found\r\n\r\n";
         send(client_sock, not_found, strlen(not_found), 0);

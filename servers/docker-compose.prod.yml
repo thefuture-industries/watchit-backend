@@ -1,0 +1,72 @@
+version: "3.8"
+networks:
+  production:
+services:
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+      - "8001:8001"
+      - "8002:8002"
+      - "8011:8011"
+      - "8012:8012"
+      - "8020:8021"
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+    depends_on:
+      - gateway_service
+      - user_service
+      - movie_service
+      - blog_service
+    networks:
+      - production
+
+  gateway_service:
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile.prod
+    mem_limit: 250m
+    mem_reservation: 150m
+    cpus: 0.3
+    cpu_shares: 512
+    networks:
+      - production
+
+  user_service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile.prod
+    environment:
+      - DSN="host=localhost user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+    mem_limit: 120m
+    mem_reservation: 70m
+    cpus: 0.1
+    cpu_shares: 128
+    networks:
+      - production
+
+  movie_service:
+    build:
+      context: ./movie-service
+      dockerfile: Dockerfile.prod
+    environment:
+      - DSN="host=localhost user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+    mem_limit: 190m
+    mem_reservation: 70m
+    cpus: 0.2
+    cpu_shares: 256
+    networks:
+      - production
+
+  blog_service:
+    build:
+      context: ./blog-service
+      dockerfile: Dockerfile.prod
+    environment:
+      - DSN="host=localhost user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+    mem_limit: 190m
+    mem_reservation: 70m
+    cpus: 0.2
+    cpu_shares: 256
+    networks:
+      - production
