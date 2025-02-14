@@ -4,11 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - "servers/user-service/**"
+      - "server/user-service/**"
   pull_request:
     branches: [main]
     paths:
-      - "servers/user-service/**"
+      - "server/user-service/**"
 
 jobs:
   build:

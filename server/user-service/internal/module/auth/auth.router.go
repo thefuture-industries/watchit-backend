@@ -17,3 +17,5 @@ func RegisterRoutes(router *mux.Router) {
 	authRouter.HandleFunc("/signin", SigninHandler).Methods(http.MethodPost)
 	authRouter.HandleFunc("/signup", SignupHandler).Methods(http.MethodPost)
 }
+
+
