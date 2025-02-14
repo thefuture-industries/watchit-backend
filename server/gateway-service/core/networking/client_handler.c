@@ -1,8 +1,3 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c). All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,28 +6,22 @@
 #include <ws2tcpip.h>
 #include <pthread.h>
 
-#include "networking/services_paths.h"
-#include "networking/route_handler.h"
-#include "security/suspicious_checker.h"
-#include "networking/headers.h"
-#include "ip_filter/ip.h"
-#include "utiling/logger.h"
-#include "config/config.h"
+#include "client_handler.h"
+#include "common.h"
 
-#pragma comment(lib, "ws2_32.lib")
-
-// Declare the variable without initialization
-char* listen_port;
-char* listen_addr;
+#include "services_paths.h"
+#include "route_handler.h"
+#include "../security/suspicious_checker.h"
+#include "headers.h"
+#include "../ip_filter/ip.h"
+#include "../utiling/logger.h"
+#include "../config/config.h"
 
 #define BUF_SIZE 8192
 #define MAX_REQUEST_SIZE 4096
 
-// Declare the mutex
-pthread_mutex_t rr_mutex;
-
 /*
- * Функция forward_to_backend() - пересылает запрос на backend‑сервер
+ * Функция forward_to_backend() - пересылает HTTP-запрос на backend‑сервер
  */
 int forward_to_backend(int client_sock, const char *backend_ip, int backend_port, const char *method, const char *path, const char *request) {
     int backend_sock;
@@ -50,13 +39,13 @@ int forward_to_backend(int client_sock, const char *backend_ip, int backend_port
     backend_addr.sin_port = htons(backend_port);
     if (inet_pton(AF_INET, backend_ip, &backend_addr.sin_addr) <= 0) {
         perror("inet_pton");
-        close(backend_sock);
+        closesocket(backend_sock);
         return -1;
     }
 
     if (connect(backend_sock, (struct sockaddr *)&backend_addr, sizeof(backend_addr)) < 0) {
         perror("connect");
-        close(backend_sock);
+        closesocket(backend_sock);
         return -1;
     }
 
@@ -65,41 +54,38 @@ int forward_to_backend(int client_sock, const char *backend_ip, int backend_port
     snprintf(http_request, sizeof(http_request), "%s %s HTTP/1.1\r\nHost: %s:%d\r\n\r\n",
              method, path, backend_ip, backend_port);
 
-    //  snprintf(http_request, sizeof(http_request), "GET /micro/user/sync HTTP/1.1\r\nHost: localhost:8001\r\n\r\n%s",
-    //  request);
+    printf("%s", http_request);
 
-    printf(http_request);
-
-    // Отправляем запрос на бэкенд-сервер
+    // Отправляем запрос на backend-сервер
     if (send(backend_sock, http_request, strlen(http_request), 0) == -1) {
         perror("send");
-        close(backend_sock);
+        closesocket(backend_sock);
         return -1;
     }
 
-    // Получаем ответ от бэкенда и передаем его клиенту
+    // Получаем ответ от бэкенда и пересылаем его клиенту
     char response[MAX_REQUEST_SIZE];
     ssize_t bytes_received;
     while ((bytes_received = recv(backend_sock, response, MAX_REQUEST_SIZE, 0)) > 0) {
         send(client_sock, response, bytes_received, 0);
     }
 
-    close(backend_sock);
+    closesocket(backend_sock);
     return 0;
 }
 
 /*
- * Функция handle_client() - обрабатывает запрос в отдельном потоке
+ * Функция handle_client() - обработка запроса в отдельном потоке
  */
 void *handle_client(void *arg) {
     int client_sock = *((int *)arg);
     free(arg);
 
-    // Получаем IP клиента (устройство)
+    // Получаем IP клиента
     char clientIP[INET_ADDRSTRLEN];
     get_client_ip(client_sock, clientIP, sizeof(clientIP));
 
-    // Проверяем частоту запросов с данного IP
+    // Проверка частоты запросов с IP
     if (check_ip_rate(clientIP)) {
         char *banned_message = "HTTP/1.1 403 Forbidden\r\n\r\nIP banned";
         send(client_sock, banned_message, strlen(banned_message), 0);
@@ -118,7 +104,7 @@ void *handle_client(void *arg) {
     }
     buffer[received] = '\0';
 
-    // Если в запросе (либо URL, либо тело) обнаружен подозрительный текст, закрываем соединение
+    // Если запрос содержит подозрительную активность - прекращаем выполнение
     if (is_request_suspicious(buffer)) {
         char *forbidden_msg = "HTTP/1.1 403 Forbidden\r\n\r\nSuspicious activity detected";
         send(client_sock, forbidden_msg, strlen(forbidden_msg), 0);
@@ -141,6 +127,7 @@ void *handle_client(void *arg) {
     printf("Request: %s %s %s\n", method, url, protocol);
 
     const char *status = "200 (Forwarded)";
+
     if (strstr(url, "/user/") != NULL) {
         Backend selected;
         pthread_mutex_lock(&rr_mutex);
@@ -148,7 +135,6 @@ void *handle_client(void *arg) {
         user_rr_index = (user_rr_index + 1) % user_backend_count;
         pthread_mutex_unlock(&rr_mutex);
 
-        // Преобразуем запрос: меняем префикс "/api/v1" на "/micro"
         char modified_request[BUF_SIZE];
         transform_request(buffer, modified_request, BUF_SIZE, selected.ip, selected.port);
 
@@ -168,14 +154,14 @@ void *handle_client(void *arg) {
         sprintf(message, "We forward the request to the microservice user to %s:%d", selected.ip, selected.port);
         log_request(clientIP, method, url, status, message);
         forward_to_backend(client_sock, selected.ip, selected.port, method, new_url, modified_request);
-    } else if (strstr(url, "/blog/") != NULL) {
+    }
+    else if (strstr(url, "/blog/") != NULL) {
         Backend selected;
         pthread_mutex_lock(&rr_mutex);
         selected = blog_backends[blog_rr_index];
         blog_rr_index = (blog_rr_index + 1) % blog_backend_count;
         pthread_mutex_unlock(&rr_mutex);
 
-        // Преобразуем запрос: меняем префикс "/api/v1" на "/micro"
         char modified_request[BUF_SIZE];
         transform_request(buffer, modified_request, BUF_SIZE, selected.ip, selected.port);
 
@@ -194,15 +180,15 @@ void *handle_client(void *arg) {
         char message[256];
         sprintf(message, "We forward the request to the microservice blog to %s:%d", selected.ip, selected.port);
         log_request(clientIP, method, url, status, message);
-        forward_to_backend(client_sock, selected.ip, selected.port, method, modified_request, modified_request);
-    } else if (strstr(url, "/movie/") != NULL) {
+        forward_to_backend(client_sock, selected.ip, selected.port, method, new_url, modified_request);
+    }
+    else if (strstr(url, "/movie/") != NULL) {
         Backend selected;
         pthread_mutex_lock(&rr_mutex);
         selected = movie_backends[movie_rr_index];
         movie_rr_index = (movie_rr_index + 1) % movie_backend_count;
         pthread_mutex_unlock(&rr_mutex);
 
-        // Преобразуем запрос: меняем префикс "/api/v1" на "/micro"
         char modified_request[BUF_SIZE];
         transform_request(buffer, modified_request, BUF_SIZE, selected.ip, selected.port);
 
@@ -221,8 +207,9 @@ void *handle_client(void *arg) {
         char message[256];
         sprintf(message, "We forward the request to the microservice movie to %s:%d", selected.ip, selected.port);
         log_request(clientIP, method, url, status, message);
-        forward_to_backend(client_sock, selected.ip, selected.port, method, modified_request, modified_request);
-    } else {
+        forward_to_backend(client_sock, selected.ip, selected.port, method, new_url, modified_request);
+    }
+    else {
         char *not_found = "HTTP/1.1 404 Not Found\r\n\r\n";
         send(client_sock, not_found, strlen(not_found), 0);
         log_request(clientIP, method, url, status, not_found);
@@ -230,102 +217,4 @@ void *handle_client(void *arg) {
 
     closesocket(client_sock);
     pthread_exit(NULL);
-}
-
-/*
- * Функция main() - инициирует Winsock, запускает сервер и принимает подключения
- */
-int main() {
-    SetConsoleCP(65001);
-    SetConsoleOutputCP(65001);
-
-    WSADATA wsaData;
-    if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0) {
-        fprintf(stderr, "WSAStartup failed: %d\n", WSAGetLastError());
-        system("pause");
-        exit(EXIT_FAILURE);
-    }
-
-    listen_port = get_config("listen_port");
-    listen_addr = get_config("listen_addr");
-
-    pthread_mutex_init(&rr_mutex, NULL);
-
-    int server_sock;
-    struct sockaddr_in server_addr;
-
-    server_sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_sock < 0) {
-        perror("socket");
-        WSACleanup();
-        exit(EXIT_FAILURE);
-    }
-
-    int opt = 1;
-    if (setsockopt(server_sock, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) < 0) {
-        perror("setsockopt");
-        closesocket(server_sock);
-        WSACleanup();
-        exit(EXIT_FAILURE);
-    }
-
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(atoi(listen_port));
-    // server_addr.sin_addr.s_addr = INADDR_ANY;
-
-    if (inet_pton(AF_INET, listen_addr, &server_addr.sin_addr) <= 0) {
-        perror("Invalid listen_addr");
-        WSACleanup();
-        exit(EXIT_FAILURE);
-    }
-
-    memset(server_addr.sin_zero, 0, sizeof(server_addr.sin_zero));
-
-    if (bind(server_sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
-        int err = WSAGetLastError();
-        fprintf(stderr, "bind failed with error: %d\n", err);
-        closesocket(server_sock);
-        WSACleanup();
-        exit(EXIT_FAILURE);
-    }
-
-    if (listen(server_sock, 10) < 0) {
-        perror("listen");
-        closesocket(server_sock);
-        WSACleanup();
-        exit(EXIT_FAILURE);
-    }
-
-    printf("The multithreaded server listens on the port %s...\n", listen_port);
-
-    while (1) {
-        struct sockaddr_in client_addr;
-        socklen_t addr_len = sizeof(client_addr);
-        int *client_sock_ptr = malloc(sizeof(int));
-        if (!client_sock_ptr) {
-            perror("malloc");
-            continue;
-        }
-        *client_sock_ptr = accept(server_sock, (struct sockaddr *)&client_addr, &addr_len);
-        if (*client_sock_ptr < 0) {
-            perror("accept");
-            free(client_sock_ptr);
-            continue;
-        }
-
-        pthread_t tid;
-        if (pthread_create(&tid, NULL, handle_client, client_sock_ptr) != 0) {
-            perror("pthread_create");
-            closesocket(*client_sock_ptr);
-            free(client_sock_ptr);
-            continue;
-        }
-        pthread_detach(tid);
-    }
-
-    closesocket(server_sock);
-    pthread_mutex_destroy(&rr_mutex);
-    WSACleanup();
-    system("pause");
-    return 0;
 }

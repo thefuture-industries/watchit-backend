@@ -15,7 +15,7 @@ OBJ_DIR = obj
 TARGET = $(OBJ_DIR)/gateway-server.exe
 
 # Получаем список всех C-файлов в текущем каталоге и подкаталогах
-SOURCES := $(shell find . -name "*.c" -print)
+SOURCES := $(shell find . -name "*.c" -not -path "*/test/*" -print)
 
 # Создаем список объектных файлов
 OBJECTS := $(patsubst %.c,$(OBJ_DIR)/%.o,$(SOURCES))
