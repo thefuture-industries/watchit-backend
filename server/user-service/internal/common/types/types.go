@@ -11,3 +11,9 @@ type SigninPayload struct {
 	Username string `json:"username" validate:"required"`
 	PINCODE  string `json:"pin_code" validate:"required"`
 }
+
+type UpdatePayload struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	PINCODE  string `json:"pin_code"`
+}

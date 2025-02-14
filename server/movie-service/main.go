@@ -7,15 +7,15 @@ package main
 
 import (
 	"fmt"
-	"go-user-service/cmd/api"
-	"go-user-service/internal/common/database"
+	"go-movie-service/cmd/api"
+	"go-movie-service/internal/common/database"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"go.uber.org/zap"
 	"github.com/joho/godotenv"
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -40,14 +40,14 @@ func main() {
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
 	// Создаем и запускаем основной сервер
-	server := api.NewAPIServer(":8001", db)
+	server := api.NewAPIServer(":8011", db)
 	go func() {
-		fmt.Println(`   __  __                  __  ____                                      _
-  / / / /_______  _____   /  |/  (_)_____________  ________  ______   __(_)_______
- / / / / ___/ _ \/ ___/  / /|_/ / / ___/ ___/ __ \/ ___/ _ \/ ___/ | / / / ___/ _ \
-/ /_/ (__  )  __/ /     / /  / / / /__/ /  / /_/ (__  )  __/ /   | |/ / / /__/  __/
-\____/____/\___/_/     /_/  /_/_/\___/_/   \____/____/\___/_/    |___/_/\___/\___/
-                                                                                   `)
+		fmt.Println(`    __  ___           _         __  ____                                      _
+   /  |/  /___ _   __(_)__     /  |/  (_)_____________  ________  ______   __(_)_______
+  / /|_/ / __ \ | / / / _ \   / /|_/ / / ___/ ___/ __ \/ ___/ _ \/ ___/ | / / / ___/ _ \
+ / /  / / /_/ / |/ / /  __/  / /  / / / /__/ /  / /_/ (__  )  __/ /   | |/ / / /__/  __/
+/_/  /_/\____/|___/_/\___/  /_/  /_/_/\___/_/   \____/____/\___/_/    |___/_/\___/\___/
+                                                                                        `)
 		if err := server.Run(); err != nil {
 			errChan <- err
 		}

@@ -3,7 +3,7 @@
 //  *  Licensed under the MIT License. See License.txt in the project root for license information.
 //  *--------------------------------------------------------------------------------------------*
 
-package auth
+package sync
 
 import (
 	"net/http"
@@ -12,10 +12,5 @@ import (
 )
 
 func RegisterRoutes(router *mux.Router) {
-	authRouter := router.PathPrefix("/auth").Subrouter()
-
-	authRouter.HandleFunc("/signin", SigninHandler).Methods(http.MethodPost)
-	authRouter.HandleFunc("/signup", SignupHandler).Methods(http.MethodPost)
-	authRouter.HandleFunc("/signout", SignoutHandler).Methods(http.MethodPost)
-	authRouter.HandleFunc("/update", UpdateHandler).Methods(http.MethodPut)
+	router.HandleFunc("/sync", SyncHandler).Methods(http.MethodGet)
 }

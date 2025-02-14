@@ -127,3 +127,19 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 
 	utils.WriteJSON(w, http.StatusCreated, "the user has been successfully created!")
 }
+
+func UpdateHandler(w http.ResponseWriter, r *http.Request) {}
+
+func SignoutHandler(w http.ResponseWriter, r *http.Request) {
+	// Создаем куки с истекшим сроком действия
+	cookie := &http.Cookie{
+		Name:   "auth-token",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	}
+
+	http.SetCookie(w, cookie)
+
+	utils.WriteJSON(w, http.StatusOK, "You have successfully logged out.")
+}

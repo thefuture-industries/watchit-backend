@@ -1,4 +1,4 @@
-## Micro User Data service
+## Micro Movie Data service
 
 ### Description
 
@@ -23,5 +23,5 @@ This service provides functionality for working with user data, including regist
 
 ### Setting up
 
-- Works on port 8001/8002
-- API - http://localhost:[8001/8002]/micro/user/adm/doc
+- Works on port 8011/8012
+- API - http://localhost:[8011/8012]/micro/movie/adm/doc
