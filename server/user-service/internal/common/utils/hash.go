@@ -1,3 +1,8 @@
+// *---------------------------------------------------------------------------------------------
+//  *  Copyright (c). All rights reserved.
+//  *  Licensed under the MIT License. See License.txt in the project root for license information.
+//  *--------------------------------------------------------------------------------------------*
+
 package utils
 
 import (
@@ -18,7 +23,6 @@ func Encrypt(plaintext string) (string, error) {
 	key = os.Getenv("SUPER_SECRET_KEY")
 	iv = os.Getenv("IV")
 
-	
 	// Создание блока шифрования AES
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {

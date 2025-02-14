@@ -11,12 +11,12 @@
   "paths": {
     "/auth/signup": {
       "post": {
-        "description": "Adding user",
+        "description": "Signup user",
         "consumes": ["application/json"],
         "produces": ["application/json"],
         "tags": ["user"],
-        "summary": "Adding user",
-        "operationId": "add-user",
+        "summary": "Signup user",
+        "operationId": "signup-user",
         "parameters": [
           {
             "description": "User data",
@@ -24,7 +24,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/types.User"
+              "$ref": "#/definitions/types.Signup"
             }
           }
         ],
@@ -37,6 +37,41 @@
           },
           "400": {
             "description": "such an email has already been registered",
+            "schema": {
+              "$ref": "#/definitions/types.ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "description": "Signin user",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["user"],
+        "summary": "Signin user",
+        "operationId": "signin-user",
+        "parameters": [
+          {
+            "description": "User data",
+            "name": "DTO",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/types.Signin"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the user has been successfully created!",
+            "schema": {
+              "$ref": "#/definitions/types.UserResponse"
+            }
+          },
+          "400": {
+            "description": "the user was not found",
             "schema": {
               "$ref": "#/definitions/types.ErrorResponse"
             }
@@ -130,12 +165,12 @@
     "types.ErrorResponse": {
       "type": "object",
       "properties": {
-        "error": {
+        "message": {
           "type": "string"
         }
       }
     },
-    "types.User": {
+    "types.Signup": {
       "type": "object",
       "properties": {
         "username": {
@@ -148,6 +183,17 @@
           "type": "string"
         },
         "country": {
+          "type": "string"
+        }
+      }
+    },
+    "types.Signin": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "pin_code": {
           "type": "string"
         }
       }
