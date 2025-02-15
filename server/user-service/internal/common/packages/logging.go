@@ -103,3 +103,18 @@ func (l *Logger) productionLogging(log string) {
 		return // Важно выйти, если не смогли записать
 	}
 }
+
+// WriteHeader добавляет статус ответа в обертку
+// ---------------------------------------------
+func (rw *responseWriter) WriteHeader(status int) {
+	rw.status = status
+	rw.ResponseWriter.WriteHeader(status)
+}
+
+// Write добавляет размер записи в обертку
+// ---------------------------------------
+func (rw *responseWriter) Write(b []byte) (int, error) {
+	size, err := rw.ResponseWriter.Write(b)
+	rw.size += int64(size)
+	return size, err
+}

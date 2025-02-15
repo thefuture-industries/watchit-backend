@@ -16,7 +16,9 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
+	"go-user-service/cmd/conf"
 	"go-user-service/internal/common/packages"
+	"go-user-service/internal/module/admin"
 	"go-user-service/internal/module/auth"
 	"go-user-service/internal/module/sync"
 )
@@ -41,6 +43,12 @@ func (s *APIServer) Run() error {
 
 	router := mux.NewRouter()
 	subrouter := router.PathPrefix("/micro/user").Subrouter()
+
+	// logger
+	logger, _ := zap.NewProduction()
+
+	// Vision monitoring
+	monitoring := conf.NewVision()
 
 	// ------
 	// Scalar
@@ -69,14 +77,15 @@ func (s *APIServer) Run() error {
 	// -------------
 	// ROUTERS PATHS
 	// -------------
-	auth.RegisterRoutes(subrouter)
-	sync.RegisterRoutes(subrouter)
+	auth.NewHandler(monitoring, logger).RegisterRoutes(subrouter)
+	admin.NewHandler(monitoring, logger).RegisterRoutes(subrouter)
+	sync.NewHandler(monitoring, logger).RegisterRoutes(subrouter)
 
 	// ------------------
-	// Логирование server
+	// Middlewares
 	// ------------------
-	logger, _ := zap.NewProduction()
 	router.Use(packages.NewLogger(logger).LoggerMiddleware)
+	router.Use(packages.NewVision(monitoring, logger).ServeHTTP)
 
 	// ---------------
 	// подключаем CORS

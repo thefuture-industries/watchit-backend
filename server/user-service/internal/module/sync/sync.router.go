@@ -11,6 +11,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func RegisterRoutes(router *mux.Router) {
-	router.HandleFunc("/sync", SyncHandler).Methods(http.MethodGet)
+func (h Handler) RegisterRoutes(router *mux.Router) {
+	router.HandleFunc("/sync", h.SyncHandler).Methods(http.MethodGet)
 }

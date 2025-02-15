@@ -14,8 +14,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"go.uber.org/zap"
 	"github.com/joho/godotenv"
+	"go.uber.org/zap"
 )
 
 func main() {

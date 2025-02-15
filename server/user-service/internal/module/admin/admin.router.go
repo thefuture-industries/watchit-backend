@@ -3,7 +3,7 @@
 //  *  Licensed under the MIT License. See License.txt in the project root for license information.
 //  *--------------------------------------------------------------------------------------------*
 
-package auth
+package admin
 
 import (
 	"net/http"
@@ -12,10 +12,7 @@ import (
 )
 
 func (h Handler) RegisterRoutes(router *mux.Router) {
-	authRouter := router.PathPrefix("/auth").Subrouter()
+	adminRouter := router.PathPrefix("/admin").Subrouter()
 
-	authRouter.HandleFunc("/signin", h.SigninHandler).Methods(http.MethodPost)
-	authRouter.HandleFunc("/signup", h.SignupHandler).Methods(http.MethodPost)
-	authRouter.HandleFunc("/signout", h.SignoutHandler).Methods(http.MethodPost)
-	authRouter.HandleFunc("/update", h.UpdateHandler).Methods(http.MethodPut)
+	adminRouter.HandleFunc("/vision/stats", h.MonitoringHandler).Methods(http.MethodGet)
 }

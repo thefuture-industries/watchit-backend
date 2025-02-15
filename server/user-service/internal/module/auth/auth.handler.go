@@ -7,6 +7,7 @@ package auth
 
 import (
 	"fmt"
+	"go-user-service/cmd/conf"
 	"go-user-service/internal/common/database"
 	"go-user-service/internal/common/database/actions"
 	"go-user-service/internal/common/types"
@@ -16,9 +17,22 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
-func SigninHandler(w http.ResponseWriter, r *http.Request) {
+type Handler struct {
+	monitor *conf.Vision
+	logger  *zap.Logger
+}
+
+func NewHandler(monitor *conf.Vision, logger *zap.Logger) *Handler {
+	return &Handler{
+		monitor: monitor,
+		logger:  logger,
+	}
+}
+
+func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 	var payload *types.SigninPayload
 
 	// Отправляем пользователю ошибку, что не все поля заполнены
@@ -34,11 +48,15 @@ func SigninHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Получение пользователя
+	queryStart := time.Now()
 	isUsername, err := actions.GetUserByUsername(payload.Username)
 	if err != nil {
+		h.monitor.VisionDBError()
+		h.logger.Error("[DB ERROR]", zap.Error(err))
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
+	h.monitor.VisionDBQuery(time.Since(queryStart))
 
 	if isUsername == nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("the user was not found"))
@@ -47,6 +65,7 @@ func SigninHandler(w http.ResponseWriter, r *http.Request) {
 
 	pincode_hash, err := utils.Encrypt(payload.PINCODE)
 	if err != nil {
+		h.logger.Error("[HASH ERROR]", zap.Error(err))
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
@@ -59,6 +78,7 @@ func SigninHandler(w http.ResponseWriter, r *http.Request) {
 
 	uuid_hash, err := utils.Encrypt(isUsername.UUID)
 	if err != nil {
+		h.logger.Error("[HASH ERROR]", zap.Error(err))
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
@@ -80,7 +100,7 @@ func SigninHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func SignupHandler(w http.ResponseWriter, r *http.Request) {
+func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 	var payload *types.SignupPayload
 
 	// Отправляем пользователю ошибку, что не все поля заполнены
@@ -97,6 +117,8 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 
 	isUsername, err := actions.GetUserByUsername(payload.Username)
 	if err != nil {
+		h.monitor.VisionDBError()
+		h.logger.Error("[DB ERROR]", zap.Error(err))
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
@@ -128,9 +150,9 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusCreated, "the user has been successfully created!")
 }
 
-func UpdateHandler(w http.ResponseWriter, r *http.Request) {}
+func (h Handler) UpdateHandler(w http.ResponseWriter, r *http.Request) {}
 
-func SignoutHandler(w http.ResponseWriter, r *http.Request) {
+func (h Handler) SignoutHandler(w http.ResponseWriter, r *http.Request) {
 	// Создаем куки с истекшим сроком действия
 	cookie := &http.Cookie{
 		Name:   "auth-token",
