@@ -32,7 +32,7 @@
     "expo-router": "~4.0.16",
     "expo-splash-screen": "~0.29.19",
     "expo-status-bar": "~2.0.0",
-    "expo-symbols": "~0.2.0",
+    "expo-symbols": "~0.2.2",
     "expo-system-ui": "~4.0.6",
     "expo-web-browser": "~14.0.1",
     "lucide-react-native": "^0.470.0",
