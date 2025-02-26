@@ -54,7 +54,7 @@
     "@types/react": "~18.3.12",
     "@types/react-test-renderer": "^18.3.0",
     "jest": "^29.2.1",
-    "jest-expo": "~52.0.2",
+    "jest-expo": "~52.0.5",
     "os": "^0.1.2",
     "prettier": "^3.4.2",
     "react-test-renderer": "18.3.1",
