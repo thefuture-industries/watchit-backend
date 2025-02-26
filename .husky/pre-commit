@@ -37,7 +37,7 @@ if echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
 
     echo "[|] Running formatted and build for user-service..."
     cd ./server/user-service
-    go fmt ./...
+    gofmt -w .
     make build
     echo "[+] Success formatted and build for user-service!"
     cd ../../
@@ -50,7 +50,7 @@ if echo "$CHANGED_FILES" | grep -qE '^server/movie-service/'; then
 
     echo "[|] Running formatted and build for movie-service..."
     cd ./server/movie-service
-    go fmt ./...
+    gofmt -w .
     make build
     echo "[+] Success formatted and build for movie-service!"
     cd ../../
@@ -63,7 +63,7 @@ fi
 
 #     echo "[|] Running formatted and build for blog-service..."
 #     cd ./server/blog-service
-#     go fmt ./...
+#     gofmt -w .
 #     make build
 #     echo "[+] Success formatted and build for blog-service!"
 #     cd ../../

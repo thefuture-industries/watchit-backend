@@ -11,9 +11,9 @@ import (
 	"net/http"
 
 	"github.com/MarceloPetrucio/go-scalar-api-reference"
-	"github.com/noneandundefined/vision-go"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/noneandundefined/vision-go"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 

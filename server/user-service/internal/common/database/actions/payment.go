@@ -13,6 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
+
 func CreatePayment(payment *database.Payments) error {
 	create := database.GetDB().Create(payment)
 
