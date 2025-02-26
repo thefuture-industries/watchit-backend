@@ -1,0 +1,74 @@
+#!/bin/sh
+set -e
+
+echo "Running pre-commit hook..."
+
+# Получаем список измененных файлов
+CHANGED_FILES=$(git diff --cached --name-only)
+
+if echo "$CHANGED_FILES" | grep -qE '^client-mobile/'; then
+    echo "Changes in 'client-mobile' directory detected."
+
+    echo "[|] Running formatted and build for client-mobile..."
+    cd ./client-mobile
+    pnpm format
+    # pnpm test
+    echo "[+] Success formatted and build for client-mobile!"
+    cd ..
+else
+    echo "No changes in 'client-mobile' directory. Skipping actions for client-mobile."
+fi
+
+if echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
+    echo "Changes in 'gateway-service' directory detected."
+
+    echo "[|] Running formatted and build for gateway-service..."
+    cd ./server/gateway-service
+    make clean
+    make
+    echo "[+] Success formatted and build for gateway-service!"
+    cd ../../
+else
+    echo "No changes in 'gateway-service' directory. Skipping actions for gateway-service."
+fi
+
+if echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
+    echo "Changes in 'user-service' directory detected."
+
+    echo "[|] Running formatted and build for user-service..."
+    cd ./server/user-service
+    go fmt ./...
+    make build
+    echo "[+] Success formatted and build for user-service!"
+    cd ../../
+else
+    echo "No changes in 'user-service' directory. Skipping actions for user-service."
+fi
+
+if echo "$CHANGED_FILES" | grep -qE '^server/movie-service/'; then
+    echo "Changes in 'movie-service' directory detected."
+
+    echo "[|] Running formatted and build for movie-service..."
+    cd ./server/movie-service
+    go fmt ./...
+    make build
+    echo "[+] Success formatted and build for movie-service!"
+    cd ../../
+else
+    echo "No changes in 'movie-service' directory. Skipping actions for movie-service."
+fi
+
+# if echo "$CHANGED_FILES" | grep -qE '^server/blog-service/'; then
+#     echo "Changes in 'blog-service' directory detected."
+
+#     echo "[|] Running formatted and build for blog-service..."
+#     cd ./server/blog-service
+#     go fmt ./...
+#     make build
+#     echo "[+] Success formatted and build for blog-service!"
+#     cd ../../
+# else
+#     echo "No changes in 'blog-service' directory. Skipping actions for blog-service."
+# fi
+
+echo "Husky is successfully!"
