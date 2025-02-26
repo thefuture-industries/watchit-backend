@@ -7,7 +7,6 @@ package auth
 
 import (
 	"fmt"
-	"go-user-service/cmd/conf"
 	"go-user-service/internal/common/database"
 	"go-user-service/internal/common/database/actions"
 	"go-user-service/internal/common/types"
@@ -17,15 +16,16 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/google/uuid"
+	"github.com/noneandundefined/vision-go"
 	"go.uber.org/zap"
 )
 
 type Handler struct {
-	monitor *conf.Vision
+	monitor *vision.Vision
 	logger  *zap.Logger
 }
 
-func NewHandler(monitor *conf.Vision, logger *zap.Logger) *Handler {
+func NewHandler(monitor *vision.Vision, logger *zap.Logger) *Handler {
 	return &Handler{
 		monitor: monitor,
 		logger:  logger,
@@ -51,8 +51,11 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 	queryStart := time.Now()
 	isUsername, err := actions.GetUserByUsername(payload.Username)
 	if err != nil {
-		h.monitor.VisionDBError()
-		h.logger.Error("[DB ERROR]", zap.Error(err))
+		ctx := utils.SetErrorInContext(r.Context(), err)
+		r = r.WithContext(ctx)
+		h.monitor.VisionError(err)
+		// h.monitor.VisionDBError()
+		// h.logger.Error("[DB ERROR]", zap.Error(err))
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}

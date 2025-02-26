@@ -11,12 +11,12 @@ import (
 	"net/http"
 
 	"github.com/MarceloPetrucio/go-scalar-api-reference"
+	"github.com/noneandundefined/vision-go"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
-	"go-user-service/cmd/conf"
 	"go-user-service/internal/common/packages"
 	"go-user-service/internal/module/admin"
 	"go-user-service/internal/module/auth"
@@ -47,13 +47,10 @@ func (s *APIServer) Run() error {
 	// logger
 	logger, _ := zap.NewProduction()
 
-	// Vision monitoring
-	monitoring := conf.NewVision()
-
 	// ------
 	// Scalar
 	// ------
-	subrouter.PathPrefix("/docs/").Handler(http.StripPrefix("/docs/", http.FileServer(http.Dir("./docs"))))
+	subrouter.PathPrefix("/docs/").Handler(http.StripPrefix("/docs/", http.FileServer(http.Dir("./docs/"))))
 	subrouter.HandleFunc("/docs", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./docs/swagger.json")
 	})
@@ -73,6 +70,12 @@ func (s *APIServer) Run() error {
 
 		fmt.Fprintln(w, htmlContent)
 	})
+
+	// Vision monitoring
+	monitoring := vision.NewVision()
+	subrouter.HandleFunc("/admin/vision", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./docs/vision/index.html")
+	}).Methods("GET")
 
 	// -------------
 	// ROUTERS PATHS

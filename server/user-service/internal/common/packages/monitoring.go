@@ -6,20 +6,21 @@
 package packages
 
 import (
-	"context"
-	"go-user-service/cmd/conf"
+	"fmt"
+	"go-user-service/internal/common/utils"
 	"net/http"
 	"time"
 
+	"github.com/noneandundefined/vision-go"
 	"go.uber.org/zap"
 )
 
 type Vision struct {
 	logger  *zap.Logger
-	monitor *conf.Vision
+	monitor *vision.Vision
 }
 
-func NewVision(monitor *conf.Vision, logger *zap.Logger) *Vision {
+func NewVision(monitor *vision.Vision, logger *zap.Logger) *Vision {
 	return &Vision{
 		monitor: monitor,
 		logger:  logger,
@@ -44,27 +45,30 @@ func (v *Vision) ServeHTTP(next http.Handler) http.Handler {
 			status:         200,
 		}
 
-		errorChan := make(chan error, 1)
-		defer close(errorChan)
-
-		ctx := context.WithValue(r.Context(), ErrorContextKey, errorChan)
-		r = r.WithContext(ctx)
-
 		next.ServeHTTP(wrapped, r)
 
-		var err error
-		select {
-		case err = <-errorChan:
-			// Ошибка получена
+		err := utils.GetErrorFromContext(r.Context())
+		fmt.Println(err)
+		if err != nil {
+			fmt.Println("ERROR!!!")
+			v.monitor.VisionDBError()
 			v.monitor.VisionError(err)
-			v.logger.Error("request error",
-				zap.String("method", r.Method),
-				zap.String("path", r.URL.Path),
-				zap.Error(err),
-			)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError) // Отправляем клиенту ошибку 500
-		default:
+			v.logger.Error("[REQ ERROR]", zap.Error(err))
 		}
+
+		// var err error
+		// select {
+		// case err = <-errorChan:
+		// 	// Ошибка получена
+		// 	v.monitor.VisionError(err)
+		// 	v.logger.Error("request error",
+		// 		zap.String("method", r.Method),
+		// 		zap.String("path", r.URL.Path),
+		// 		zap.Error(err),
+		// 	)
+		// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError) // Отправляем клиенту ошибку 500
+		// default:
+		// }
 
 		duration := time.Since(start)
 

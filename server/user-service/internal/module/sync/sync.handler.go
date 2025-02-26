@@ -8,18 +8,18 @@ package sync
 import (
 	"net/http"
 
-	"go-user-service/cmd/conf"
 	"go-user-service/internal/common/utils"
 
+	"github.com/noneandundefined/vision-go"
 	"go.uber.org/zap"
 )
 
 type Handler struct {
-	monitor *conf.Vision
+	monitor *vision.Vision
 	logger  *zap.Logger
 }
 
-func NewHandler(monitor *conf.Vision, logger *zap.Logger) *Handler {
+func NewHandler(monitor *vision.Vision, logger *zap.Logger) *Handler {
 	return &Handler{
 		monitor: monitor,
 		logger:  logger,
