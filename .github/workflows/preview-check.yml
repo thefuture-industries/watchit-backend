@@ -59,11 +59,11 @@ jobs:
                   eas-version: latest
                   token: ${{ secrets.EXPO_TOKEN }}
 
-            - name: Decode JKS KEY
-              run: |
-                  cd ./client-mobile
-                  mkdir -p ./android/app
-                  echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > ./android/app/keystore.jks
+            # - name: Decode JKS KEY
+            #   run: |
+            #       cd ./client-mobile
+            #       mkdir -p ./android/app
+            #       echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > ./android/app/keystore.jks
 
             - name: Build APK
               run: |

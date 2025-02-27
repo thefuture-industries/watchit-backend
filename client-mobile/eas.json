@@ -7,13 +7,19 @@
 		"preview": {
 			"distribution": "internal",
 			"android": {
-				"keystorePath": "./android/app/keystore.jks",
-				"keystorePassword": "password",
-				"keyAlias": "my-key",
-				"keyPassword": "password"
+				"buildType": "apk",
+				"credentialsSource": "local"
 			}
 		},
 		"production": {}
+	},
+	"credentials": {
+		"android": {
+			"keystorePath": "./android/app/keystore.jks",
+			"keystorePassword": "password",
+			"keyAlias": "my-key",
+			"keyPassword": "password"
+		}
 	},
 	"cli": {
 		"version": ">= 0.52.0"
