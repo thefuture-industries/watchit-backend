@@ -1,0 +1,111 @@
+name: Preview Check
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Install pnpm
+              run: npm i -g pnpm
+
+            - name: Install packages React Native
+              run: |
+                  pnpm install --dir ./client-mobile
+                  npx react-native doctor
+
+            # Установка Java и Android SDK
+            - name: Install Java and Android SDK
+              uses: actions/setup-java@v3
+              with:
+                  distribution: 'temurin'
+                  java-version: '17'
+
+            - name: Install Android SDK
+              run: |
+                  sudo apt update
+                  sudo apt install -y android-sdk
+                  echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+                  echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
+                  echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+                  echo "$ANDROID_HOME/tools" >> $GITHUB_PATH
+
+            - name: Build APK
+              run: |
+                  cd ./client-mobile/android
+                  ./gradlew assembleDebug
+
+            - name: Install Build Tools C
+              run: sudo apt update && sudo apt install -y build-essential
+
+            - name: Install base packages for C analystics
+              run: sudo apt install cppcheck && sudo apt install build-essential && sudo apt install clang && sudo apt install valgrind
+
+            - name: Build C Server
+              run: |
+                  cd ./server/gateway-service
+                  make clean && make
+
+            - name: Analystic C Server
+              run: |
+                  cd ./server/gateway-service
+                  clang-tidy core/*.c -- -Iinclude
+
+            - name: Install Go
+              uses: actions/setup-go@v4
+              with:
+                  go-version: 1.23.0
+
+            # USER SERVICE
+            - name: Install dependencies (USER)
+              working-directory: ./server/user-service
+              run: |
+                  go mod download
+
+            - name: Run make (USER)
+              working-directory: ./server/user-service
+              run: make build
+
+            # MOVIE SERVICE
+            - name: Install dependencies (MOVIE)
+              working-directory: ./server/movie-service
+              run: |
+                  go mod download
+
+            - name: Run make (MOVIE)
+              working-directory: ./server/movie-service
+              run: make build
+
+            # Проверка свободного порта (Linux)
+            - name: Check port -> 8001
+              run: |
+                  if lsof -i :8001; then
+                    echo "Port 8001 exists!";
+                    exit 1;
+                  else
+                    echo "Port 8001 is free!";
+                  fi
+
+            - name: Check port -> 8011
+              run: |
+                  if lsof -i :8011; then
+                    echo "Port 8011 exists!";
+                    exit 1;
+                  else
+                    echo "Port 8011 is free!";
+                  fi
