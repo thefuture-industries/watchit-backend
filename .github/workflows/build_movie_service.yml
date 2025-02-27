@@ -1,43 +1,47 @@
 name: Build Movie MicroService
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "server/movie-service/**"
-  pull_request:
-    branches: [main]
-    paths:
-      - "server/movie-service/**"
+    push:
+        branches: [main]
+        paths:
+            - 'server/movie-service/**'
+    pull_request:
+        branches: [main]
+        paths:
+            - 'server/movie-service/**'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    build:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: write
+            issues: write
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
 
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: "1.23.0"
+            - name: Set up Go
+              uses: actions/setup-go@v3
+              with:
+                  go-version: '1.23.0'
 
-      - name: Change directory
-        working-directory: ./server/movie-service
-        run: pwd
+            - name: Change directory
+              working-directory: ./server/movie-service
+              run: pwd
 
-      - name: Install dependencies
-        working-directory: ./server/movie-service
-        run: |
-          go mod download
+            - name: Install dependencies
+              working-directory: ./server/movie-service
+              run: |
+                  go mod download
 
-      - name: Run make
-        working-directory: ./server/movie-service
-        run: make build
+            - name: Run make
+              working-directory: ./server/movie-service
+              run: make build
 
-      - name: Archive artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: movie-service
-          path: ./server/movie-service/bin/movie-service
+            - name: Archive artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: movie-service
+                  path: ./server/movie-service/bin/movie-service
