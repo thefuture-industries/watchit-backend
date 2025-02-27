@@ -1,8 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <winsock2.h>
-#include <windows.h>
+#ifdef _WIN32
+    #include <winsock2.h>
+    #include <windows.h>
+    #define PLATFORM_CLOSE_SOCKET(s) closesocket(s)
+#else
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    #include <unistd.h>
+    #define PLATFORM_CLOSE_SOCKET(s) close(s)
+#endif
 #include <ws2tcpip.h>
 #include <pthread.h>
 
@@ -39,13 +48,13 @@ int forward_to_backend(int client_sock, const char *backend_ip, int backend_port
     backend_addr.sin_port = htons(backend_port);
     if (inet_pton(AF_INET, backend_ip, &backend_addr.sin_addr) <= 0) {
         perror("inet_pton");
-        closesocket(backend_sock);
+        PLATFORM_CLOSE_SOCKET(backend_sock);
         return -1;
     }
 
     if (connect(backend_sock, (struct sockaddr *)&backend_addr, sizeof(backend_addr)) < 0) {
         perror("connect");
-        closesocket(backend_sock);
+        PLATFORM_CLOSE_SOCKET(backend_sock);
         return -1;
     }
 
@@ -59,7 +68,7 @@ int forward_to_backend(int client_sock, const char *backend_ip, int backend_port
     // Отправляем запрос на backend-сервер
     if (send(backend_sock, http_request, strlen(http_request), 0) == -1) {
         perror("send");
-        closesocket(backend_sock);
+        PLATFORM_CLOSE_SOCKET(backend_sock);
         return -1;
     }
 
@@ -70,7 +79,7 @@ int forward_to_backend(int client_sock, const char *backend_ip, int backend_port
         send(client_sock, response, bytes_received, 0);
     }
 
-    closesocket(backend_sock);
+    PLATFORM_CLOSE_SOCKET(backend_sock);
     return 0;
 }
 
@@ -92,14 +101,14 @@ void *handle_client(void *arg) {
         printf("HTTP/1.1 403 Forbidden\r\n\r\nIP banned");
         log_request(clientIP, "BLOCKED", "N/A", "403", "IP banned");
         log_security("IP banned");
-        closesocket(client_sock);
+        PLATFORM_CLOSE_SOCKET(client_sock);
         pthread_exit(NULL);
     }
 
     char buffer[BUF_SIZE];
     int received = recv(client_sock, buffer, BUF_SIZE - 1, 0);
     if (received <= 0) {
-        closesocket(client_sock);
+        PLATFORM_CLOSE_SOCKET(client_sock);
         pthread_exit(NULL);
     }
     buffer[received] = '\0';
@@ -110,7 +119,7 @@ void *handle_client(void *arg) {
         send(client_sock, forbidden_msg, strlen(forbidden_msg), 0);
         printf("HTTP/1.1 403 Forbidden\r\n\r\nSuspicious activity detected");
         log_security("Suspicious activity detected");
-        closesocket(client_sock);
+        PLATFORM_CLOSE_SOCKET(client_sock);
         pthread_exit(NULL);
     }
 
@@ -120,7 +129,7 @@ void *handle_client(void *arg) {
         send(client_sock, error_msg, strlen(error_msg), 0);
         log_request(clientIP, "UNKNOWN", "UNKNOWN", "400", error_msg);
         log_error("Bad Request: Unable to parse the request.");
-        closesocket(client_sock);
+        PLATFORM_CLOSE_SOCKET(client_sock);
         pthread_exit(NULL);
     }
 
@@ -215,6 +224,6 @@ void *handle_client(void *arg) {
         log_request(clientIP, method, url, status, not_found);
     }
 
-    closesocket(client_sock);
+    PLATFORM_CLOSE_SOCKET(client_sock);
     pthread_exit(NULL);
 }

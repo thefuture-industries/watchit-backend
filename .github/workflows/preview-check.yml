@@ -57,10 +57,15 @@ jobs:
                 eas-version: latest
                 token: ${{ secrets.EXPO_TOKEN }}
 
-            # - name: Build APK
-            #   run: |
-            #       cd ./client-mobile
-            #       eas build --platform android --profile preview --non-interactive
+            - name: Decode JKS KEY
+              run: |
+                  cd ./client-mobile
+                  echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > ./android/app/keystore.jks
+
+            - name: Build APK
+              run: |
+                  cd ./client-mobile
+                  eas build --platform android --profile preview --non-interactive
 
             - name: Install Build Tools C
               run: sudo apt update && sudo apt install -y build-essential

@@ -5,8 +5,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <winsock2.h>
-#include <windows.h>
+#ifdef _WIN32
+    #include <winsock2.h>
+    #include <windows.h>
+    #define PLATFORM_CLOSE_SOCKET(s) closesocket(s)
+#else
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    #include <unistd.h>
+    #include <unistd.h>
+    #define PLATFORM_CLOSE_SOCKET(s) close(s)
+#endif
 #include "config/config.h"
 #include "server.h"
 

@@ -1,8 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <winsock2.h>
-#include <windows.h>
+#ifdef _WIN32
+    #include <winsock2.h>
+    #include <windows.h>
+    #define PLATFORM_CLOSE_SOCKET(s) closesocket(s)
+#else
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    #include <unistd.h>
+    #define PLATFORM_CLOSE_SOCKET(s) close(s)
+#endif
 #include <ws2tcpip.h>
 #include <pthread.h>
 
@@ -35,7 +44,7 @@ void start_server(const char* listen_addr, const char* listen_port) {
     int opt = 1;
     if (setsockopt(server_sock, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) < 0) {
         perror("setsockopt");
-        closesocket(server_sock);
+        PLATFORM_CLOSE_SOCKET(server_sock);
         WSACleanup();
         exit(EXIT_FAILURE);
     }
@@ -53,14 +62,14 @@ void start_server(const char* listen_addr, const char* listen_port) {
     if (bind(server_sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
         int err = WSAGetLastError();
         fprintf(stderr, "bind failed with error: %d\n", err);
-        closesocket(server_sock);
+        PLATFORM_CLOSE_SOCKET(server_sock);
         WSACleanup();
         exit(EXIT_FAILURE);
     }
 
     if (listen(server_sock, 10) < 0) {
         perror("listen");
-        closesocket(server_sock);
+        PLATFORM_CLOSE_SOCKET(server_sock);
         WSACleanup();
         exit(EXIT_FAILURE);
     }
@@ -85,14 +94,14 @@ void start_server(const char* listen_addr, const char* listen_port) {
         pthread_t tid;
         if (pthread_create(&tid, NULL, handle_client, client_sock_ptr) != 0) {
             perror("pthread_create");
-            closesocket(*client_sock_ptr);
+            PLATFORM_CLOSE_SOCKET(*client_sock_ptr);
             free(client_sock_ptr);
             continue;
         }
         pthread_detach(tid);
     }
 
-    closesocket(server_sock);
+    PLATFORM_CLOSE_SOCKET(server_sock);
     pthread_mutex_destroy(&rr_mutex);
     WSACleanup();
 }

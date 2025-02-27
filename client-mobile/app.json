@@ -17,9 +17,12 @@
 				"backgroundColor": "#ffffff"
 			},
 			"package": "flicksfi.android.com",
-			"credentialsSource": "local",
-			"keystorePath": "./flicksfi-andr-pre-key.jks",
-			"keystoreAlias": "flicksfi-andr-key"
+			"keystore": {
+				"keystorePath": "./android/app/keystore.jks",
+				"keystorePassword": "password",
+				"keyAlias": "my-key",
+				"keyPassword": "password"
+			}
 		},
 		"web": {
 			"bundler": "metro",
