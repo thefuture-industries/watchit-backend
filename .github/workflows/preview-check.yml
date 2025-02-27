@@ -67,15 +67,15 @@ jobs:
 
             - name: Set enviroment variables
               run: |
-                  echo "ANDROID_KEYSTORE_PATH=client-mobile/android/app/keystore.jks" >> $GITHUB_ENV
+                  echo "ANDROID_KEYSTORE_PATH=./client-mobile/android/app/keystore.jks" >> $GITHUB_ENV
                   echo "ANDROID_KEYSTORE_PASSWORD=password" >> $GITHUB_ENV
                   echo "ANDROID_KEY_ALIAS=my-key" >> $GITHUB_ENV
                   echo "ANDROID_KEY_PASSWORD=password" >> $GITHUB_ENV
 
-            - name: Build APK
-              run: |
-                  cd ./client-mobile
-                  eas build --platform android --profile preview --non-interactive
+            # - name: Build APK
+            #   run: |
+            #       cd ./client-mobile
+            #       eas build --platform android --profile preview --non-interactive
 
             - name: Install Build Tools C
               run: sudo apt update && sudo apt install -y build-essential
