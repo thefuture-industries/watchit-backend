@@ -59,6 +59,7 @@ jobs:
 
             - name: Build APK
               run: |
+                  cd ./client-mobile
                   eas build --platform android --profile preview --non-interactive
 
             - name: Install Build Tools C
