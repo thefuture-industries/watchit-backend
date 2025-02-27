@@ -81,7 +81,7 @@ jobs:
               run: sudo apt update && sudo apt install -y build-essential
 
             - name: Install base packages for C analystics
-              run: sudo apt install cppcheck && sudo apt install build-essential && sudo apt install clang && sudo apt install valgrind
+              run: sudo apt install -y cppcheck && sudo apt install -y build-essential && sudo apt install -y clang && sudo apt install -y valgrind
 
             - name: Build C Server
               run: |
