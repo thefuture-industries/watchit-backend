@@ -16,7 +16,10 @@
 				"foregroundImage": "./assets/images/adaptive-icon.png",
 				"backgroundColor": "#ffffff"
 			},
-			"package": "flicksfi.android.com"
+			"package": "flicksfi.android.com",
+      "credentialsSource": "local",
+      "keystorePath": "./flicksfi-andr-pre-key.jks",
+      "keystoreAlias": "flicksfi-andr-key"
 		},
 		"web": {
 			"bundler": "metro",
