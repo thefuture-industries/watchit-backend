@@ -31,7 +31,6 @@ jobs:
             - name: Install packages React Native
               run: |
                   pnpm install --dir ./client-mobile
-                  npx react-native doctor
 
             # Установка Java и Android SDK
             - name: Install Java and Android SDK
