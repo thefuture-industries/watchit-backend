@@ -16,13 +16,7 @@
 				"foregroundImage": "./assets/images/adaptive-icon.png",
 				"backgroundColor": "#ffffff"
 			},
-			"package": "flicksfi.android.com",
-			"keystore": {
-				"keystorePath": "./android/app/keystore.jks",
-				"keystorePassword": "password",
-				"keyAlias": "my-key",
-				"keyPassword": "password"
-			}
+			"package": "flicksfi.android.com"
 		},
 		"web": {
 			"bundler": "metro",

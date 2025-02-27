@@ -1,0 +1,21 @@
+{
+	"build": {
+		"development": {
+			"developmentClient": true,
+			"distribution": "internal"
+		},
+		"preview": {
+			"distribution": "internal",
+			"android": {
+				"keystorePath": "./android/keystore.jks",
+				"keystorePassword": "password",
+				"keyAlias": "my-key",
+				"keyPassword": "password"
+			}
+		},
+		"production": {}
+	},
+	"cli": {
+		"version": ">= 0.52.0"
+	}
+}
