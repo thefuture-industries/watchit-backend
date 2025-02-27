@@ -51,8 +51,11 @@ jobs:
             - name: Install Expo CLI
               run: npm i -g expo-cli eas-cli
 
-            - name: Authenticate with Expo
-              run: eas login --token ${{ secrets.EXPO_TOKEN }}
+            - name: 🏗 Setup EAS
+              uses: expo/expo-github-action@v8
+              with:
+                eas-version: latest
+                token: ${{ secrets.EXPO_TOKEN }}
 
             - name: Build APK
               run: |
