@@ -65,6 +65,13 @@ jobs:
             #       mkdir -p ./android/app
             #       echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > ./android/app/keystore.jks
 
+            - name: Set enviroment variables
+              run: |
+                  echo "ANDROID_KEYSTORE_PATH=client-mobile/android/app/keystore.jks" >> $GITHUB_ENV
+                  echo "ANDROID_KEYSTORE_PASSWORD=password" >> $GITHUB_ENV
+                  echo "ANDROID_KEY_ALIAS=my-key" >> $GITHUB_ENV
+                  echo "ANDROID_KEY_PASSWORD=password" >> $GITHUB_ENV
+
             - name: Build APK
               run: |
                   cd ./client-mobile

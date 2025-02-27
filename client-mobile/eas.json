@@ -13,14 +13,14 @@
 		},
 		"production": {}
 	},
-	"credentials": {
-		"android": {
-			"keystorePath": "./android/app/keystore.jks",
-			"keystorePassword": "password",
-			"keyAlias": "my-key",
-			"keyPassword": "password"
-		}
-	},
+	// "credentials": {
+	// 	"android": {
+	// 		"keystorePath": "./android/app/keystore.jks",
+	// 		"keystorePassword": "password",
+	// 		"keyAlias": "my-key",
+	// 		"keyPassword": "password"
+	// 	}
+	// },
 	"cli": {
 		"version": ">= 0.52.0"
 	}
