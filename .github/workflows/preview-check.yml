@@ -57,10 +57,10 @@ jobs:
                 eas-version: latest
                 token: ${{ secrets.EXPO_TOKEN }}
 
-            - name: Build APK
-              run: |
-                  cd ./client-mobile
-                  eas build --platform android --profile preview --non-interactive
+            # - name: Build APK
+            #   run: |
+            #       cd ./client-mobile
+            #       eas build --platform android --profile preview --non-interactive
 
             - name: Install Build Tools C
               run: sudo apt update && sudo apt install -y build-essential
