@@ -5,12 +5,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
 #include <winsock2.h>
+#include <windows.h>
 #include "config/config.h"
 #include "server.h"
 
-#pragma comment(lib, "ws2_32.lib")
+// #pragma comment(lib, "ws2_32.lib")
 
 int main() {
     // Устанавливаем кодировку консоли для корректного отображения UTF-8

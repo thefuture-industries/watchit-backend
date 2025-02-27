@@ -51,7 +51,7 @@ void transform_request(const char *orig_req, char *new_req, size_t new_req_size,
     char temp_headers[2048];  // Буфер для хранения временных заголовков
     char *temp_ptr = temp_headers;
     const char *current_pos = headers;
-    bool found_host = false;
+    // bool found_host = false;
 
     while (*current_pos) {
         if (strncasecmp(current_pos, "Host:", 5) == 0) {

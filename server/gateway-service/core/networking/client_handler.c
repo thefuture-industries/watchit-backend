@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <windows.h>
 #include <winsock2.h>
+#include <windows.h>
 #include <ws2tcpip.h>
 #include <pthread.h>
 
@@ -26,7 +26,7 @@
 int forward_to_backend(int client_sock, const char *backend_ip, int backend_port, const char *method, const char *path, const char *request) {
     int backend_sock;
     struct sockaddr_in backend_addr;
-    char url[256];
+    // char url[256];
 
     backend_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (backend_sock < 0) {

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <windows.h>
 #include <winsock2.h>
+#include <windows.h>
 #include <ws2tcpip.h>
 #include <pthread.h>
 
@@ -11,7 +11,7 @@
 #include "config/config.h"
 #include "networking/common.h"
 
-#pragma comment(lib, "ws2_32.lib")
+// #pragma comment(lib, "ws2_32.lib")
 
 /*
  * Функция start_server() - создаёт серверный сокет, привязывает его к указанному

@@ -3,72 +3,103 @@ set -e
 
 echo "Running pre-commit hook..."
 
+# COLORS
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
 # Получаем список измененных файлов
 CHANGED_FILES=$(git diff --cached --name-only)
 
+### React Native ###
 if echo "$CHANGED_FILES" | grep -qE '^client-mobile/'; then
-    echo "Changes in 'client-mobile' directory detected."
+    echo -e "${YELLOW}Changes in 'client-mobile' directory detected.${NC}"
 
-    echo "[|] Running formatted and build for client-mobile..."
+    echo -e "${GREEN}[|] Running formatted and build for client-mobile...${NC}"
     cd ./client-mobile
     pnpm format
     # pnpm test
-    echo "[+] Success formatted and build for client-mobile!"
+    echo -e "${GREEN}[+] Success formatted and build for client-mobile!${NC}"
     cd ..
 else
-    echo "No changes in 'client-mobile' directory. Skipping actions for client-mobile."
+    echo -e "${YELLOW}No changes in 'client-mobile' directory. Skipping actions for client-mobile.${NC}"
 fi
 
-if echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
-    echo "Changes in 'gateway-service' directory detected."
+### C# ###
+if echo "$CHANGED_FILES" | grep -qE '^client-windows/'; then
+    echo -e "${YELLOW}Changes in 'client-windows' directory detected.${NC}"
 
-    echo "[|] Running formatted and build for gateway-service..."
+    echo -e "${GREEN}[|] Running formatted and build for client-windows...${NC}"
+    cd ./client-windows
+    # dotnet restore
+    # dotnet build --configuration Release || { echo -e "${RED}C# build failed${NC}"; exit 1; }
+    echo -e "${GREEN}[+] Success formatted and build for client-windows!${NC}"
+    cd ..
+else
+    echo -e "${YELLOW}No changes in 'client-windows' directory. Skipping actions for client-windows.${NC}"
+fi
+
+### C ###
+if echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
+    echo -e "${YELLOW}Changes in 'gateway-service' directory detected.${NC}"
+
+    echo -e "${GREEN}[|] Running formatted and build for gateway-service...${NC}"
     cd ./server/gateway-service
+    mkdir -p build
+    # gcc -Wall -Wextra -lws2_32 -o build/main core/*.c || { echo "C compilation failed"; exit 1; }
     make clean
     make
-    echo "[+] Success formatted and build for gateway-service!"
+    echo -e "${GREEN}[+] Success formatted and build for gateway-service!${NC}"
     cd ../../
 else
-    echo "No changes in 'gateway-service' directory. Skipping actions for gateway-service."
+    echo -e "${YELLOW}No changes in 'gateway-service' directory. Skipping actions for gateway-service.${NC}"
 fi
 
+### Golang ###
 if echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
-    echo "Changes in 'user-service' directory detected."
+    echo -e "${YELLOW}Changes in 'user-service' directory detected.${NC}"
 
-    echo "[|] Running formatted and build for user-service..."
+    echo -e "${GREEN}[|] Running formatted and build for user-service...${NC}"
     cd ./server/user-service
+    go mod tidy
     gofmt -w .
     make build
-    echo "[+] Success formatted and build for user-service!"
+    echo -e "${GREEN}[+] Success formatted and build for user-service!${NC}"
     cd ../../
 else
-    echo "No changes in 'user-service' directory. Skipping actions for user-service."
+    echo -e "${YELLOW}No changes in 'user-service' directory. Skipping actions for user-service.${NC}"
 fi
 
+### Golang ###
 if echo "$CHANGED_FILES" | grep -qE '^server/movie-service/'; then
-    echo "Changes in 'movie-service' directory detected."
+    echo -e "${YELLOW}Changes in 'movie-service' directory detected.${NC}"
 
-    echo "[|] Running formatted and build for movie-service..."
+    echo -e "${GREEN}[|] Running formatted and build for movie-service...${NC}"
     cd ./server/movie-service
+    go mod tidy
     gofmt -w .
     make build
-    echo "[+] Success formatted and build for movie-service!"
+    echo -e "${GREEN}[+] Success formatted and build for movie-service!${NC}"
     cd ../../
 else
-    echo "No changes in 'movie-service' directory. Skipping actions for movie-service."
+    echo -e "${YELLOW}No changes in 'movie-service' directory. Skipping actions for movie-service.${NC}"
 fi
 
+### Golang ###
 # if echo "$CHANGED_FILES" | grep -qE '^server/blog-service/'; then
-#     echo "Changes in 'blog-service' directory detected."
+#     echo -e "${YELLOW}Changes in 'blog-service' directory detected.${NC}"
 
-#     echo "[|] Running formatted and build for blog-service..."
+#     echo -e "${GREEN}[|] Running formatted and build for blog-service...${NC}"
 #     cd ./server/blog-service
+#     go mod tidy
 #     gofmt -w .
 #     make build
-#     echo "[+] Success formatted and build for blog-service!"
+#     echo -e "${GREEN}[+] Success formatted and build for blog-service!${NC}"
 #     cd ../../
 # else
-#     echo "No changes in 'blog-service' directory. Skipping actions for blog-service."
+#     echo -e "No changes in 'blog-service' directory. Skipping actions for blog-service."
 # fi
 
 echo "Husky is successfully!"
