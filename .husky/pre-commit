@@ -47,12 +47,10 @@ if echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
 
     echo -e "${GREEN}[|] Running formatted and build for gateway-service...${NC}"
     cd ./server/gateway-service
-    mkdir -p build
-    # gcc -Wall -Wextra -lws2_32 -o build/main core/*.c || { echo "C compilation failed"; exit 1; }
-    make clean
-    make
+    make build
+    cd ./test && go test -v
     echo -e "${GREEN}[+] Success formatted and build for gateway-service!${NC}"
-    cd ../../
+    cd ../../../
 else
     echo -e "${YELLOW}No changes in 'gateway-service' directory. Skipping actions for gateway-service.${NC}"
 fi

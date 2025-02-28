@@ -77,48 +77,52 @@ jobs:
             #       cd ./client-mobile
             #       eas build --platform android --profile preview --non-interactive
 
-            - name: Install Build Tools C
-              run: sudo apt update && sudo apt install -y build-essential
-
-            - name: Install base packages for C analystics
-              run: sudo apt install -y cppcheck && sudo apt install -y build-essential && sudo apt install -y clang && sudo apt install -y valgrind
-
-            - name: Build C Server
-              run: |
-                  cd ./server/gateway-service
-                  make clean && make
-
-            - name: Analystic C Server
-              run: |
-                  cd ./server/gateway-service
-                  clang-tidy core/*.c -- -Iinclude
-
-            - name: Install Go
+            - name: Setup Golang Packages
               uses: actions/setup-go@v4
               with:
                   go-version: 1.23.0
 
+            - name: Build Golang Gateway Server
+              run: |
+                  cd ./server/gateway-service
+                  make build
+
+            - name: Build Golang Gateway Server | test
+              run: |
+                  cd ./server/gateway-service
+                  make build
+                  cd ./test && go test -v
+
             # USER SERVICE
-            - name: Install dependencies (USER)
+            - name: Install dependencies (user-service)
               working-directory: ./server/user-service
               run: |
                   go mod download
 
-            - name: Run make (USER)
+            - name: Run make (user-service) | test
               working-directory: ./server/user-service
               run: make build
 
             # MOVIE SERVICE
-            - name: Install dependencies (MOVIE)
+            - name: Install dependencies (movie-service)
               working-directory: ./server/movie-service
               run: |
                   go mod download
 
-            - name: Run make (MOVIE)
+            - name: Run make (movie-service) | test
               working-directory: ./server/movie-service
               run: make build
 
             # Проверка свободного порта (Linux)
+            - name: Check port -> 8080
+              run: |
+                  if lsof -i :8080; then
+                    echo "Port 8080 exists!";
+                    exit 1;
+                  else
+                    echo "Port 8080 is free!";
+                  fi
+
             - name: Check port -> 8001
               run: |
                   if lsof -i :8001; then
