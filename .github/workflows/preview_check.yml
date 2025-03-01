@@ -18,10 +18,6 @@ jobs:
             pull-requests: write
             issues: write
 
-        strategy:
-            matrix:
-                services: ['user-service', 'movie-service', 'gateway-service']
-
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -90,50 +86,31 @@ jobs:
               run: |
                   pnpm install --dir ./client-mobile
 
-            - name: Install dependencies (${{ matrix.services }})
-              working-directory: ./server/${{ matrix.services }}
-              run: go mod download
-
-            - name: Run tests (${{ matrix.services }})
-              working-directory: ./server/${{ matrix.services }}/test
+            - name: Install dependencies services
+              working-directory: ./server
               run: |
-                  if ls *.go &>/dev/null; then
-                    go test -v
-                  else
-                    echo "No tests found for service '${{ matrix.services }}'"
-                  fi
+                  cd ./gateway-service && go mod download && cd ..
+                  cd ./user-service && go mod download && cd ..
+                  cd ./movie-service && go mod download && cd ..
+
+            - name: Run tests services
+              working-directory: ./server
+              run: |
+                  cd ./gateway-service/test && go test -v && cd ../..
 
             - name: Build Golang Gateway Server
               run: |
                   cd ./server/gateway-service
                   make build
 
-            # - name: Tests Gateway Server
-            #   run: |
-            #       cd ./server/gateway-service/test
-            #       go test -v
-
-            # USER SERVICE
-            # - name: Install dependencies (user-service)
-            #   working-directory: ./server/user-service
-            #   run: |
-            #       go mod download
-
             - name: Build Golang User Server
               working-directory: ./server/user-service
               run: make build
-
-            # MOVIE SERVICE
-            # - name: Install dependencies (movie-service)
-            #   working-directory: ./server/movie-service
-            #   run: |
-            #       go mod download
 
             - name: Build Golang Movie Server
               working-directory: ./server/movie-service
               run: make build
 
-            # Проверка свободного порта (Linux)
             - name: Check ports availability
               run: |
                   for port in 8080 8001 8011; do
@@ -144,24 +121,6 @@ jobs:
                       echo "Port $port is available."
                     fi
                   done
-
-            # - name: Check port -> 8001
-            #   run: |
-            #       if lsof -i :8001; then
-            #         echo "Port 8001 exists!";
-            #         exit 1;
-            #       else
-            #         echo "Port 8001 is free!";
-            #       fi
-
-            # - name: Check port -> 8011
-            #   run: |
-            #       if lsof -i :8011; then
-            #         echo "Port 8011 exists!";
-            #         exit 1;
-            #       else
-            #         echo "Port 8011 is free!";
-            #       fi
 
             - name: Start docker-compose
               working-directory: ./server
