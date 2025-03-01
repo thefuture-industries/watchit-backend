@@ -96,7 +96,12 @@ jobs:
 
             - name: Run tests (${{ matrix.services }})
               working-directory: ./server/${{ matrix.services }}/test
-              run: go test -v
+              run: |
+                  if ls *.go &>/dev/null; then
+                    go test -v
+                  else
+                    echo "No tests found for service '${{ matrix.services }}'"
+                  fi
 
             - name: Build Golang Gateway Server
               run: |
