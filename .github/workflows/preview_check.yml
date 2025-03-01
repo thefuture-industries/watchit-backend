@@ -29,7 +29,7 @@ jobs:
             - name: Setup docker-compose
               run: |
                   sudo apt update
-                  sudo apt install docker docker-compose
+                  sudo apt install -y docker docker-compose
 
             - name: Install Node.js
               uses: actions/setup-node@v4
