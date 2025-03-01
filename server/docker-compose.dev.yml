@@ -22,15 +22,15 @@ services:
             context: ./user-service
             dockerfile: Dockerfile.dev
         environment:
-            - DSN="host=localhost user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+            - DSN="host=db user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Asia/Shanghai"
             - SUPER_SECRET_KEY="abc&1*~#^2^#s0^=)^^7%b34"
             - IV="123456789012"
         ports:
             - '8001:8001'
-        mem_limit: 1536m
-        mem_reservation: 768m
-        cpus: 2
-        cpu_shares: 1024
+        mem_limit: 1036m
+        mem_reservation: 368m
+        cpus: 1
+        cpu_shares: 512
         depends_on:
             - db
 
@@ -39,7 +39,7 @@ services:
             context: ./movie-service
             dockerfile: Dockerfile.dev
         environment:
-            - DSN="host=localhost user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+            - DSN="host=db user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Asia/Shanghai"
             - SUPER_SECRET_KEY="abc&1*~#^2^#s0^=)^^7%b34"
             - IV="123456789012"
         ports:
