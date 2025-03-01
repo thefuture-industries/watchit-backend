@@ -18,9 +18,20 @@ jobs:
             pull-requests: write
             issues: write
 
+        strategy:
+            matrix:
+                services: ['user-service', 'movie-service', 'gateway-service']
+
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+
+            - name: Setup docker-compose
+              run: |
+                  id: buildx
+                  uses: docker/setup-buildx-action@v2
+              env:
+                  DOCKER_COMPOSE_VERSION: 1.29.2
 
             - name: Install Node.js
               uses: actions/setup-node@v4
@@ -30,25 +41,16 @@ jobs:
             - name: Install pnpm
               run: npm i -g pnpm
 
-            - name: Install packages React Native
-              run: |
-                  pnpm install --dir ./client-mobile
-
-            # Установка Java и Android SDK
             - name: Install Java and Android SDK
               uses: actions/setup-java@v3
               with:
                   distribution: 'temurin'
                   java-version: '17'
 
-            # - name: Install Android SDK
-            #   run: |
-            #       sudo apt update
-            #       sudo apt install -y android-sdk
-            #       echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
-            #       echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
-            #       echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
-            #       echo "$ANDROID_HOME/tools" >> $GITHUB_PATH
+            - name: Install GOlang
+              uses: actions/setup-go@v4
+              with:
+                  go-version: 1.23.0
 
             - name: Install Expo CLI
               run: npm i -g expo-cli eas-cli
@@ -59,12 +61,6 @@ jobs:
                   eas-version: latest
                   token: ${{ secrets.EXPO_TOKEN }}
 
-            # - name: Decode JKS KEY
-            #   run: |
-            #       cd ./client-mobile
-            #       mkdir -p ./android/app
-            #       echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > ./android/app/keystore.jks
-
             - name: Set enviroment variables
               run: |
                   echo "ANDROID_KEYSTORE_PATH=./client-mobile/android/app/keystore.jks" >> $GITHUB_ENV
@@ -72,82 +68,99 @@ jobs:
                   echo "ANDROID_KEY_ALIAS=my-key" >> $GITHUB_ENV
                   echo "ANDROID_KEY_PASSWORD=password" >> $GITHUB_ENV
 
+            # - name: Install Android SDK
+            #   run: |
+            #       sudo apt update
+            #       sudo apt install -y android-sdk
+            #       echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+            #       echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
+            #       echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+            #       echo "$ANDROID_HOME/tools" >> $GITHUB_PATH
+
+            # - name: Decode JKS KEY
+            #   run: |
+            #       cd ./client-mobile
+            #       mkdir -p ./android/app
+            #       echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > ./android/app/keystore.jks
+
             # - name: Build APK
             #   run: |
             #       cd ./client-mobile
             #       eas build --platform android --profile preview --non-interactive
 
-            - name: Setup Golang Packages
-              uses: actions/setup-go@v4
-              with:
-                  go-version: 1.23.0
+            - name: Install packages React Native
+              run: |
+                  pnpm install --dir ./client-mobile
+
+            - name: Install dependencies (${{ matrix.services }})
+              working-directory: ./server/${{ matrix.services }}
+              run: go mod download
+
+            - name: Run tests (${{ matrix.services }})
+              working-directory: ./server/${{ matrix.services }}/test
+              run: go test -v
 
             - name: Build Golang Gateway Server
               run: |
                   cd ./server/gateway-service
                   make build
 
-            - name: Tests Gateway Server
-              run: |
-                  cd ./server/gateway-service/test
-                  go test -v
+            # - name: Tests Gateway Server
+            #   run: |
+            #       cd ./server/gateway-service/test
+            #       go test -v
 
             # USER SERVICE
-            - name: Install dependencies (user-service)
-              working-directory: ./server/user-service
-              run: |
-                  go mod download
+            # - name: Install dependencies (user-service)
+            #   working-directory: ./server/user-service
+            #   run: |
+            #       go mod download
 
-            - name: Run make (user-service) | test
+            - name: Build Golang User Server
               working-directory: ./server/user-service
               run: make build
 
             # MOVIE SERVICE
-            - name: Install dependencies (movie-service)
-              working-directory: ./server/movie-service
-              run: |
-                  go mod download
+            # - name: Install dependencies (movie-service)
+            #   working-directory: ./server/movie-service
+            #   run: |
+            #       go mod download
 
-            - name: Run make (movie-service) | test
+            - name: Build Golang Movie Server
               working-directory: ./server/movie-service
               run: make build
 
             # Проверка свободного порта (Linux)
-            - name: Check port -> 8080
+            - name: Check ports availability
               run: |
-                  if lsof -i :8080; then
-                    echo "Port 8080 exists!";
-                    exit 1;
-                  else
-                    echo "Port 8080 is free!";
-                  fi
+                  for port in 8080 8001 8011; do
+                    if lsof -i :"$port"; then
+                      echo "Port $port is already in use!";
+                      exit 1;
+                    else
+                      echo "Port $port is available."
+                    fi
+                  done
 
-            - name: Check port -> 8001
-              run: |
-                  if lsof -i :8001; then
-                    echo "Port 8001 exists!";
-                    exit 1;
-                  else
-                    echo "Port 8001 is free!";
-                  fi
+            # - name: Check port -> 8001
+            #   run: |
+            #       if lsof -i :8001; then
+            #         echo "Port 8001 exists!";
+            #         exit 1;
+            #       else
+            #         echo "Port 8001 is free!";
+            #       fi
 
-            - name: Check port -> 8011
-              run: |
-                  if lsof -i :8011; then
-                    echo "Port 8011 exists!";
-                    exit 1;
-                  else
-                    echo "Port 8011 is free!";
-                  fi
-
-            - name: Setup docker-compose
-              run: |
-                  sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-                  sudo chmod +x /usr/local/bin/docker-compose
-              env:
-                  DOCKER_COMPOSE_VERSION: 1.29.2
+            # - name: Check port -> 8011
+            #   run: |
+            #       if lsof -i :8011; then
+            #         echo "Port 8011 exists!";
+            #         exit 1;
+            #       else
+            #         echo "Port 8011 is free!";
+            #       fi
 
             - name: Start docker-compose
+              working-directory: ./server
               run: |
-                  cd ./server
-                  docker-compose -f docker-compose.dev.yml up --build
+                  docker compose -f docker-compose.dev.yml up --build
