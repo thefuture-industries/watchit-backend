@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+host=$1
+shift
+cmd="$@"
+
+until pgsql_isready -h "$host"; do
+  >&2 echo "Waiting for PostgreSQL..."
+  sleep 3
+done
+
+>&2 echo "PostgreSQL is available."
+
+exec $cmd
