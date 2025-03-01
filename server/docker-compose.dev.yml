@@ -6,6 +6,10 @@ services:
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: password
             POSTGRES_DB: flicksfi
+        healthcheck: 
+            test: ["CMD", "pg_isready", "-U", "postgres"]
+            interval: 5s
+            retries: 5
 
     gateway_service:
         build:
@@ -33,7 +37,8 @@ services:
         cpus: 1
         cpu_shares: 512
         depends_on:
-            - db
+            db: 
+               condition: service_healthy
 
     movie_service:
         build:
@@ -50,7 +55,8 @@ services:
         cpus: 2
         cpu_shares: 1024
         depends_on:
-            - db
+            db:
+               condition: service_healthy
 
     # blog_service:
     #     build:
