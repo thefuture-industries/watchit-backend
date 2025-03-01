@@ -87,11 +87,10 @@ jobs:
                   cd ./server/gateway-service
                   make build
 
-            - name: Build Golang Gateway Server | test
+            - name: Tests Gateway Server
               run: |
-                  cd ./server/gateway-service
-                  make build
-                  cd ./test && go test -v
+                  cd ./server/gateway-service/test
+                  go test -v
 
             # USER SERVICE
             - name: Install dependencies (user-service)
@@ -140,3 +139,15 @@ jobs:
                   else
                     echo "Port 8011 is free!";
                   fi
+
+            - name: Setup docker-compose
+              run: |
+                  sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                  sudo chmod +x /usr/local/bin/docker-compose
+              env:
+                  DOCKER_COMPOSE_VERSION: 1.29.2
+
+            - name: Start docker-compose
+              run: |
+                  cd ./server
+                  docker-compose -f docker-compose.dev.yml up --build
