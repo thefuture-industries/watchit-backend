@@ -1,70 +1,77 @@
-version: "3.8"
+version: '3.8'
 networks:
-  production:
+    production:
+
 services:
-  nginx:
-    image: nginx:stable-alpine
-    ports:
-      - "80:80"
-      - "8001:8001"
-      - "8011:8011"
-      - "8022:8022"
-    volumes:
-      - "./nginx.conf:/etc/nginx/nginx.conf"
-    depends_on:
-      - gateway_service
-      - user_service
-      - movie_service
-      - blog_service
-    networks:
-      - production
+    nginx:
+        image: nginx:stable-alpine
+        ports:
+            - '80:80'
+            - '8001:8001'
+            - '8011:8011'
+            - '8022:8022'
+        volumes:
+            - './nginx.conf:/etc/nginx/nginx.conf'
+        depends_on:
+            - gateway_service
+            - user_service
+            - movie_service
+            - blog_service
+        networks:
+            - production
 
-  gateway_service:
-    build:
-      context: ./gateway-service
-      dockerfile: Dockerfile.prod
-    mem_limit: 250m
-    mem_reservation: 150m
-    cpus: 0.3
-    cpu_shares: 512
-    networks:
-      - production
+    gateway_service:
+        build:
+            context: ./gateway-service
+            dockerfile: Dockerfile.prod
+        mem_limit: 1536m
+        mem_reservation: 768m
+        cpus: 1.8
+        cpu_shares: 1024
+        networks:
+            - production
 
-  user_service:
-    build:
-      context: ./user-service
-      dockerfile: Dockerfile.prod
-    environment:
-      - DSN="host=localhost user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-    mem_limit: 120m
-    mem_reservation: 70m
-    cpus: 0.1
-    cpu_shares: 128
-    networks:
-      - production
+    user_service:
+        build:
+            context: ./user-service
+            dockerfile: Dockerfile.prod
+        environment:
+            - DSN=host=localhost user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Asia/Shanghai
+            - SUPER_SECRET_KEY=abc&1*~#^2^#s0^=)^^7%b34
+            - IV=123456789012
+        mem_limit: 256m
+        mem_reservation: 112m
+        cpus: 0.35
+        cpu_shares: 112
+        networks:
+            - production
 
-  movie_service:
-    build:
-      context: ./movie-service
-      dockerfile: Dockerfile.prod
-    environment:
-      - DSN="host=localhost user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-    mem_limit: 190m
-    mem_reservation: 70m
-    cpus: 0.2
-    cpu_shares: 256
-    networks:
-      - production
+    movie_service:
+        build:
+            context: ./movie-service
+            dockerfile: Dockerfile.prod
+        environment:
+            - DSN=host=localhost user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Asia/Shanghai
+            - SUPER_SECRET_KEY=abc&1*~#^2^#s0^=)^^7%b34
+            - IV=123456789012
+        mem_limit: 512m
+        mem_reservation: 112m
+        cpus: 1
+        cpu_shares: 256
+        networks:
+            - production
 
-  blog_service:
-    build:
-      context: ./blog-service
-      dockerfile: Dockerfile.prod
-    environment:
-      - DSN="host=localhost user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-    mem_limit: 190m
-    mem_reservation: 70m
-    cpus: 0.2
-    cpu_shares: 256
-    networks:
-      - production
+    blog_service:
+        build:
+            context: ./blog-service
+            dockerfile: Dockerfile.prod
+        environment:
+            - DSN=host=localhost user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Asia/Shanghai
+            - SUPER_SECRET_KEY=abc&1*~#^2^#s0^=)^^7%b34
+            - IV=123456789012
+        mem_limit: 512m
+        mem_reservation: 112m
+        cpus: 0.4
+        cpu_shares: 112
+        networks:
+            - production

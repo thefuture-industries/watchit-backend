@@ -127,7 +127,7 @@ jobs:
               run: |
                   docker-compose -f docker-compose.dev.yml up --build -d
                   echo "Waiting for services to start..."
-                  sleep 180
+                  sleep 45
 
                   if ! docker-compose -f docker-compose.dev.yml ps | grep "Up"; then
                     echo "One or more containers have exited unexpectedly."
