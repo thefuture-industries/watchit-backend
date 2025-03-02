@@ -1,2 +1,4 @@
 .vscode
 .expo/
+.scala-build/
+.metals/
