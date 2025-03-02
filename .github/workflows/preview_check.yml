@@ -125,4 +125,19 @@ jobs:
             - name: Start docker-compose
               working-directory: ./server
               run: |
-                  docker-compose -f docker-compose.dev.yml up --build
+                  docker-compose -f docker-compose.dev.yml up --build -d
+                  echo "Waiting for services to start..."
+                  sleep 180
+
+                  if ! docker-compose -f docker-compose.dev.yml ps | grep "Up"; then
+                    echo "One or more containers have exited unexpectedly."
+                    docker-compose -f docker-compose.dev.yml logs --tail=150
+                    exit 1
+                  fi
+
+                  echo "All services are running successfully."
+
+            - name: Check running services
+              working-directory: ./server
+              run: |
+                  docker-compose -f docker-compose.dev.yml ps
