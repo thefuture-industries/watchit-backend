@@ -4,7 +4,9 @@ import java.sql.{Connection, DriverManager, PreparedStatement, ResultSet, Statem
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import scala.collection.mutable.ListBuffer
 
-case class Broker(id: Int, sender: String, received: String, payload: JsonNode, status: String, created_at: Timestamp)
+import Models.Broker
+
+// case class Broker(id: Int, sender: String, received: String, payload: JsonNode, status: String, created_at: Timestamp)
 
 class Database {
     val DB_URL = "jdbc:postgresql://localhost:5432/flicksfi"
