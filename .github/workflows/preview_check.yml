@@ -42,12 +42,12 @@ jobs:
                   java-version: '22.0.1'
                   cache: 'sbt'
 
-            - name: Install SBT using SDKMAN
+            - name: Install SBT
               run: |
-                  curl -s "https://get.sdkman.io" | bash
-                  export SDKMAN_DIR="$HOME/.sdkman"
-                  . "$SDKMAN_DIR/bin/sdkman-init.sh"
-                  sdk install sbt
+                  echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
+                  curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE68D9D86F6DA29" | sudo apt-key add -
+                  sudo apt-get update
+                  sudo apt-get install sbt
 
             - name: Cache SBT dependencies (Ivy2)
               uses: actions/cache@v3
