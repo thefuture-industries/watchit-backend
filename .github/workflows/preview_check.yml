@@ -47,7 +47,7 @@ jobs:
                   echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
                   curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE68D9D86F6DA29" | sudo apt-key add -
                   sudo apt-get update
-                  sudo apt-get install sbt
+                  sudo apt-get install -y sbt
 
             - name: Cache SBT dependencies (Ivy2)
               uses: actions/cache@v3
