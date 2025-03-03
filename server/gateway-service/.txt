@@ -1,0 +1,10 @@
+1) Install Windows |
+ > choco install sbt
+  Install Linux |
+ > sudo apt-get install sbt
+
+2) Create new project
+ > sbt new scala/scala-seed.g8
+
+3) Start project
+ > sbt run

@@ -7,3 +7,4 @@
  > sbt new scala/scala-seed.g8
 
 3) Start project
+ > sbt run
