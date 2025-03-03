@@ -1,8 +1,8 @@
-FROM openjdk:22
+FROM openjdk:22-slim
 
-RUN curl -L -o sbt.deb https://github.com/sbt/sbt/releases/download/v1.9.7/sbt-1.9.7.deb \
-    && dpkg -i sbt.deb \
-    && rm sbt.deb
+RUN apt-get update && apt-get install -y curl && \
+    curl -L -o sbt.deb https://github.com/sbt/sbt/releases/download/v1.9.7/sbt-1.9.7.deb && \
+    dpkg -i sbt.deb && rm sbt.deb
 
 WORKDIR /app
 
