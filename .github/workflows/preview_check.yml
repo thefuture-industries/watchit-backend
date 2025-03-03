@@ -45,7 +45,8 @@ jobs:
             - name: Install SBT using SDKMAN
               run: |
                   curl -s "https://get.sdkman.io" | bash
-                  source "$HOME/.sdkman/bin/sdkman-init.sh"
+                  export SDKMAN_DIR="$HOME/.sdkman"
+                  . "$SDKMAN_DIR/bin/sdkman-init.sh"
                   sdk install sbt
 
             - name: Cache SBT dependencies (Ivy2)
