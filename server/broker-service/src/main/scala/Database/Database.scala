@@ -1,3 +1,5 @@
+package Database
+
 import java.sql.{Connection, DriverManager, PreparedStatement, ResultSet, Statement, Timestamp}
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import scala.collection.mutable.ListBuffer
