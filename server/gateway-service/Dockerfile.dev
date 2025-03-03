@@ -1,4 +1,4 @@
-FROM openjdk:22.0.1
+FROM openjdk:22
 
 RUN curl -L -o sbt.deb https://github.com/sbt/sbt/releases/download/v1.9.7/sbt-1.9.7.deb \
     && dpkg -i sbt.deb \
