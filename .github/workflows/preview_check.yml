@@ -40,6 +40,21 @@ jobs:
               with:
                   distribution: 'temurin'
                   java-version: '22.0.1'
+                  cache: 'sbt'
+
+            - name: Install SBT
+              run: |
+                  curl -fsSL https://repo.scala-sbt.org/scalasbt/debian/sbt-1.0.asc | sudo tee /etc/apt/trusted.gpg.d/sbt.asc
+                  echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
+                  sudo apt update
+                  sudo apt install -y sbt
+
+            - name: 📦 Кэширование зависимостей SBT
+              uses: actions/cache@v3
+              with:
+                  path: ~/.ivy2/cache
+                  key: sbt-${{ runner.os }}-${{ hashFiles('**/build.sbt') }}
+                  restore-keys: sbt-${{ runner.os }}
 
             - name: Install GOlang
               uses: actions/setup-go@v4
@@ -89,19 +104,19 @@ jobs:
             - name: Install dependencies services
               working-directory: ./server
               run: |
-                  cd ./gateway-service && go mod download && cd ..
                   cd ./user-service && go mod download && cd ..
                   cd ./movie-service && go mod download && cd ..
 
-            - name: Run tests services
-              working-directory: ./server
-              run: |
-                  cd ./gateway-service/test && go test -v && cd ../..
+            # - name: Run tests services
+            #   working-directory: ./server
+            #   run: |
+            #       cd ./gateway-service/test && go test -v && cd ../..
 
-            - name: Build Golang Gateway Server
+            - name: Build Gateway Server
               run: |
                   cd ./server/gateway-service
-                  make build
+                  sbt compile
+                  sbt test
 
             - name: Build Golang User Server
               working-directory: ./server/user-service
