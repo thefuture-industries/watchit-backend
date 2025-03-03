@@ -1,0 +1,15 @@
+FROM openjdk:22.0.1
+
+RUN curl -L -o sbt.deb https://github.com/sbt/sbt/releases/download/v1.9.7/sbt-1.9.7.deb \
+    && dpkg -i sbt.deb \
+    && rm sbt.deb
+
+WORKDIR /app
+
+COPY ./app
+
+RUN sbt compile
+
+RUN sbt assembly
+
+CMD ["java", "-jar", "target/scala-2.13/broker-service_2.13-0.1.0-SNAPSHOT.jar"]

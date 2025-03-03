@@ -41,19 +41,32 @@ else
     echo -e "${YELLOW}No changes in 'client-windows' directory. Skipping actions for client-windows.${NC}"
 fi
 
-### C ###
+### Scala ###
 if echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
     echo -e "${YELLOW}Changes in 'gateway-service' directory detected.${NC}"
 
     echo -e "${GREEN}[|] Running formatted and build for gateway-service...${NC}"
     cd ./server/gateway-service
-    make build
-    cd ./test && go test -v
+    sbt scalafmtAll
+    sbt test
     echo -e "${GREEN}[+] Success formatted and build for gateway-service!${NC}"
-    cd ../../../
+    cd ../../
 else
     echo -e "${YELLOW}No changes in 'gateway-service' directory. Skipping actions for gateway-service.${NC}"
 fi
+
+# if echo "$CHANGED_FILES" | grep -qE '^server/broker-service/'; then
+#     echo -e "${YELLOW}Changes in 'broker-service' directory detected.${NC}"
+
+#     echo -e "${GREEN}[|] Running formatted and build for broker-service...${NC}"
+#     cd ./server/broker-service
+#     sbt scalafmtAll
+#     sbt test
+#     echo -e "${GREEN}[+] Success formatted and build for broker-service!${NC}"
+#     cd ../../
+# else
+#     echo -e "${YELLOW}No changes in 'broker-service' directory. Skipping actions for gateway-service.${NC}"
+# fi
 
 ### Golang ###
 if echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
