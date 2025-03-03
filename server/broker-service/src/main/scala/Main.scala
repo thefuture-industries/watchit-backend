@@ -1,3 +1,4 @@
+import scala.collection.mutable
 import java.net.{ServerSocket, Socket}
 import java.io.{BufferedReader, InputStreamReader, PrintWriter}
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
@@ -8,6 +9,8 @@ import Packages.Logger
 object TCPServer {
     val PORT = 8888
     val database = new Database()
+
+    val clients = mutable.Set[PrintWriter]()
 
     def main(args: Array[String]): Unit = {
         val serverSocket = new ServerSocket(PORT)
@@ -27,14 +30,19 @@ class ClientHandler(socket: Socket, database: Database) extends Thread {
     val objectMapper = new ObjectMapper()
 
     override def run(): Unit = {
-        val in = new BufferedReader(new InputStreamReader(socket.getInputStream))
-        val out = new PrintWriter(socket.getOutputStream, true)
+        val in = new BufferedReader(new InputStreamReader(socket.getInputStream, "UTF-8"))
+        val out = new PrintWriter(socket.getOutputStream, true, java.nio.charset.StandardCharsets.UTF_8)
+
+        // Добавляем клиента в список
+        TCPServer.clients.add(out)
 
         try {
             if (in.ready()) {
                 val receivedData = in.readLine()
                 if (receivedData != null && receivedData.nonEmpty) {
+                    println("DATA PAYLOAD!!!")
                     database.insertData(receivedData)
+                    notifyClients(s"""$receivedData""")
                     out.println("Data received and stored")
                 }
             }
@@ -46,6 +54,7 @@ class ClientHandler(socket: Socket, database: Database) extends Thread {
                 Logger.logError(e.getMessage)
                 out.println(s"""{"status": "error", "message": "${e.getMessage}"}""")
         } finally {
+            TCPServer.clients.remove(out)
             out.close()
             in.close()
             socket.close()
@@ -67,5 +76,11 @@ class ClientHandler(socket: Socket, database: Database) extends Thread {
 
         val json_data = objectMapper.writeValueAsString(brokersData)
         out.println(json_data)
+    }
+
+    def notifyClients(message: String): Unit = {
+        TCPServer.clients.foreach {
+            client => client.println(message)
+        }
     }
 }

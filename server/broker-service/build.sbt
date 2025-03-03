@@ -2,14 +2,17 @@ import Dependencies._
 
 ThisBuild / scalaVersion     := "2.13.12"
 ThisBuild / version          := "0.1.0-SNAPSHOT"
-ThisBuild / organization     := "com.example"
-ThisBuild / organizationName := "example"
+ThisBuild / organization     := "com.flicksfi"
+ThisBuild / organizationName := "flicksfi"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "brocker-service",
+    name := "broker-service",
     libraryDependencies += munit % Test
   )
+
+javacOptions ++= Seq("-encoding", "UTF-8")
+scalacOptions ++= Seq("-encoding", "UTF-8")
 
 libraryDependencies += "org.postgresql" % "postgresql" % "42.5.4"
 libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.14.0"
