@@ -6,7 +6,7 @@ RUN curl -L -o sbt.deb https://github.com/sbt/sbt/releases/download/v1.9.7/sbt-1
 
 WORKDIR /app
 
-COPY ./app
+COPY ./app .
 
 RUN sbt compile
 
