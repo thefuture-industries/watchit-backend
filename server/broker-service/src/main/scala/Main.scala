@@ -8,7 +8,6 @@ object TCPServer {
 
     def main(args: Array[String]): Unit = {
         val serverSocket = new ServerSocket(PORT)
-        // val conn = connectDB()
         database.createTableIfNotExists()
 
         println(s"Server is listening on port $PORT")
