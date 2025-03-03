@@ -10,6 +10,4 @@ COPY ./app
 
 RUN sbt compile
 
-RUN sbt assembly
-
 CMD ["java", "-jar", "target/scala-2.13/gateway-service_2.13-0.1.0-SNAPSHOT.jar"]

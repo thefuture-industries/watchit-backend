@@ -22,55 +22,54 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - name: Setup docker-compose
+            - name: Install Docker and Docker Compose
               run: |
                   sudo apt update
                   sudo apt install -y docker docker-compose
 
-            - name: Install Node.js
+            - name: Install Node.js (v20) for React Native and Expo
               uses: actions/setup-node@v4
               with:
                   node-version: 20
 
-            - name: Install pnpm
+            - name: Install pnpm (package manager)
               run: npm i -g pnpm
 
-            - name: Install Java and Android SDK
+            - name: Install Java (JDK 22) and enable caching for SBT dependencies
               uses: actions/setup-java@v3
               with:
                   distribution: 'temurin'
                   java-version: '22.0.1'
                   cache: 'sbt'
 
-            - name: Install SBT
+            - name: Install SBT using SDKMAN
               run: |
-                  curl -fsSL https://repo.scala-sbt.org/scalasbt/debian/sbt-1.0.asc | sudo tee /etc/apt/trusted.gpg.d/sbt.asc
-                  echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
-                  sudo apt update
-                  sudo apt install -y sbt
+                  curl -s "https://get.sdkman.io" | bash
+                  source "$HOME/.sdkman/bin/sdkman-init.sh"
+                  sdk install sbt
 
-            - name: 📦 Кэширование зависимостей SBT
+            - name: Cache SBT dependencies (Ivy2)
               uses: actions/cache@v3
               with:
                   path: ~/.ivy2/cache
                   key: sbt-${{ runner.os }}-${{ hashFiles('**/build.sbt') }}
                   restore-keys: sbt-${{ runner.os }}
 
-            - name: Install GOlang
+            - name: Install Golang (v1.23.0) for backend services
               uses: actions/setup-go@v4
               with:
                   go-version: 1.23.0
 
-            - name: Install Expo CLI
+            - name: Install Expo CLI and EAS CLI for React Native
               run: npm i -g expo-cli eas-cli
 
-            - name: 🏗 Setup EAS
+            - name: Configure EAS (Expo Application Services)
               uses: expo/expo-github-action@v8
               with:
                   eas-version: latest
                   token: ${{ secrets.EXPO_TOKEN }}
 
-            - name: Set enviroment variables
+            - name: Set environment variables for Android build
               run: |
                   echo "ANDROID_KEYSTORE_PATH=./client-mobile/android/app/keystore.jks" >> $GITHUB_ENV
                   echo "ANDROID_KEYSTORE_PASSWORD=password" >> $GITHUB_ENV
@@ -97,11 +96,11 @@ jobs:
             #       cd ./client-mobile
             #       eas build --platform android --profile preview --non-interactive
 
-            - name: Install packages React Native
+            - name: Install React Native dependencies using pnpm
               run: |
                   pnpm install --dir ./client-mobile
 
-            - name: Install dependencies services
+            - name: Download dependencies for Golang services
               working-directory: ./server
               run: |
                   cd ./user-service && go mod download && cd ..
@@ -112,7 +111,7 @@ jobs:
             #   run: |
             #       cd ./gateway-service/test && go test -v && cd ../..
 
-            - name: Build Gateway Server
+            - name: Compile and run tests for Scala Gateway Service (SBT)
               run: |
                   cd ./server/gateway-service
                   sbt compile
@@ -126,7 +125,7 @@ jobs:
               working-directory: ./server/movie-service
               run: make build
 
-            - name: Check ports availability
+            - name: Check port availability before starting services
               run: |
                   for port in 8080 8001 8011; do
                     if lsof -i :"$port"; then
@@ -137,7 +136,7 @@ jobs:
                     fi
                   done
 
-            - name: Start docker-compose
+            - name: Start all services using Docker Compose
               working-directory: ./server
               run: |
                   docker-compose -f docker-compose.dev.yml up --build -d
@@ -152,7 +151,7 @@ jobs:
 
                   echo "All services are running successfully."
 
-            - name: Check running services
+            - name: Verify running services
               working-directory: ./server
               run: |
                   docker-compose -f docker-compose.dev.yml ps
