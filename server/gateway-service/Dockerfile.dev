@@ -12,7 +12,7 @@ ENV PATH="$HOME/.sdkman/candidates/sbt/current/bin:$PATH"
 
 WORKDIR /app
 
-COPY ./app .
+COPY . .
 
 RUN sbt compile
 
