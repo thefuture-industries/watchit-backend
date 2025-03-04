@@ -1,13 +1,19 @@
-FROM openjdk:22.0.1
+FROM ubuntu:22.04
 
-RUN curl -L -o sbt.deb https://github.com/sbt/sbt/releases/download/v1.9.7/sbt-1.9.7.deb \
-    && dpkg -i sbt.deb \
-    && rm sbt.deb
+RUN apt update -q && \
+    apt install -y -q openjdk-17-jre openjdk-17-jdk-headless && \
+    apt install -y -q fontconfig fonts-dejavu curl zip unzip git
+
+RUN curl -s "https://get.sdkman.io" | bash
+
+RUN bash -c "source $HOME/.sdkman/bin/sdkman-init.sh && sdk install sbt"
+
+ENV PATH="$HOME/.sdkman/candidates/sbt/current/bin:$PATH"
 
 WORKDIR /app
 
-COPY ./app
+COPY . .
 
-RUN sbt compile
+RUN bash -c "source $HOME/.sdkman/bin/sdkman-init.sh && sbt compile"
 
-CMD ["java", "-jar", "target/scala-2.13/broker-service_2.13-0.1.0-SNAPSHOT.jar"]
+CMD ["java", "-jar", "target/scala-2.13/broker-service-assembly-0.1.0.jar"]
