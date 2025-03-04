@@ -16,4 +16,6 @@ COPY . .
 
 RUN bash -c "source $HOME/.sdkman/bin/sdkman-init.sh && sbt compile"
 
+RUN bash -c "source $HOME/.sdkman/bin/sdkman-init.sh && sbt assembly"
+
 CMD ["java", "-jar", "target/scala-2.13/gateway-service-assembly-0.1.0.jar"]
