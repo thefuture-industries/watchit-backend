@@ -1,8 +1,14 @@
-FROM openjdk:22-slim
+FROM openjdk:17
 
-RUN apt-get update && apt-get install -y curl && \
-    curl -L -o sbt.deb https://github.com/sbt/sbt/releases/download/v1.9.7/sbt-1.9.7.deb && \
-    dpkg -i sbt.deb && rm sbt.deb
+RUN apt-get update && apt-get install -y \
+    curl zip unzip git && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN curl -s "https://get.sdkman.io" | bash
+
+RUN bash -c "source $HOME/.sdkman/bin/sdkman-init.sh && sdk install sbt"
+
+ENV PATH="$HOME/.sdkman/candidates/sbt/current/bin:$PATH"
 
 WORKDIR /app
 
