@@ -1,7 +1,8 @@
-FROM openjdk:12-jdk-oraclelinux7
+FROM ubuntu:22.04
 
-RUN apt update
-RUN apt install -y curl zip unzip git
+RUN apt update -q && \
+    apt install -y -q openjdk-17-jre openjdk-17-jdk-headless && \
+    apt install -y -q fontconfig fonts-dejavu curl zip unzip git
 
 RUN curl -s "https://get.sdkman.io" | bash
 
