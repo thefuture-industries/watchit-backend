@@ -53,6 +53,7 @@ jobs:
                   path: ~/.ivy2/cache
                   key: sbt-${{ runner.os }}-${{ hashFiles('**/build.sbt') }}
                   restore-keys: sbt-${{ runner.os }}
+                  max-size: 90M
 
             - name: Install Golang (v1.23.0) for backend services
               uses: actions/setup-go@v4
@@ -154,3 +155,5 @@ jobs:
               working-directory: ./server
               run: |
                   docker-compose -f docker-compose.dev.yml ps
+            - name: Clean up all Docker services
+              run: docker system prune -af
