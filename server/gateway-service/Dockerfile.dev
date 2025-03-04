@@ -1,7 +1,7 @@
 FROM openjdk:17
 
-RUN apt-get update && apt-get install -y apt
-RUN apt-get install -y curl zip unzip git
+RUN sudo apt update
+RUN sudo apt install -y curl zip unzip git
 
 RUN curl -s "https://get.sdkman.io" | bash
 
