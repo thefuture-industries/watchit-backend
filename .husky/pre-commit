@@ -82,26 +82,26 @@ else
     echo -e "${YELLOW}No changes in 'gateway-service' directory. Skipping actions for gateway-service.${NC}"
 fi
 
-# if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/broker-service/'; then
-#     echo -e "${YELLOW}Changes in 'broker-service' directory detected.${NC}"
+if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/broker-service/'; then
+    echo -e "${YELLOW}Changes in 'broker-service' directory detected.${NC}"
 
-#     echo -e "${GREEN}[|] Running formatted and build for broker-service...${NC}"
-#     cd ./server/broker-service
-#     sbt scalafmtAll
-#     sbt test
-#     sbt clean assembly
-#     echo -e "${GREEN}[+] Success formatted and build for broker-service!${NC}"
-#     cd ../../
-# elif echo "$CHANGED_FILES" | grep -qE '^broker-service/'; then
-#    echo -e "${YELLOW}Changes in 'broker-service' directory detected. Only formatting will be done.${NC}"
-#
-#    cd ./server/broker-service
-#    sbt scalafmtAll
-#    cd ../../
-#    echo -e "${GREEN}[+] Success formatted for broker-service!${NC}"
-# else
-#     echo -e "${YELLOW}No changes in 'broker-service' directory. Skipping actions for gateway-service.${NC}"
-# fi
+    echo -e "${GREEN}[|] Running formatted and build for broker-service...${NC}"
+    cd ./server/broker-service
+    sbt scalafmtAll
+    # sbt test
+    sbt clean assembly
+    echo -e "${GREEN}[+] Success formatted and build for broker-service!${NC}"
+    cd ../../
+elif echo "$CHANGED_FILES" | grep -qE '^broker-service/'; then
+   echo -e "${YELLOW}Changes in 'broker-service' directory detected. Only formatting will be done.${NC}"
+
+   cd ./server/broker-service
+   sbt scalafmtAll
+   cd ../../
+   echo -e "${GREEN}[+] Success formatted for broker-service!${NC}"
+else
+    echo -e "${YELLOW}No changes in 'broker-service' directory. Skipping actions for gateway-service.${NC}"
+fi
 
 ### Golang ###
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
