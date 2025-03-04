@@ -45,6 +45,7 @@ object ClientHandler {
               settings = pool
             )
             .recover { case ex: Exception =>
+                Logger.logError(ex.getMessage)
                 HttpResponse(
                   StatusCodes.InternalServerError,
                   entity = "Failed to send request to microservice"

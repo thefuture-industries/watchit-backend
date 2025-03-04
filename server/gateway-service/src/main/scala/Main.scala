@@ -42,6 +42,7 @@ object Main extends App {
                     onComplete(ClientHandler.forward_to_backend(request, targetURL)) {
                         case scala.util.Success(response) => complete(response)
                         case scala.util.Failure(ex)       =>
+                            Logger.logError(ex.getMessage)
                             complete(
                               HttpResponse(
                                 StatusCodes.InternalServerError,
@@ -56,8 +57,14 @@ object Main extends App {
 
     val bindingFuture = Http().bindAndHandle(route, config.server_addr, config.server_port.toInt)
 
+    println("""   ______      __                              _____                 _
+  / ____/___ _/ /____ _      ______ ___  __   / ___/___  ______   __(_)_______
+ / / __/ __ `/ __/ _ \ | /| / / __ `/ / / /   \__ \/ _ \/ ___/ | / / / ___/ _ \
+/ /_/ / /_/ / /_/  __/ |/ |/ / /_/ / /_/ /   ___/ /  __/ /   | |/ / / /__/  __/
+\____/\__,_/\__/\___/|__/|__/\__,_/\__, /   /____/\___/_/    |___/_/\___/\___/
+                                  /____/                                       """)
     println(
-      s"Server online at http://${config.server_addr}:${config.server_port}/\nPress RETURN to stop..."
+      s"\nServer online at http://${config.server_addr}:${config.server_port}/\nPress RETURN to stop..."
     )
     StdIn.readLine()
     bindingFuture

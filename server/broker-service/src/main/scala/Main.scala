@@ -16,6 +16,12 @@ object TCPServer {
         val serverSocket = new ServerSocket(PORT)
         database.createTableIfNotExists()
 
+        println("""    ____             __                _____                 _
+   / __ )_________  / /_____  _____   / ___/___  ______   __(_)_______
+  / __  / ___/ __ \/ //_/ _ \/ ___/   \__ \/ _ \/ ___/ | / / / ___/ _ \
+ / /_/ / /  / /_/ / ,< /  __/ /      ___/ /  __/ /   | |/ / / /__/  __/
+/_____/_/   \____/_/|_|\___/_/      /____/\___/_/    |___/_/\___/\___/
+                                                                       """)
         println(s"Server is listening on port $PORT")
         while (true) {
             val socket = serverSocket.accept()

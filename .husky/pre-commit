@@ -49,6 +49,7 @@ if echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
     cd ./server/gateway-service
     sbt scalafmtAll
     sbt test
+    sbt clean assembly
     echo -e "${GREEN}[+] Success formatted and build for gateway-service!${NC}"
     cd ../../
 else
@@ -62,6 +63,7 @@ fi
 #     cd ./server/broker-service
 #     sbt scalafmtAll
 #     sbt test
+#     sbt clean assembly
 #     echo -e "${GREEN}[+] Success formatted and build for broker-service!${NC}"
 #     cd ../../
 # else

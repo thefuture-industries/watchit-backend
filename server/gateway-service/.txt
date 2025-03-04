@@ -17,3 +17,6 @@
 
 6) Format code
  > sbt scalafmtAll
+
+7) Build JAR file
+ > sbt assembly
