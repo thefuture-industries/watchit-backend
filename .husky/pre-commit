@@ -81,7 +81,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/g
     git add .
     echo -e "${GREEN}[+] Success formatted and build for gateway-service!${NC}"
     cd ../../
-elif echo "$CHANGED_FILES" | grep -qE '^gateway-service/'; then
+elif echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
     echo -e "${YELLOW}Changes in 'gateway-service' directory detected. Only formatting will be done.${NC}"
 
     cd ./server/gateway-service
@@ -106,7 +106,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/b
     git add .
     echo -e "${GREEN}[+] Success formatted and build for broker-service!${NC}"
     cd ../../
-elif echo "$CHANGED_FILES" | grep -qE '^broker-service/'; then
+elif echo "$CHANGED_FILES" | grep -qE '^server/broker-service/'; then
    echo -e "${YELLOW}Changes in 'broker-service' directory detected. Only formatting will be done.${NC}"
 
    cd ./server/broker-service
@@ -132,7 +132,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/u
     git add .
     echo -e "${GREEN}[+] Success formatted and build for user-service!${NC}"
     cd ../../
-elif echo "$CHANGED_FILES" | grep -qE '^user-service/'; then
+elif echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
     echo -e "${YELLOW}Changes in 'user-service' directory detected. Only formatting will be done.${NC}"
 
     cd ./server/user-service
@@ -158,7 +158,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/m
     git add .
     echo -e "${GREEN}[+] Success formatted and build for movie-service!${NC}"
     cd ../../
-elif echo "$CHANGED_FILES" | grep -qE '^movie-service/'; then
+elif echo "$CHANGED_FILES" | grep -qE '^server/movie-service/'; then
     echo -e "${YELLOW}Changes in 'movie-service' directory detected. Only formatting will be done.${NC}"
 
     cd ./server/movie-service
@@ -184,7 +184,7 @@ fi
 #      git add .
 #     echo -e "${GREEN}[+] Success formatted and build for blog-service!${NC}"
 #     cd ../../
-# elif echo "$CHANGED_FILES" | grep -qE '^blog-service/'; then
+# elif echo "$CHANGED_FILES" | grep -qE '^server/blog-service/'; then
 #    echo -e "${YELLOW}Changes in 'blog-service' directory detected. Only formatting will be done.${NC}"
 #
 #    cd ./server/blog-service

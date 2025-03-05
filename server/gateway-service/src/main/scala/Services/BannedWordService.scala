@@ -1,6 +1,6 @@
-package Security
+package Services
 
-object BannedWord {
+object BannedWordService {
     private val bannedWords = Set(
       "<script>",
       "</script>",
