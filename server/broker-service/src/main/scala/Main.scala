@@ -1,13 +1,13 @@
 import scala.collection.mutable
-import java.net.{ServerSocket, Socket}
-import java.io.{BufferedReader, InputStreamReader, PrintWriter}
-import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
+import java.net.{ ServerSocket, Socket }
+import java.io.{ BufferedReader, InputStreamReader, PrintWriter }
+import com.fasterxml.jackson.databind.{ JsonNode, ObjectMapper }
 
 import Database.Database
 import Packages.Logger
 
 object TCPServer {
-    val PORT = 8888
+    val PORT     = 8888
     val database = new Database()
 
     val clients = mutable.Set[PrintWriter]()
@@ -36,8 +36,9 @@ class ClientHandler(socket: Socket, database: Database) extends Thread {
     val objectMapper = new ObjectMapper()
 
     override def run(): Unit = {
-        val in = new BufferedReader(new InputStreamReader(socket.getInputStream, "UTF-8"))
-        val out = new PrintWriter(socket.getOutputStream, true, java.nio.charset.StandardCharsets.UTF_8)
+        val in  = new BufferedReader(new InputStreamReader(socket.getInputStream, "UTF-8"))
+        val out =
+            new PrintWriter(socket.getOutputStream, true, java.nio.charset.StandardCharsets.UTF_8)
 
         // Добавляем клиента в список
         TCPServer.clients.add(out)
@@ -51,8 +52,7 @@ class ClientHandler(socket: Socket, database: Database) extends Thread {
                     notifyClients(s"""$receivedData""")
                     out.println("Data received and stored")
                 }
-            }
-            else {
+            } else {
                 sendBrokersData(out)
             }
         } catch {
@@ -85,8 +85,8 @@ class ClientHandler(socket: Socket, database: Database) extends Thread {
     }
 
     def notifyClients(message: String): Unit = {
-        TCPServer.clients.foreach {
-            client => client.println(message)
+        TCPServer.clients.foreach { client =>
+            client.println(message)
         }
     }
 }

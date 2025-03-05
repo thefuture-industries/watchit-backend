@@ -4,15 +4,15 @@ import com.fasterxml.jackson.node.ObjectNode
 import com.fasterxml.jackson.databind.ObjectMapper
 
 object TCPClient {
-    val SERVER_ADDR = "localhost"
-    val SERVER_PORT = 8888
+    val SERVER_ADDR  = "localhost"
+    val SERVER_PORT  = 8888
     val objectMapper = new ObjectMapper()
 
     def main(args: Array[String]): Unit = {
         try {
             val socket = new Socket(SERVER_ADDR, SERVER_PORT)
-            val in = new BufferedReader(new InputStreamReader(socket.getInputStream))
-            val out = new PrintWriter(socket.getOutputStream, true)
+            val in     = new BufferedReader(new InputStreamReader(socket.getInputStream))
+            val out    = new PrintWriter(socket.getOutputStream, true)
 
             println("Connected to the server.")
 

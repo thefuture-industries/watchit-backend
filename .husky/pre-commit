@@ -27,6 +27,8 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^client-m
     cd ./client-mobile
     pnpm format
     # pnpm test
+
+    git add .
     echo -e "${GREEN}[+] Success formatted and build for client-mobile!${NC}"
     cd ..
 elif echo "$CHANGED_FILES" | grep -qE '^client-mobile/'; then
@@ -34,6 +36,8 @@ elif echo "$CHANGED_FILES" | grep -qE '^client-mobile/'; then
 
     cd ./client-mobile
     pnpm format
+
+    git add .
     echo -e "${GREEN}[+] Success formatted for client-mobile!${NC}"
     cd ..
 else
@@ -48,12 +52,16 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^client-w
     cd ./client-windows
     # dotnet restore
     # dotnet build --configuration Release || { echo -e "${RED}C# build failed${NC}"; exit 1; }
+
+    git add .
     echo -e "${GREEN}[+] Success formatted and build for client-windows!${NC}"
     cd ..
 elif echo "$CHANGED_FILES" | grep -qE '^client-windows/'; then
     echo -e "${YELLOW}Changes in 'client-windows' directory detected. Only formatting will be done.${NC}"
     cd ./client-windows
     # format!!!
+
+    git add .
     echo -e "${GREEN}[+] Success formatted and build for client-windows!${NC}"
     cd ..
 else
@@ -69,6 +77,8 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/g
     sbt scalafmtAll
     sbt test
     sbt clean assembly
+
+    git add .
     echo -e "${GREEN}[+] Success formatted and build for gateway-service!${NC}"
     cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^gateway-service/'; then
@@ -77,6 +87,8 @@ elif echo "$CHANGED_FILES" | grep -qE '^gateway-service/'; then
     cd ./server/gateway-service
     sbt scalafmtAll
     cd ../../
+
+    git add .
     echo -e "${GREEN}[+] Success formatted for gateway-service!${NC}"
 else
     echo -e "${YELLOW}No changes in 'gateway-service' directory. Skipping actions for gateway-service.${NC}"
@@ -90,6 +102,8 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/b
     sbt scalafmtAll
     # sbt test
     sbt clean assembly
+
+    git add .
     echo -e "${GREEN}[+] Success formatted and build for broker-service!${NC}"
     cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^broker-service/'; then
@@ -98,6 +112,8 @@ elif echo "$CHANGED_FILES" | grep -qE '^broker-service/'; then
    cd ./server/broker-service
    sbt scalafmtAll
    cd ../../
+
+   git add .
    echo -e "${GREEN}[+] Success formatted for broker-service!${NC}"
 else
     echo -e "${YELLOW}No changes in 'broker-service' directory. Skipping actions for gateway-service.${NC}"
@@ -112,6 +128,8 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/u
     go mod tidy
     gofmt -w .
     make build
+
+    git add .
     echo -e "${GREEN}[+] Success formatted and build for user-service!${NC}"
     cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^user-service/'; then
@@ -119,6 +137,8 @@ elif echo "$CHANGED_FILES" | grep -qE '^user-service/'; then
 
     cd ./server/user-service
     gofmt -w .
+
+    git add .
     echo -e "${GREEN}[+] Success formatted for user-service!${NC}"
     cd ../../
 else
@@ -134,6 +154,8 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/m
     go mod tidy
     gofmt -w .
     make build
+
+    git add .
     echo -e "${GREEN}[+] Success formatted and build for movie-service!${NC}"
     cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^movie-service/'; then
@@ -141,6 +163,8 @@ elif echo "$CHANGED_FILES" | grep -qE '^movie-service/'; then
 
     cd ./server/movie-service
     gofmt -w .
+
+    git add .
     echo -e "${GREEN}[+] Success formatted for movie-service!${NC}"
     cd ../../
 else
@@ -156,6 +180,8 @@ fi
 #     go mod tidy
 #     gofmt -w .
 #     make build
+#
+#      git add .
 #     echo -e "${GREEN}[+] Success formatted and build for blog-service!${NC}"
 #     cd ../../
 # elif echo "$CHANGED_FILES" | grep -qE '^blog-service/'; then
@@ -163,6 +189,8 @@ fi
 #
 #    cd ./server/blog-service
 #    gofmt -w .
+#
+#    git add .
 #    echo -e "${GREEN}[+] Success formatted for blog-service!${NC}"
 #    cd ../../
 # else

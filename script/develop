@@ -1,0 +1,63 @@
+#!/bin/bash
+
+set -e
+
+# COLORS
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# Функция для отображения справки
+show_help() {
+    echo "Использование: ./develop.sh [команда] [сервис]"
+    echo "Команды:"
+    echo "  up      Запускает указанные сервисы"
+    echo "  down    Останавливает указанные сервисы"
+    echo "  build   Собирает указанные сервисы"
+    echo "  help    Показать это сообщение"
+}
+
+echo -e "${GREEN}Начало установки и конфигурирования...${NC}"
+
+# Функция для сборки сервиса
+build_service() {
+    local service_name=$1
+    echo "Сборка сервиса: $service_name..."
+    # Здесь можно добавить команды для сборки сервиса
+    # Например, компиляция кода или установка зависимостей
+}
+
+go_() {
+    local go_service_path=$1
+    echo "Запуск Go сервиса из $go_service_path..."
+    cd "$go_service_path"
+    make run &
+}
+
+scala_() {
+    local scala_service_path=$1
+    echo "Запуск Scala сервиса из $scala_service_path..."
+    java -jar $scala_service_path & ######################
+}
+
+csharp_() {
+    local csharp_service_path=$1
+    echo "Запуск C# сервиса из $csharp_service_path..."
+    dotnet $csharp_service_path & ######################
+}
+
+# scala_ "../server/gateway-service/target/scala-2.13/gateway-service-assembly-0.1.0.jar"
+# scala_ "../server/broker-service/target/scala-2.13/broker-service-assembly-0.1.0.jar"
+go_ "../server/user-service"
+go_ "../server/movie-service"
+
+# wait
+
+# for job in `jobs -p`; do
+#     wait $job || {
+#         echo -e "${RED}Ошибка: один из процессов завершился с ошибкой.${NC}"
+#         exit 1
+#     }
+# done
