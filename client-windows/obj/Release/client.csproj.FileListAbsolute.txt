@@ -1,1 +1,0 @@
-C:\Users\Artemiik\Documents\git\flicksfi\client-windows\obj\Release\client.csproj.AssemblyReference.cache

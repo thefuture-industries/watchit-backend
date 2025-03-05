@@ -7,9 +7,9 @@ import akka.stream.ActorMaterializer
 import scala.io.StdIn
 import scala.concurrent.ExecutionContextExecutor
 
-import Packages.{ Logger }
-import Security.{ BannedWord }
-import Networking.{ ClientHandler }
+import Repository.{ UserRepository, MovieRepository }
+
+import Services.{ LoggerService, BannedWordService }
 import Config.Config
 
 object Main extends App {
@@ -19,43 +19,12 @@ object Main extends App {
 
     val config = Config()
 
-    val route = pathPrefix("api" / "v1" / "user") {
-        extractRequest { request =>
-            val newPath =
-                "/micro/user" + request.uri.path.toString().substring("/api/v1/user".length)
-            val body    = request.entity.dataBytes.runFold("")(_ + _.utf8String)
+    val routes = concat(
+      new UserRepository().forward_user,
+      new MovieRepository().forward_movie
+    )
 
-            onSuccess(body) { bodyContent =>
-                if (
-                  BannedWord.is_request_suspicious(bodyContent) || BannedWord
-                      .is_request_suspicious(request.uri.toString())
-                ) {
-                    complete(
-                      HttpResponse(
-                        StatusCodes.Forbidden,
-                        entity = "Suspicious content detected in request"
-                      )
-                    )
-                } else {
-                    val targetURL =
-                        s"${config.security}://${config.usermicro_addr}:${config.usermicro_port}$newPath"
-                    onComplete(ClientHandler.forward_to_backend(request, targetURL)) {
-                        case scala.util.Success(response) => complete(response)
-                        case scala.util.Failure(ex)       =>
-                            Logger.logError(ex.getMessage)
-                            complete(
-                              HttpResponse(
-                                StatusCodes.InternalServerError,
-                                entity = "Failed to forward request"
-                              )
-                            )
-                    }
-                }
-            }
-        }
-    }
-
-    val bindingFuture = Http().bindAndHandle(route, config.server_addr, config.server_port.toInt)
+    val bindingFuture = Http().bindAndHandle(routes, config.server_addr, config.server_port.toInt)
 
     println("""   ______      __                              _____                 _
   / ____/___ _/ /____ _      ______ ___  __   / ___/___  ______   __(_)_______
@@ -64,12 +33,10 @@ object Main extends App {
 \____/\__,_/\__/\___/|__/|__/\__,_/\__, /   /____/\___/_/    |___/_/\___/\___/
                                   /____/                                       """)
     println(
-      s"\nServer online at http://${config.server_addr}:${config.server_port}/\nPress RETURN to stop..."
+      s"\nServer online at ${config.security}://${config.server_addr}:${config.server_port}/\nPress RETURN to stop..."
     )
     StdIn.readLine()
     bindingFuture
         .flatMap(_.unbind())
         .onComplete(_ => system.terminate())
 }
-
-// Ограничени времени ответа от микросервиса

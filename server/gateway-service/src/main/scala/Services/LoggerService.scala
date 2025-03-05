@@ -1,10 +1,10 @@
-package Packages
+package Services
 
 import java.io._
 import java.text.SimpleDateFormat
 import java.util.Date
 
-object Logger {
+object LoggerService {
     private val logDir         = new File("logs")
     private val logFile_ERROR  = new File(logDir, "errors.log")
     private val logFile_SOCKET = new File(logDir, "server.log")
