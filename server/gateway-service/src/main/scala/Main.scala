@@ -7,7 +7,7 @@ import akka.stream.ActorMaterializer
 import scala.io.StdIn
 import scala.concurrent.ExecutionContextExecutor
 
-import Repository.{ UserRepository }
+import Repository.{ UserRepository, MovieRepository }
 
 import Services.{ LoggerService, BannedWordService }
 import Config.Config
@@ -20,7 +20,8 @@ object Main extends App {
     val config = Config()
 
     val routes = concat(
-      new UserRepository().forward_user
+      new UserRepository().forward_user,
+      new MovieRepository().forward_movie
     )
 
     val bindingFuture = Http().bindAndHandle(routes, config.server_addr, config.server_port.toInt)
@@ -32,7 +33,7 @@ object Main extends App {
 \____/\__,_/\__/\___/|__/|__/\__,_/\__, /   /____/\___/_/    |___/_/\___/\___/
                                   /____/                                       """)
     println(
-      s"\nServer online at http://${config.server_addr}:${config.server_port}/\nPress RETURN to stop..."
+      s"\nServer online at ${config.security}://${config.server_addr}:${config.server_port}/\nPress RETURN to stop..."
     )
     StdIn.readLine()
     bindingFuture

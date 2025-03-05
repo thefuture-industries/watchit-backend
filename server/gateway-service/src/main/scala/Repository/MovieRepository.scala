@@ -8,24 +8,24 @@ import akka.http.scaladsl.model._
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 
-import Interfaces.{ UserInterface, ForwardInterface }
+import Interfaces.{ MovieInterface, ForwardInterface }
 import Repository.{ ForwardRepository }
 import Services.{ LoggerService, BannedWordService }
 import Config.Config
 
-class UserRepository(implicit ec: ExecutionContext) extends UserInterface {
+class MovieRepository(implicit ec: ExecutionContext) extends MovieInterface {
     private val config                                = Config();
     private val _forward_repository: ForwardInterface = new ForwardRepository()
 
-    def forward_user(implicit
+    def forward_movie(implicit
         system: ActorSystem,
         materializer: Materializer,
         executionContext: ExecutionContextExecutor
     ): Route = {
-        pathPrefix("api" / "v1" / "user") {
+        pathPrefix("api" / "v1" / "movie") {
             extractRequest { request =>
                 val newPath =
-                    "/micro/user" + request.uri.path.toString().substring("/api/v1/user".length)
+                    "/micro/movie" + request.uri.path.toString().substring("/api/v1/movie".length)
                 val body    = request.entity.dataBytes.runFold("")(_ + _.utf8String)
 
                 onSuccess(body) { bodyContent =>
@@ -41,7 +41,7 @@ class UserRepository(implicit ec: ExecutionContext) extends UserInterface {
                         )
                     } else {
                         val targetURL =
-                            s"${config.security}://${config.usermicro_addr}:${config.usermicro_port}$newPath"
+                            s"${config.security}://${config.moviemicro_addr}:${config.moviemicro_port}$newPath"
                         onComplete(
                           this._forward_repository.forward_to_backend(request, targetURL)
                         ) {

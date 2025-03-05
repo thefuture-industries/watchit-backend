@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.{ JsonNode, ObjectMapper }
 
 import Database.Database
 import Packages.Logger
+import Config.Config
 
 object TCPServer {
     val PORT     = 8888
     val database = new Database()
+    val config   = Config()
 
     val clients = mutable.Set[PrintWriter]()
 
@@ -23,6 +25,9 @@ object TCPServer {
 /_____/_/   \____/_/|_|\___/_/      /____/\___/_/    |___/_/\___/\___/
                                                                        """)
         println(s"Server is listening on port $PORT")
+        println(
+          s"\nServer online at ${config.security}://${config.server_addr}:${config.server_port}/\nPress RETURN to stop..."
+        )
         while (true) {
             val socket = serverSocket.accept()
             Logger.logSocket("", "", "", "New client connected")

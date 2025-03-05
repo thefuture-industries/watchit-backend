@@ -21,7 +21,7 @@ CHANGED_FILES=$(git diff --cached --name-only)
 
 ### React Native ###
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^client-mobile/'; then
-    echo -e "${YELLOW}Changes in 'client-mobile' directory detected.${NC}"
+    echo -e "${BLUE}Changes in 'client-mobile' directory detected.${NC}"
 
     echo -e "${GREEN}[|] Running formatted and build for client-mobile...${NC}"
     cd ./client-mobile
@@ -32,7 +32,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^client-m
     echo -e "${GREEN}[+] Success formatted and build for client-mobile!${NC}"
     cd ..
 elif echo "$CHANGED_FILES" | grep -qE '^client-mobile/'; then
-    echo -e "${YELLOW}Changes in 'client-mobile' directory detected. Only formatting will be done.${NC}"
+    echo -e "${BLUE}Changes in 'client-mobile' directory detected. Only formatting will be done.${NC}"
 
     cd ./client-mobile
     pnpm format
@@ -46,7 +46,7 @@ fi
 
 ### C# ###
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^client-windows/'; then
-    echo -e "${YELLOW}Changes in 'client-windows' directory detected.${NC}"
+    echo -e "${BLUE}Changes in 'client-windows' directory detected.${NC}"
 
     echo -e "${GREEN}[|] Running formatted and build for client-windows...${NC}"
     cd ./client-windows
@@ -57,7 +57,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^client-w
     echo -e "${GREEN}[+] Success formatted and build for client-windows!${NC}"
     cd ..
 elif echo "$CHANGED_FILES" | grep -qE '^client-windows/'; then
-    echo -e "${YELLOW}Changes in 'client-windows' directory detected. Only formatting will be done.${NC}"
+    echo -e "${BLUE}Changes in 'client-windows' directory detected. Only formatting will be done.${NC}"
     cd ./client-windows
     # format!!!
 
@@ -70,7 +70,7 @@ fi
 
 ### Scala ###
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
-    echo -e "${YELLOW}Changes in 'gateway-service' directory detected.${NC}"
+    echo -e "${BLUE}Changes in 'gateway-service' directory detected.${NC}"
 
     echo -e "${GREEN}[|] Running formatted and build for gateway-service...${NC}"
     cd ./server/gateway-service
@@ -82,7 +82,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/g
     echo -e "${GREEN}[+] Success formatted and build for gateway-service!${NC}"
     cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
-    echo -e "${YELLOW}Changes in 'gateway-service' directory detected. Only formatting will be done.${NC}"
+    echo -e "${BLUE}Changes in 'gateway-service' directory detected. Only formatting will be done.${NC}"
 
     cd ./server/gateway-service
     sbt scalafmtAll
@@ -95,7 +95,7 @@ else
 fi
 
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/broker-service/'; then
-    echo -e "${YELLOW}Changes in 'broker-service' directory detected.${NC}"
+    echo -e "${BLUE}Changes in 'broker-service' directory detected.${NC}"
 
     echo -e "${GREEN}[|] Running formatted and build for broker-service...${NC}"
     cd ./server/broker-service
@@ -107,7 +107,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/b
     echo -e "${GREEN}[+] Success formatted and build for broker-service!${NC}"
     cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^server/broker-service/'; then
-   echo -e "${YELLOW}Changes in 'broker-service' directory detected. Only formatting will be done.${NC}"
+   echo -e "${BLUE}Changes in 'broker-service' directory detected. Only formatting will be done.${NC}"
 
    cd ./server/broker-service
    sbt scalafmtAll
@@ -121,7 +121,7 @@ fi
 
 ### Golang ###
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
-    echo -e "${YELLOW}Changes in 'user-service' directory detected.${NC}"
+    echo -e "${BLUE}Changes in 'user-service' directory detected.${NC}"
 
     echo -e "${GREEN}[|] Running formatted and build for user-service...${NC}"
     cd ./server/user-service
@@ -133,7 +133,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/u
     echo -e "${GREEN}[+] Success formatted and build for user-service!${NC}"
     cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
-    echo -e "${YELLOW}Changes in 'user-service' directory detected. Only formatting will be done.${NC}"
+    echo -e "${BLUE}Changes in 'user-service' directory detected. Only formatting will be done.${NC}"
 
     cd ./server/user-service
     gofmt -w .
@@ -147,7 +147,7 @@ fi
 
 ### Golang ###
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/movie-service/'; then
-    echo -e "${YELLOW}Changes in 'movie-service' directory detected.${NC}"
+    echo -e "${BLUE}Changes in 'movie-service' directory detected.${NC}"
 
     echo -e "${GREEN}[|] Running formatted and build for movie-service...${NC}"
     cd ./server/movie-service
@@ -159,7 +159,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/m
     echo -e "${GREEN}[+] Success formatted and build for movie-service!${NC}"
     cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^server/movie-service/'; then
-    echo -e "${YELLOW}Changes in 'movie-service' directory detected. Only formatting will be done.${NC}"
+    echo -e "${BLUE}Changes in 'movie-service' directory detected. Only formatting will be done.${NC}"
 
     cd ./server/movie-service
     gofmt -w .
@@ -173,7 +173,7 @@ fi
 
 ### Golang ###
 # if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/blog-service/'; then
-#     echo -e "${YELLOW}Changes in 'blog-service' directory detected.${NC}"
+#     echo -e "${BLUE}Changes in 'blog-service' directory detected.${NC}"
 
 #     echo -e "${GREEN}[|] Running formatted and build for blog-service...${NC}"
 #     cd ./server/blog-service
@@ -185,7 +185,7 @@ fi
 #     echo -e "${GREEN}[+] Success formatted and build for blog-service!${NC}"
 #     cd ../../
 # elif echo "$CHANGED_FILES" | grep -qE '^server/blog-service/'; then
-#    echo -e "${YELLOW}Changes in 'blog-service' directory detected. Only formatting will be done.${NC}"
+#    echo -e "${BLUE}Changes in 'blog-service' directory detected. Only formatting will be done.${NC}"
 #
 #    cd ./server/blog-service
 #    gofmt -w .
