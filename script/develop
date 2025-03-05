@@ -9,6 +9,130 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+TOTAL_STEPS=14
+STEP=0
+PIDS=""
+increment_step() {
+    STEP=$((STEP + 1))
+    echo -e "${BLUE}[STEP $STEP/$TOTAL_STEPS] ${1}${NC}"
+}
+
+HOME="C:\Users\Artemiik\Documents\git\flicksfi"
+OS=$(uname -s)
+
+#########################################################
+############### INSTALL DEPENDENCIES ####################
+install_choco() {
+    increment_step "Проверяем установку Chocolatey..."
+    if ! command -v choco &>/dev/null; then
+        echo -e "${YELLOW}Chocolatey не найден. Устанавливаем...${NC}"
+        if [[ "$OS" == "MINGW64_NT"* || "$OS" == "CYGWIN"* || "$OS" == "Windows_NT"* ]]; then
+            powershell.exe -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; \
+            [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12; \
+            iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+        fi
+    else
+        echo -e "Chocolatey уже установлен."
+    fi
+}
+
+install_node() {
+    increment_step "Проверяем установку Node.js..."
+    if ! command -v node &>/dev/null; then
+        echo -e "${YELLOW}Node.js не найден. Устанавливаем...${NC}"
+        if [[ "$OS" == "Linux" ]]; then
+            sudo apt update
+            sudo apt install -y nodejs npm
+        elif [[ "$OS" == "MINGW64_NT"* || "$OS" == "CYGWIN"* || "$OS" == "Windows_NT"* ]]; then
+            choco install nodejs ###########################
+        fi
+    else
+        echo -e "Node.js уже установлен."
+    fi
+}
+
+install_expo_cli() {
+    increment_step "Проверяем установку Expo CLI..."
+    if ! command -v expo &>/dev/null; then
+        echo -e "${YELLOW}Expo CLI не найден. Устанавливаем...${NC}"
+        npm install -g expo-cli
+    else
+        echo -e "Expo CLI уже установлен."
+    fi
+}
+
+install_java() {
+    increment_step "Проверяем установку Java..."
+    if ! command -v java &>/dev/null || [[ $(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d '.' -f1) -lt 17 ]]; then
+        echo -e "${YELLOW}Java не найдена или версия ниже 17. Устанавливаем...${NC}"
+        if [[ "$OS" == "Linux" ]]; then
+            sudo apt update
+            sudo apt install -y openjdk-17-jdk
+        elif [[ "$OS" == "MINGW64_NT"* || "$OS" == "CYGWIN"* || "$OS" == "Windows_NT"* ]]; then
+            choco install openjdk17
+        fi
+    else
+        echo -e "Java 17 или выше уже установлена."
+    fi
+}
+
+install_pnpm() {
+    increment_step "Проверяем установку pnpm..."
+    if ! command -v pnpm &>/dev/null; then
+        echo -e "${YELLOW}pnpm не найден. Устанавливаем...${NC}"
+        npm install -g pnpm
+    else
+        echo -e "pnpm уже установлен."
+    fi
+}
+
+install_sbt() {
+    increment_step "Проверяем установку sbt..."
+    if ! command -v sbt &>/dev/null; then
+        echo -e "${YELLOW}sbt не найден. Устанавливаем...${NC}"
+        if [[ "$OS" == "Linux" ]]; then
+            echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+            sudo apt update
+            sudo apt install sbt
+        elif [[ "$OS" == "MINGW64_NT"* || "$OS" == "CYGWIN"* || "$OS" == "Windows_NT"* ]]; then
+            choco install sbt
+        fi
+    else
+        echo -e "sbt уже установлен."
+    fi
+}
+
+install_golang() {
+    increment_step "Проверяем установку Golang..."
+    if ! command -v go &>/dev/null; then
+        echo -e "${YELLOW}Golang не найден. Устанавливаем...${NC}"
+        if [[ "$OS" == "Linux" ]]; then
+            sudo apt update
+            sudo apt install golang-go
+        elif [[ "$OS" == "MINGW64_NT"* || "$OS" == "CYGWIN"* || "$OS" == "Windows_NT"* ]]; then
+            choco install golang
+        fi
+    else
+        echo -e "Golang уже установлен."
+    fi
+}
+
+check_() {
+    echo -e "${BLUE}Инициализация контейнера для сервисов${NC}"
+
+    install_choco
+    install_node
+    install_expo_cli
+    install_java
+    install_pnpm
+    install_sbt
+    install_golang
+}
+
+check_
+################### END DEPENDENCIES ####################
+#########################################################
+
 # Функция для отображения справки
 show_help() {
     echo "Использование: ./develop.sh [команда] [сервис]"
@@ -19,45 +143,91 @@ show_help() {
     echo "  help    Показать это сообщение"
 }
 
-echo -e "${GREEN}Начало установки и конфигурирования...${NC}"
-
-# Функция для сборки сервиса
 build_service() {
-    local service_name=$1
-    echo "Сборка сервиса: $service_name..."
-    # Здесь можно добавить команды для сборки сервиса
+    cd "$HOME"
+    increment_step "Начало установки и конфигурирования..."
+
+    increment_step "Проверка свободных портов..."
+    for PORT in 8001 8011 8022 8080 8888; do
+        echo "Проверяем порт: ${PORT}"
+        if [[ "$OS" == "Linux" ]]; then
+            # Для Linux используем netstat + grep или ss
+            PID=$(netstat -tulnp 2>/dev/null | grep ":$PORT" | awk '{print $7}' | cut -d'/' -f1)
+
+            if [[ -z "$PID" ]]; then
+                echo "✅ Порт $PORT свободен!"
+            else
+                echo "⚠️ Найден процесс на порту $PORT с PID: $PID"
+                echo "🔪 Убиваем процесс..."
+                kill -9 $PID
+                echo "✅ Процесс $PID остановлен!"
+            fi
+        elif [[ "$OS" == "MINGW64_NT"* || "$OS" == "CYGWIN"* || "$OS" == "Windows_NT"* ]]; then
+            # Для Windows (Git Bash, Cygwin, MinGW)
+            PID=$(netstat -ano | grep ":$PORT" | awk '{print $5}' | tail -n 1)
+
+            if [[ -z "$PID" ]]; then
+                echo "✅ Порт $PORT свободен!"
+            else
+                echo "⚠️ Найден процесс на порту $PORT с PID: $PID"
+                echo "🔪 Убиваем процесс..."
+                taskkill /F /PID "$PID"
+                echo "✅ Процесс $PID остановлен!"
+            fi
+        else
+            echo -e "${YELLOW}❌ Неизвестная ОС: $OS${NC}"
+            exit 1
+        fi
+    done
     # Например, компиляция кода или установка зависимостей
 }
 
 go_() {
     local go_service_path=$1
-    echo "Запуск Go сервиса из $go_service_path..."
-    cd "$go_service_path"
-    make run &
+
+    increment_step "Запуск Go сервиса из $go_service_path..."
+    cd "$HOME/$go_service_path" && make run &
+    PIDS="$PIDS $!"
+    echo -e "${GREEN}Процесс Go сервиса с PID: $!${NC}"
 }
 
 scala_() {
     local scala_service_path=$1
-    echo "Запуск Scala сервиса из $scala_service_path..."
-    java -jar $scala_service_path & ######################
+
+    increment_step "Запуск Scala сервиса из $scala_service_path..."
+    java -jar $HOME/$scala_service_path &
+    PIDS="$PIDS $!"
+    echo -e "${GREEN}Процесс Scala сервиса с PID: $!${NC}"
 }
 
 csharp_() {
     local csharp_service_path=$1
-    echo "Запуск C# сервиса из $csharp_service_path..."
-    dotnet $csharp_service_path & ######################
+
+    increment_step "Запуск C# сервиса из $csharp_service_path..."
+    dotnet $HOME/$csharp_service_path &
+    PIDS="$PIDS $!"
+    echo -e "${GREEN}Процесс C# сервиса с PID: $!${NC}"
 }
 
-# scala_ "../server/gateway-service/target/scala-2.13/gateway-service-assembly-0.1.0.jar"
-# scala_ "../server/broker-service/target/scala-2.13/broker-service-assembly-0.1.0.jar"
-go_ "../server/user-service"
-go_ "../server/movie-service"
+build_service
 
-# wait
+##################################
+########### SERVICE ##############
+scala_ "server/gateway-service/target/scala-2.13/gateway-service-assembly-0.1.0.jar"
+scala_ "server/broker-service/target/scala-2.13/broker-service-assembly-0.1.0.jar"
+go_ "server/user-service"
+go_ "server/movie-service"
+########### SERVICE ##############
+##################################
 
-# for job in `jobs -p`; do
-#     wait $job || {
-#         echo -e "${RED}Ошибка: один из процессов завершился с ошибкой.${NC}"
-#         exit 1
-#     }
-# done
+wait_for_jobs() {
+    increment_step "Ожидаем завершения всех процессов..."
+    for pid in $PIDS; do
+        wait "$pid" || {
+            echo -e "${RED}Ошибка: один из процессов завершился с ошибкой.${NC}"
+            exit 1
+        }
+    done
+    echo -e "${GREEN}Все процессы завершены успешно.${NC}"
+}
+wait_for_jobs
