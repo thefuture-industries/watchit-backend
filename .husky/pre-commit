@@ -10,8 +10,12 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# при main ветки оставить этот код
-# при комите в новую ветку этот код не выполняь только форматирование кода
+TOTAL_STEPS=6 # 7
+STEP=0
+increment_step() {
+    STEP=$((STEP + 1))
+    echo -e "${BLUE}[STEP $STEP/$TOTAL_STEPS] ${1}${NC}"
+}
 
 # Получаем текущую ветку
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -21,7 +25,7 @@ CHANGED_FILES=$(git diff --cached --name-only)
 
 ### React Native ###
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^client-mobile/'; then
-    echo -e "${BLUE}Changes in 'client-mobile' directory detected.${NC}"
+    increment_step "Changes in 'client-mobile' directory detected."
 
     echo -e "${GREEN}[|] Running formatted and build for client-mobile...${NC}"
     cd ./client-mobile
@@ -32,7 +36,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^client-m
     echo -e "${GREEN}[+] Success formatted and build for client-mobile!${NC}"
     cd ..
 elif echo "$CHANGED_FILES" | grep -qE '^client-mobile/'; then
-    echo -e "${BLUE}Changes in 'client-mobile' directory detected. Only formatting will be done.${NC}"
+    increment_step "Changes in 'client-mobile' directory detected. Only formatting will be done."
 
     cd ./client-mobile
     pnpm format
@@ -41,12 +45,12 @@ elif echo "$CHANGED_FILES" | grep -qE '^client-mobile/'; then
     echo -e "${GREEN}[+] Success formatted for client-mobile!${NC}"
     cd ..
 else
-    echo -e "${YELLOW}No changes in 'client-mobile' directory. Skipping actions for client-mobile.${NC}"
+    increment_step "No changes in 'client-mobile' directory. Skipping actions for client-mobile."
 fi
 
 ### C# ###
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^client-windows/'; then
-    echo -e "${BLUE}Changes in 'client-windows' directory detected.${NC}"
+    increment_step "Changes in 'client-windows' directory detected."
 
     echo -e "${GREEN}[|] Running formatted and build for client-windows...${NC}"
     cd ./client-windows
@@ -57,7 +61,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^client-w
     echo -e "${GREEN}[+] Success formatted and build for client-windows!${NC}"
     cd ..
 elif echo "$CHANGED_FILES" | grep -qE '^client-windows/'; then
-    echo -e "${BLUE}Changes in 'client-windows' directory detected. Only formatting will be done.${NC}"
+    increment_step "Changes in 'client-windows' directory detected. Only formatting will be done."
     cd ./client-windows
     # format!!!
 
@@ -65,12 +69,12 @@ elif echo "$CHANGED_FILES" | grep -qE '^client-windows/'; then
     echo -e "${GREEN}[+] Success formatted and build for client-windows!${NC}"
     cd ..
 else
-    echo -e "${YELLOW}No changes in 'client-windows' directory. Skipping actions for client-windows.${NC}"
+    increment_step "No changes in 'client-windows' directory. Skipping actions for client-windows."
 fi
 
 ### Scala ###
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
-    echo -e "${BLUE}Changes in 'gateway-service' directory detected.${NC}"
+    increment_step "Changes in 'gateway-service' directory detected."
 
     echo -e "${GREEN}[|] Running formatted and build for gateway-service...${NC}"
     cd ./server/gateway-service
@@ -82,7 +86,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/g
     echo -e "${GREEN}[+] Success formatted and build for gateway-service!${NC}"
     cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
-    echo -e "${BLUE}Changes in 'gateway-service' directory detected. Only formatting will be done.${NC}"
+    increment_step "Changes in 'gateway-service' directory detected. Only formatting will be done."
 
     cd ./server/gateway-service
     sbt scalafmtAll
@@ -91,11 +95,11 @@ elif echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
     git add .
     echo -e "${GREEN}[+] Success formatted for gateway-service!${NC}"
 else
-    echo -e "${YELLOW}No changes in 'gateway-service' directory. Skipping actions for gateway-service.${NC}"
+    increment_step "No changes in 'gateway-service' directory. Skipping actions for gateway-service."
 fi
 
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/broker-service/'; then
-    echo -e "${BLUE}Changes in 'broker-service' directory detected.${NC}"
+    increment_step "Changes in 'broker-service' directory detected."
 
     echo -e "${GREEN}[|] Running formatted and build for broker-service...${NC}"
     cd ./server/broker-service
@@ -107,7 +111,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/b
     echo -e "${GREEN}[+] Success formatted and build for broker-service!${NC}"
     cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^server/broker-service/'; then
-   echo -e "${BLUE}Changes in 'broker-service' directory detected. Only formatting will be done.${NC}"
+   increment_step "Changes in 'broker-service' directory detected. Only formatting will be done."
 
    cd ./server/broker-service
    sbt scalafmtAll
@@ -116,12 +120,12 @@ elif echo "$CHANGED_FILES" | grep -qE '^server/broker-service/'; then
    git add .
    echo -e "${GREEN}[+] Success formatted for broker-service!${NC}"
 else
-    echo -e "${YELLOW}No changes in 'broker-service' directory. Skipping actions for gateway-service.${NC}"
+    increment_step "No changes in 'broker-service' directory. Skipping actions for gateway-service."
 fi
 
 ### Golang ###
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
-    echo -e "${BLUE}Changes in 'user-service' directory detected.${NC}"
+    increment_step "Changes in 'user-service' directory detected."
 
     echo -e "${GREEN}[|] Running formatted and build for user-service...${NC}"
     cd ./server/user-service
@@ -133,7 +137,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/u
     echo -e "${GREEN}[+] Success formatted and build for user-service!${NC}"
     cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
-    echo -e "${BLUE}Changes in 'user-service' directory detected. Only formatting will be done.${NC}"
+    increment_step "Changes in 'user-service' directory detected. Only formatting will be done."
 
     cd ./server/user-service
     gofmt -w .
@@ -142,12 +146,12 @@ elif echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
     echo -e "${GREEN}[+] Success formatted for user-service!${NC}"
     cd ../../
 else
-    echo -e "${YELLOW}No changes in 'user-service' directory. Skipping actions for user-service.${NC}"
+    increment_step "No changes in 'user-service' directory. Skipping actions for user-service."
 fi
 
 ### Golang ###
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/movie-service/'; then
-    echo -e "${BLUE}Changes in 'movie-service' directory detected.${NC}"
+    increment_step "Changes in 'movie-service' directory detected."
 
     echo -e "${GREEN}[|] Running formatted and build for movie-service...${NC}"
     cd ./server/movie-service
@@ -159,7 +163,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/m
     echo -e "${GREEN}[+] Success formatted and build for movie-service!${NC}"
     cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^server/movie-service/'; then
-    echo -e "${BLUE}Changes in 'movie-service' directory detected. Only formatting will be done.${NC}"
+    increment_step "Changes in 'movie-service' directory detected. Only formatting will be done."
 
     cd ./server/movie-service
     gofmt -w .
@@ -168,12 +172,12 @@ elif echo "$CHANGED_FILES" | grep -qE '^server/movie-service/'; then
     echo -e "${GREEN}[+] Success formatted for movie-service!${NC}"
     cd ../../
 else
-    echo -e "${YELLOW}No changes in 'movie-service' directory. Skipping actions for movie-service.${NC}"
+    increment_step "No changes in 'movie-service' directory. Skipping actions for movie-service."
 fi
 
 ### Golang ###
 # if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/blog-service/'; then
-#     echo -e "${BLUE}Changes in 'blog-service' directory detected.${NC}"
+#     increment_step "Changes in 'blog-service' directory detected."
 
 #     echo -e "${GREEN}[|] Running formatted and build for blog-service...${NC}"
 #     cd ./server/blog-service
@@ -185,7 +189,7 @@ fi
 #     echo -e "${GREEN}[+] Success formatted and build for blog-service!${NC}"
 #     cd ../../
 # elif echo "$CHANGED_FILES" | grep -qE '^server/blog-service/'; then
-#    echo -e "${BLUE}Changes in 'blog-service' directory detected. Only formatting will be done.${NC}"
+#    increment_step "Changes in 'blog-service' directory detected. Only formatting will be done."
 #
 #    cd ./server/blog-service
 #    gofmt -w .
@@ -194,7 +198,7 @@ fi
 #    echo -e "${GREEN}[+] Success formatted for blog-service!${NC}"
 #    cd ../../
 # else
-#     echo -e "No changes in 'blog-service' directory. Skipping actions for blog-service."
+#     increment_step "No changes in 'blog-service' directory. Skipping actions for blog-service."
 # fi
 
 echo "Husky is successfully!"
