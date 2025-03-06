@@ -1,4 +1,4 @@
-package Networking
+package Repository
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model._
@@ -9,9 +9,10 @@ import akka.http.scaladsl.settings.ConnectionPoolSettings
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration._
 
-import Packages.Logger
+import Interfaces.{ ForwardInterface }
+import Services.{ LoggerService }
 
-object ClientHandler {
+class ForwardRepository(implicit ec: ExecutionContext) extends ForwardInterface {
     def forward_to_backend(request: HttpRequest, targetURL: String)(implicit
         system: ActorSystem,
         mat: Materializer,
@@ -21,7 +22,7 @@ object ClientHandler {
             .find(_.name == "X-Forwarded-For")
             .map(_.value)
             .getOrElse(request.uri.authority.host.address())
-        Logger.logServer(
+        LoggerService.logServer(
           clientIP,
           request.method.value,
           request.uri.path.toString(),
@@ -45,7 +46,7 @@ object ClientHandler {
               settings = pool
             )
             .recover { case ex: Exception =>
-                Logger.logError(ex.getMessage)
+                LoggerService.logError(ex.getMessage)
                 HttpResponse(
                   StatusCodes.InternalServerError,
                   entity = "Failed to send request to microservice"
