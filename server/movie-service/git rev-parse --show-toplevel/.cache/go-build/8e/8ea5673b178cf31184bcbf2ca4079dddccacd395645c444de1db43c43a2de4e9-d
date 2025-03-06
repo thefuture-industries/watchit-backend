@@ -1,0 +1,8 @@
+./canonical.go
+./compress.go
+./cors.go
+./doc.go
+./handlers.go
+./logging.go
+./proxy_headers.go
+./recovery.go

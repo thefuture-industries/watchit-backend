@@ -9,7 +9,7 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-TOTAL_STEPS=14
+TOTAL_STEPS=15
 STEP=0
 PIDS=""
 increment_step() {
@@ -17,8 +17,10 @@ increment_step() {
     echo -e "${BLUE}[STEP $STEP/$TOTAL_STEPS] ${1}${NC}"
 }
 
-HOME="C:\Users\Artemiik\Documents\git\flicksfi"
+# HOME="C:\Users\Artemiik\Documents\git\flicksfi"
+HOME="git rev-parse --show-toplevel"
 OS=$(uname -s)
+echo "$OS"
 
 #########################################################
 ############### INSTALL DEPENDENCIES ####################
@@ -86,14 +88,28 @@ install_pnpm() {
     fi
 }
 
+# install_sdk() {
+#     increment_step "Проверяем установку sdk..."
+#     if ! command -v sdk &>/dev/null; then
+#         echo -e "${YELLOW}sdk не найден. Устанавливаем...${NC}"
+#         if [[ "$OS" == "Linux" ]]; then
+#             sudo apt update
+#             sudo apt install -y -q curl zip unzip
+#             curl -s "https://get.sdkman.io" | bash
+#             source "$HOME/.sdkman/bin/sdkman-init.sh"
+#         fi
+#     else
+#         echo -e "sdk уже установлен."
+#     fi
+# }
+
 install_sbt() {
     increment_step "Проверяем установку sbt..."
     if ! command -v sbt &>/dev/null; then
         echo -e "${YELLOW}sbt не найден. Устанавливаем...${NC}"
         if [[ "$OS" == "Linux" ]]; then
-            echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
             sudo apt update
-            sudo apt install sbt
+            sudo sdk install sbt
         elif [[ "$OS" == "MINGW64_NT"* || "$OS" == "CYGWIN"* || "$OS" == "Windows_NT"* ]]; then
             choco install sbt
         fi
@@ -125,6 +141,7 @@ check_() {
     install_expo_cli
     install_java
     install_pnpm
+    # install_sdk
     install_sbt
     install_golang
 }
@@ -144,7 +161,7 @@ show_help() {
 }
 
 build_service() {
-    cd "$HOME"
+    cd "$($HOME)"
     increment_step "Начало установки и конфигурирования..."
 
     increment_step "Проверка свободных портов..."
@@ -186,7 +203,7 @@ go_() {
     local go_service_path=$1
 
     increment_step "Запуск Go сервиса из $go_service_path..."
-    cd "$HOME/$go_service_path" && make run &
+    cd "$($HOME)/$go_service_path" && make run &
     PIDS="$PIDS $!"
     echo -e "${GREEN}Процесс Go сервиса с PID: $!${NC}"
 }
@@ -195,7 +212,11 @@ scala_() {
     local scala_service_path=$1
 
     increment_step "Запуск Scala сервиса из $scala_service_path..."
-    java -jar $HOME/$scala_service_path &
+    if ! test -f "$HOME/$scala_service_path"; then
+        sbt compile
+        sbt clean assembly
+    fi
+    java -jar $($HOME)/$scala_service_path &
     PIDS="$PIDS $!"
     echo -e "${GREEN}Процесс Scala сервиса с PID: $!${NC}"
 }
@@ -204,7 +225,7 @@ csharp_() {
     local csharp_service_path=$1
 
     increment_step "Запуск C# сервиса из $csharp_service_path..."
-    dotnet $HOME/$csharp_service_path &
+    dotnet $($HOME)/$csharp_service_path &
     PIDS="$PIDS $!"
     echo -e "${GREEN}Процесс C# сервиса с PID: $!${NC}"
 }
