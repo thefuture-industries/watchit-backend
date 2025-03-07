@@ -17,7 +17,8 @@ increment_step() {
     echo -e "${BLUE}[STEP $STEP/$TOTAL_STEPS] ${1}${NC}"
 }
 
-HOME="C:\Users\Artemiik\Documents\git\flicksfi"
+# HOME="C:\Users\Artemiik\Documents\git\flicksfi"
+HOME="$(git rev-parse --show-toplevel)"
 OS=$(uname -s)
 
 #########################################################
@@ -193,8 +194,10 @@ go_() {
 
 scala_() {
     local scala_service_path=$1
+    cd "$HOME/$scala_service_path"
 
     increment_step "Запуск Scala сервиса из $scala_service_path..."
+    sbt compile && sbt clean assembly
     java -jar $HOME/$scala_service_path &
     PIDS="$PIDS $!"
     echo -e "${GREEN}Процесс Scala сервиса с PID: $!${NC}"

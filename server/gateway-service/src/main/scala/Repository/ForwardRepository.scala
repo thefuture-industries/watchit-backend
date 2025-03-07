@@ -18,18 +18,11 @@ class ForwardRepository(implicit ec: ExecutionContext) extends ForwardInterface 
         mat: Materializer,
         ec: ExecutionContext
     ): Future[HttpResponse] = {
-        val clientIP = request.headers
+        val startTime       = System.currentTimeMillis()
+        val clientIP        = request.headers
             .find(_.name == "X-Forwarded-For")
             .map(_.value)
             .getOrElse(request.uri.authority.host.address())
-        LoggerService.logServer(
-          clientIP,
-          request.method.value,
-          request.uri.path.toString(),
-          "200 (Forwarded)",
-          s"We forward the request to the microservice: $targetURL"
-        )
-
         val filteredHeaders = request.headers.filterNot(_.name == "Timeout-Access")
 
         val pool = ConnectionPoolSettings(system)
@@ -45,6 +38,19 @@ class ForwardRepository(implicit ec: ExecutionContext) extends ForwardInterface 
               ),
               settings = pool
             )
+            .map { response =>
+                val responseTime = System.currentTimeMillis() - startTime
+                LoggerService.logServer(
+                  clientIP,
+                  request.method.value,
+                  request.uri.path.toString(),
+                  response.status.intValue().toString(),
+                  responseTime,
+                  "",
+                  s"We forward the request to the microservice: $targetURL"
+                )
+                response
+            }
             .recover { case ex: Exception =>
                 LoggerService.logError(ex.getMessage)
                 HttpResponse(

@@ -16,12 +16,14 @@ import (
 )
 
 type Logger struct {
-	logger *zap.Logger
+	logger        *zap.Logger
+	currentLogDir string
 }
 
 func NewLogger(logger *zap.Logger) *Logger {
 	return &Logger{
-		logger: logger,
+		logger:        logger,
+		currentLogDir: getCurrentLogDir(),
 	}
 }
 
@@ -29,6 +31,20 @@ type responseWriter struct {
 	http.ResponseWriter
 	status int
 	size   int64
+}
+
+func getCurrentLogDir() string {
+	dateFormatFolder := time.Now().Format("02.01")
+	dir := filepath.Join("logs", dateFormatFolder)
+	os.MkdirAll(dir, 0755)
+	return dir
+}
+
+func (l *Logger) updateLogDirIfNeeded() {
+	newLogDir := getCurrentLogDir()
+	if newLogDir != l.currentLogDir {
+		l.currentLogDir = newLogDir
+	}
 }
 
 func (l *Logger) LoggerMiddleware(next http.Handler) http.Handler {
@@ -59,6 +75,7 @@ func (l *Logger) LoggerMiddleware(next http.Handler) http.Handler {
 			time.Since(start),
 		)
 
+		l.updateLogDirIfNeeded()
 		l.productionLogging(entry)
 	})
 }
@@ -76,23 +93,16 @@ func getHTTPVersion(r *http.Request) string {
 	}
 }
 
-// Запись логов в папку logs/app.log
+// Запись логов в папку logs/date/app.log
 // ---------------------------------------
 func (l *Logger) productionLogging(log string) {
-	APP_DIR := filepath.Join("logs", "app")
-
-	// Проверка на существование и создание папки
-	err := os.MkdirAll(APP_DIR, 0755)
-	if err != nil {
-		l.logger.Error("error creating app directory: %v", zap.Error(err))
-		return // Важно выйти, если папка не создана
-	}
+	APP_DIR := filepath.Join(l.currentLogDir, "app.log")
 
 	// Открытие или создание файла
-	appLogFile, err := os.OpenFile(filepath.Join(APP_DIR, "app.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	appLogFile, err := os.OpenFile(APP_DIR, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		l.logger.Error("failed to open app log file: %v", zap.Error(err))
-		return // Важно выйти, если файл не открыт
+		return
 	}
 	defer appLogFile.Close()
 
@@ -102,4 +112,19 @@ func (l *Logger) productionLogging(log string) {
 		l.logger.Error("error writing to log file: %v", zap.Error(err))
 		return // Важно выйти, если не смогли записать
 	}
+}
+
+// WriteHeader добавляет статус ответа в обертку
+// ---------------------------------------------
+func (rw *responseWriter) WriteHeader(status int) {
+	rw.status = status
+	rw.ResponseWriter.WriteHeader(status)
+}
+
+// Write добавляет размер записи в обертку
+// ---------------------------------------
+func (rw *responseWriter) Write(b []byte) (int, error) {
+	size, err := rw.ResponseWriter.Write(b)
+	rw.size += int64(size)
+	return size, err
 }
