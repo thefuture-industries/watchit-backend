@@ -194,13 +194,14 @@ go_() {
 
 scala_() {
     local scala_service_path=$1
-    cd "$HOME/$scala_service_path"
+    # cd "$HOME/$scala_service_path"
 
     increment_step "Запуск Scala сервиса из $scala_service_path..."
     sbt compile && sbt clean assembly
     java -jar $HOME/$scala_service_path &
     PIDS="$PIDS $!"
     echo -e "${GREEN}Процесс Scala сервиса с PID: $!${NC}"
+
 }
 
 csharp_() {
@@ -211,6 +212,18 @@ csharp_() {
     PIDS="$PIDS $!"
     echo -e "${GREEN}Процесс C# сервиса с PID: $!${NC}"
 }
+
+cleanup() {
+    echo -e "${RED}\nОстановка всех запущенных сервисов...${NC}"
+    for PID in $PIDS; do
+        echo "🔪 Останавливаем процесс PID: $PID"
+        kill -9 $PID 2>/dev/null
+    done
+    echo -e "${GREEN}✅ Все сервисы остановлены!${NC}"
+    exit 0
+}
+
+trap cleanup SIGINT
 
 build_service
 
@@ -223,14 +236,4 @@ go_ "server/movie-service"
 ########### SERVICE ##############
 ##################################
 
-wait_for_jobs() {
-    increment_step "Ожидаем завершения всех процессов..."
-    for pid in $PIDS; do
-        wait "$pid" || {
-            echo -e "${RED}Ошибка: один из процессов завершился с ошибкой.${NC}"
-            exit 1
-        }
-    done
-    echo -e "${GREEN}Все процессы завершены успешно.${NC}"
-}
-wait_for_jobs
+wait
