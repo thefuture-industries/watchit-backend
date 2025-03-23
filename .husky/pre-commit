@@ -120,7 +120,7 @@ elif echo "$CHANGED_FILES" | grep -qE '^server/broker-service/'; then
    git add .
    echo -e "${GREEN}[+] Success formatted for broker-service!${NC}"
 else
-    increment_step "No changes in 'broker-service' directory. Skipping actions for gateway-service."
+    increment_step "No changes in 'broker-service' directory. Skipping actions for broker-service."
 fi
 
 ### Golang ###
@@ -129,8 +129,16 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/u
 
     echo -e "${GREEN}[|] Running formatted and build for user-service...${NC}"
     cd ./server/user-service
+
+    # Установка
+    go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+    go install golang.org/x/tools/cmd/goimports@latest
+
     go mod tidy
-    gofmt -w .
+
+    make fmt
+    make check
+    make lint
     make build
 
     git add .
@@ -155,8 +163,16 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/m
 
     echo -e "${GREEN}[|] Running formatted and build for movie-service...${NC}"
     cd ./server/movie-service
+
+    # Установка
+    go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+    go install golang.org/x/tools/cmd/goimports@latest
+
     go mod tidy
-    gofmt -w .
+
+    make fmt
+    make check
+    make lint
     make build
 
     git add .
@@ -181,11 +197,19 @@ fi
 
 #     echo -e "${GREEN}[|] Running formatted and build for blog-service...${NC}"
 #     cd ./server/blog-service
-#     go mod tidy
-#     gofmt -w .
-#     make build
 #
-#      git add .
+#    # Установка
+#    go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+#    go install golang.org/x/tools/cmd/goimports@latest
+#
+#    go mod tidy
+#
+#    make fmt
+#    make check
+#    make lint
+#    make build
+#
+#     git add .
 #     echo -e "${GREEN}[+] Success formatted and build for blog-service!${NC}"
 #     cd ../../
 # elif echo "$CHANGED_FILES" | grep -qE '^server/blog-service/'; then

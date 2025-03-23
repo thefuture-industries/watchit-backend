@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"go-user-service/internal/common/packages"
 	"go-user-service/internal/common/utils"
 	"net/http"
 
@@ -11,12 +12,14 @@ import (
 type Handler struct {
 	monitor *vision.Vision
 	logger  *zap.Logger
+	errors  *packages.Errors
 }
 
-func NewHandler(monitor *vision.Vision, logger *zap.Logger) *Handler {
+func NewHandler(monitor *vision.Vision, logger *zap.Logger, errors *packages.Errors) *Handler {
 	return &Handler{
 		monitor: monitor,
 		logger:  logger,
+		errors:  errors,
 	}
 }
 

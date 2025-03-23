@@ -21,9 +21,8 @@ import (
 )
 
 type APIServer struct {
-	addr   string
-	db     *gorm.DB
-	server *http.Server
+	addr string
+	db   *gorm.DB
 }
 
 func NewAPIServer(addr string, db *gorm.DB) *APIServer {
@@ -40,6 +39,15 @@ func (s *APIServer) Run() error {
 
 	router := mux.NewRouter()
 	subrouter := router.PathPrefix("/micro/movie").Subrouter()
+
+	// logger
+	logger, _ := zap.NewProduction()
+
+	// Vision monitoring
+	// monitoring := vision.NewVision()
+	subrouter.HandleFunc("/admin/vision", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./docs/vision/index.html")
+	}).Methods("GET")
 
 	// ------
 	// Scalar
@@ -68,12 +76,13 @@ func (s *APIServer) Run() error {
 	// -------------
 	// ROUTERS PATHS
 	// -------------
+	// errors := packages.NewErrors(monitoring, logger)
+
 	sync.RegisterRoutes(subrouter)
 
 	// ------------------
 	// Логирование server
 	// ------------------
-	logger, _ := zap.NewProduction()
 	router.Use(packages.NewLogger(logger).LoggerMiddleware)
 
 	// ---------------

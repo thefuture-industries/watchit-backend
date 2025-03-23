@@ -8,6 +8,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"go-user-service/internal/common/packages"
 	"net/http"
 )
 
@@ -25,12 +26,15 @@ func ParseJSON(r *http.Request, payload any) error {
 // ---------------------------
 // Функция ответа пользователю
 // ---------------------------
-func WriteJSON(w http.ResponseWriter, status int, v any) error {
+func WriteJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Security-Policy", "script-src 'self';")
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(status)
 
-	return json.NewEncoder(w).Encode(map[string]any{"message": v})
+	if err := json.NewEncoder(w).Encode(map[string]any{"message": v}); err != nil {
+		packages.ErrorLog(err)
+		http.Error(w, "Неизвестная ошибка от сервера", http.StatusBadGateway)
+	}
 }
 
 // --------------------------------

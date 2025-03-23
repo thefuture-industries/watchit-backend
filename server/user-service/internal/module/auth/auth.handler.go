@@ -6,15 +6,14 @@
 package auth
 
 import (
-	"fmt"
 	"go-user-service/internal/common/database"
 	"go-user-service/internal/common/database/actions"
+	"go-user-service/internal/common/packages"
 	"go-user-service/internal/common/types"
 	"go-user-service/internal/common/utils"
 	"net/http"
 	"time"
 
-	"github.com/go-playground/validator"
 	"github.com/google/uuid"
 	"github.com/noneandundefined/vision-go"
 	"go.uber.org/zap"
@@ -23,12 +22,14 @@ import (
 type Handler struct {
 	monitor *vision.Vision
 	logger  *zap.Logger
+	errors  *packages.Errors
 }
 
-func NewHandler(monitor *vision.Vision, logger *zap.Logger) *Handler {
+func NewHandler(monitor *vision.Vision, logger *zap.Logger, errors *packages.Errors) *Handler {
 	return &Handler{
 		monitor: monitor,
 		logger:  logger,
+		errors:  errors,
 	}
 }
 
@@ -42,8 +43,7 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Валидация данных от пользователя
 	if err := utils.Validate.Struct(payload); err != nil {
-		errors := err.(validator.ValidationErrors)
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("%v", errors))
+		utils.WriteJSON(w, http.StatusBadRequest, "Not all fields are filled in")
 		return
 	}
 
@@ -51,37 +51,33 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 	queryStart := time.Now()
 	isUsername, err := actions.GetUserByUsername(payload.Username)
 	if err != nil {
-		ctx := utils.SetErrorInContext(r.Context(), err)
-		r = r.WithContext(ctx)
-		h.monitor.VisionError(err)
-		// h.monitor.VisionDBError()
-		// h.logger.Error("[DB ERROR]", zap.Error(err))
+		h.errors.HandleErrors(err, true)
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
 	h.monitor.VisionDBQuery(time.Since(queryStart))
 
 	if isUsername == nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("the user was not found"))
+		utils.WriteJSON(w, http.StatusBadRequest, "the user was not found")
 		return
 	}
 
 	pincode_hash, err := utils.Encrypt(payload.PINCODE)
 	if err != nil {
-		h.logger.Error("[HASH ERROR]", zap.Error(err))
+		h.errors.HandleErrors(err, false)
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
 
 	// Проверка на pincode
 	if pincode_hash != isUsername.PINCODE {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("the user was not found"))
+		utils.WriteJSON(w, http.StatusBadRequest, "the user was not found")
 		return
 	}
 
 	uuid_hash, err := utils.Encrypt(isUsername.UUID)
 	if err != nil {
-		h.logger.Error("[HASH ERROR]", zap.Error(err))
+		h.errors.HandleErrors(err, false)
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
@@ -113,27 +109,27 @@ func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Валидация данных от пользователя
 	if err := utils.Validate.Struct(payload); err != nil {
-		errors := err.(validator.ValidationErrors)
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("%v", errors))
+		utils.WriteJSON(w, http.StatusBadRequest, "Not all fields are filled in")
 		return
 	}
 
+	queryStart := time.Now()
 	isUsername, err := actions.GetUserByUsername(payload.Username)
 	if err != nil {
-		h.monitor.VisionDBError()
-		h.logger.Error("[DB ERROR]", zap.Error(err))
+		h.errors.HandleErrors(err, true)
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
+	h.monitor.VisionDBQuery(time.Since(queryStart))
 
 	if isUsername != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("this username is busy, try another one"))
+		utils.WriteJSON(w, http.StatusBadRequest, "this username is busy, try another one")
 		return
 	}
 
 	pincode_hash, err := utils.Encrypt(payload.PINCODE)
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
+		utils.WriteJSON(w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -145,10 +141,13 @@ func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 		Country:   payload.Country,
 	}
 
+	queryStart = time.Now()
 	if err := actions.CreateUser(&user); err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
+		h.errors.HandleErrors(err, true)
+		utils.WriteJSON(w, http.StatusBadRequest, err)
 		return
 	}
+	h.monitor.VisionDBQuery(time.Since(queryStart))
 
 	utils.WriteJSON(w, http.StatusCreated, "the user has been successfully created!")
 }

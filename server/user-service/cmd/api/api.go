@@ -24,9 +24,8 @@ import (
 )
 
 type APIServer struct {
-	addr   string
-	db     *gorm.DB
-	server *http.Server
+	addr string
+	db   *gorm.DB
 }
 
 func NewAPIServer(addr string, db *gorm.DB) *APIServer {
@@ -80,15 +79,16 @@ func (s *APIServer) Run() error {
 	// -------------
 	// ROUTERS PATHS
 	// -------------
-	auth.NewHandler(monitoring, logger).RegisterRoutes(subrouter)
-	admin.NewHandler(monitoring, logger).RegisterRoutes(subrouter)
-	sync.NewHandler(monitoring, logger).RegisterRoutes(subrouter)
+	errors := packages.NewErrors(monitoring, logger)
+
+	auth.NewHandler(monitoring, logger, errors).RegisterRoutes(subrouter)
+	admin.NewHandler(monitoring, logger, errors).RegisterRoutes(subrouter)
+	sync.NewHandler(monitoring, logger, errors).RegisterRoutes(subrouter)
 
 	// ------------------
 	// Middlewares
 	// ------------------
 	router.Use(packages.NewLogger(logger).LoggerMiddleware)
-	router.Use(packages.NewVision(monitoring, logger).ServeHTTP)
 
 	// ---------------
 	// подключаем CORS

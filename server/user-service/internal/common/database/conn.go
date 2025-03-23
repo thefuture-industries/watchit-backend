@@ -7,6 +7,7 @@ package database
 
 import (
 	"fmt"
+	"go-user-service/internal/common/packages"
 	"log"
 
 	"gorm.io/driver/postgres"
@@ -20,8 +21,18 @@ func ConnectDB(dsn string) {
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
+		packages.ErrorLog(err)
+		return
 	}
 
+	err = db.AutoMigrate(&Users{}, &Payments{})
+	if err != nil {
+		log.Fatalf("Failed to migrate to database: %v", err)
+		packages.ErrorLog(err)
+		return
+	}
+
+	fmt.Println("Migration completed successfully.")
 	fmt.Println("Successfully connected to database!")
 }
 

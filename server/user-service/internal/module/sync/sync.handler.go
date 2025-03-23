@@ -8,6 +8,7 @@ package sync
 import (
 	"net/http"
 
+	"go-user-service/internal/common/packages"
 	"go-user-service/internal/common/utils"
 
 	"github.com/noneandundefined/vision-go"
@@ -17,12 +18,14 @@ import (
 type Handler struct {
 	monitor *vision.Vision
 	logger  *zap.Logger
+	errors  *packages.Errors
 }
 
-func NewHandler(monitor *vision.Vision, logger *zap.Logger) *Handler {
+func NewHandler(monitor *vision.Vision, logger *zap.Logger, errors *packages.Errors) *Handler {
 	return &Handler{
 		monitor: monitor,
 		logger:  logger,
+		errors:  errors,
 	}
 }
 

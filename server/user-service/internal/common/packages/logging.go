@@ -1,12 +1,8 @@
-// *---------------------------------------------------------------------------------------------
-//  *  Copyright (c). All rights reserved.
-//  *  Licensed under the MIT License. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*
-
 package packages
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -36,7 +32,9 @@ type responseWriter struct {
 func getCurrentLogDir() string {
 	dateFormatFolder := time.Now().Format("02.01")
 	dir := filepath.Join("logs", dateFormatFolder)
-	os.MkdirAll(dir, 0755)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		ErrorLog(err)
+	}
 	return dir
 }
 
@@ -127,4 +125,21 @@ func (rw *responseWriter) Write(b []byte) (int, error) {
 	size, err := rw.ResponseWriter.Write(b)
 	rw.size += int64(size)
 	return size, err
+}
+
+func ErrorLog(err error) {
+	dateFormatFolder := time.Now().Format("02-01")
+	APP_DIR := filepath.Join(getCurrentLogDir(), fmt.Sprintf("errors-%s.log", dateFormatFolder))
+
+	file, fileErr := os.OpenFile(APP_DIR, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if fileErr != nil {
+		log.Fatalf("Ошибка при открытии файла: %v", err)
+	}
+	defer file.Close()
+
+	logger := log.New(file, "", 0)
+	currentTime := time.Now().Format("[02/Jan/2006:15:04:05 -0700]")
+
+	fmt.Printf("%s %s\n", currentTime, err.Error())
+	logger.Printf("%s \"%s\"\n", currentTime, err.Error())
 }
