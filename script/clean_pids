@@ -1,0 +1,52 @@
+#!/bin/bash
+
+set -e
+
+# COLORS
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+HOME="$(git rev-parse --show-toplevel)"
+OS=$(uname -s)
+
+cleanup() {
+    cd "$HOME"
+
+    echo -e "${BLUE}Проверка портов...${NC}"
+    for PORT in 8080 8181 12346; do
+        echo "Проверяем порт: ${PORT}"
+        if [[ "$OS" == "Linux" ]]; then
+            # Для Linux используем netstat + grep или ss
+            PID=$(netstat -ano | grep ":$PORT" | awk '{print $(NF)}' | tail -n 1 | tr -d '\r')
+
+            if [[ -z "$PID" ]]; then
+                echo "✅ Порт $PORT свободен!"
+            else
+                echo "⚠️ Найден процесс на порту $PORT с PID: $PID"
+                echo "🔪 Убиваем процесс..."
+                kill -9 $PID
+                echo "✅ Процесс $PID остановлен!"
+            fi
+        elif [[ "$OS" == "MINGW64_NT"* || "$OS" == "CYGWIN"* || "$OS" == "Windows_NT"* ]]; then
+            # Для Windows (Git Bash, Cygwin, MinGW)
+            PID=$(netstat -ano | grep ":$PORT" | awk '{print $(NF)}' | tail -n 1 | tr -d '\r')
+
+            if [[ -z "$PID" ]]; then
+                echo "✅ Порт $PORT свободен!"
+            else
+                echo "⚠️ Найден процесс на порту $PORT с PID: $PID"
+                echo "🔪 Убиваем процесс..."
+                taskkill //F //PID "$PID" 2>/dev/null
+                echo "✅ Процесс $PID остановлен!"
+            fi
+        else
+            echo -e "${YELLOW}❌ Неизвестная ОС: $OS${NC}"
+            exit 1
+        fi
+    done
+}
+
+cleanup

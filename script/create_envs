@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -e
+
+# COLORS
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+ENV_FILE=".env"
+HOME="$(git rev-parse --show-toplevel)"
+
+# Создание .env файла и добавление переменных
+echo -e "${BLUE}Создание файла $ENV_FILE...${NC}"
+
+### USER MICROSERVICE
+cd "$HOME/server/user-service"
+# Запись переменных окружения в файл
+cat <<EOL > $ENV_FILE
+# Переменные окружения
+DSN="host=localhost user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Europe/Samara"
+SUPER_SECRET_KEY="abc&1*~#^2^#s0^=)^^7%b34"
+IV="123456789012"
+
+GO_ENV=DEV # PROD
+EOL
+
+### MOVIE MICROSERVICE
+cd "$HOME/server/movie-service"
+# Запись переменных окружения в файл
+cat <<EOL > $ENV_FILE
+# Переменные окружения
+DSN="host=localhost user=postgres password=password dbname=flicksfi port=5432 sslmode=disable TimeZone=Europe/Samara"
+SUPER_SECRET_KEY="abc&1*~#^2^#s0^=)^^7%b34"
+IV="123456789012"
+
+GO_ENV=DEV # PROD
+EOL
+
+echo -e "${GREEN}$ENV_FILE создан!${NC}"
