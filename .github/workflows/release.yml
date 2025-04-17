@@ -47,18 +47,8 @@ jobs:
                     issues=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                       "https://api.github.com/repos/${{ github.repository }}/issues?state=closed&per_page=100")
 
-                    for issue in $(echo "$issues" | jq -r '.[] | @base64'); do
-                      issue_title=$(echo "$issue" | base64 --decode | jq -r '.title')
-                      issue_labels=$(echo "$issue" | base64 --decode | jq -r '.labels | .[].name')
-
-                      if [[ "$issue_labels" == *"bug"* ]]; then
-                        bug_count=$((bug_count + 1))
-                      fi
-
-                      if [[ "$issue_labels" == *"dependencies"* ]]; then
-                        dependencies_count=$((dependencies_count + 1))
-                      fi
-                    done
+                    bug_count=$(echo "$issues" | jq '[.[] | select(.labels[].name == "bug")] | length')
+                    dependencies_count=$(echo "$issues" | jq '[.[] | select(.labels[].name == "dependencies")] | length')
 
                     if [ $bug_count -gt 0 ] || [ $dependencies_count -gt 0 ]; then
                       patch=$((patch + 1))
