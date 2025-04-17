@@ -120,14 +120,16 @@ jobs:
                   body: |
                       # [${{ steps.version.outputs.version }}](https://github.com/noneandundefined/flicksfi/tree/${{ steps.version.outputs.version }}) (${{ steps.date.outputs.date }})
 
-                      `FlicksFi this is an application for Android that uses artificial intelligence to search for movies based on the plot and provides personalized recommendations. With FlickFi, you can easily find movies that match your interests and preferences by simply entering keywords or descriptions.`
+                      FlicksFi this is an application for Android that uses artificial intelligence to search for movies based on the plot and provides personalized recommendations. With FlickFi, you can easily find movies that match your interests and preferences by simply entering keywords or descriptions.
 
                       ## Enhancements
 
                       ${{ steps.changelog.outputs.changelog_issue }}
+
+                      ### Pull Requests
                       ${{ steps.changelog.outputs.changelog_pr }}
 
-                      [© flicksfi.](https://t.me/flicksfi)
+                      [©flicksfi](https://t.me/flicksfi)
 
             - name: Create new branch for next version
               run: |
