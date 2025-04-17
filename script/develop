@@ -17,8 +17,8 @@ increment_step() {
     echo -e "${BLUE}[STEP $STEP/$TOTAL_STEPS] ${1}${NC}"
 }
 
-# HOME="C:\Users\Artemiik\Documents\git\flicksfi"
 HOME="$(git rev-parse --show-toplevel)"
+GO_VERSION="1.23.0"
 OS=$(uname -s)
 
 #########################################################
@@ -108,10 +108,34 @@ install_golang() {
     if ! command -v go &>/dev/null; then
         echo -e "${YELLOW}Golang не найден. Устанавливаем...${NC}"
         if [[ "$OS" == "Linux" ]]; then
-            sudo apt update
-            sudo apt install golang-go
+            if ! command -v wget &> /dev/null; then
+                echo "Installing wget..."
+                sudo apt-get update
+                sudo apt-get install -y wget
+            fi
+
+            # Скачиваем Go 1.23.0
+            echo "Downloading Go ${GO_VERSION} for Linux..."
+            wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
+
+            # Удаляем старую версию если есть
+            echo "Removing old Go installation if exists..."
+            sudo rm -rf /usr/local/go
+
+            # Распаковываем в /usr/local
+            echo "Installing Go..."
+            sudo tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
+
+            if [[ ":$PATH:" != *":/usr/local/go/bin:"* ]]; then
+                echo "Adding Go to PATH..."
+                echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
+                source ~/.bashrc
+            fi
+            rm go${GO_VERSION}.linux-amd64.tar.gz
         elif [[ "$OS" == "MINGW64_NT"* || "$OS" == "CYGWIN"* || "$OS" == "Windows_NT"* ]]; then
-            choco install golang
+            choco install golang --version=${GO_VERSION} -y
+            echo "Go version: $(go version)"
+            echo -e "${GREEN}Go has been successfully installed!${NC}"
         fi
     else
         echo -e "Golang уже установлен."
