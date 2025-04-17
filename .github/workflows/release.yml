@@ -47,13 +47,11 @@ jobs:
                     issues=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                       "https://api.github.com/repos/${{ github.repository }}/issues?state=closed&per_page=100")
 
-                    echo "$issues"
-
                     bug_count=$(echo "$issues" | jq '[.[] | select(.labels? != null) | select((.labels[]?.name // "") == "bug")] | length')
                     dependencies_count=$(echo "$issues" | jq '[.[] | select(.labels? != null) | select((.labels[]?.name // "") == "dependencies")] | length')
 
                     if [ $bug_count -gt 0 ] || [ $dependencies_count -gt 0 ]; then
-                      patch=$((patch + 1))
+                      patch=$((patch + bug_count + dependencies_count))
                     fi
 
                     minor=$((minor + 1))
