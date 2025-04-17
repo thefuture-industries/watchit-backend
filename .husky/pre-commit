@@ -10,7 +10,7 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-TOTAL_STEPS=6 # 7
+TOTAL_STEPS=4 # 7
 STEP=0
 increment_step() {
     STEP=$((STEP + 1))
