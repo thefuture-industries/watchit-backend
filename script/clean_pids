@@ -16,7 +16,7 @@ cleanup() {
     cd "$HOME"
 
     echo -e "${BLUE}Проверка портов...${NC}"
-    for PORT in 8080 8181 12346; do
+    for PORT in 8080 8888 8001 8011 8022; do
         echo "Проверяем порт: ${PORT}"
         if [[ "$OS" == "Linux" ]]; then
             # Для Linux используем netstat + grep или ss
