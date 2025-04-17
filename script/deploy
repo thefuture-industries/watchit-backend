@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+bash ./clean_pids
+bash ./create_envs
+bash ./pre_deploy
+
+echo "Все скрипты успешно выполнились!"
