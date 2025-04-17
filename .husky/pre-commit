@@ -17,6 +17,8 @@ increment_step() {
     echo -e "${BLUE}[STEP $STEP/$TOTAL_STEPS] ${1}${NC}"
 }
 
+HOME="$(git rev-parse --show-toplevel)"
+
 # Получаем текущую ветку
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
@@ -28,48 +30,22 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^client-m
     increment_step "Changes in 'client-mobile' directory detected."
 
     echo -e "${GREEN}[|] Running formatted and build for client-mobile...${NC}"
-    cd ./client-mobile
+    cd "$HOME/client-mobile"
     pnpm format
     # pnpm test
 
     git add .
     echo -e "${GREEN}[+] Success formatted and build for client-mobile!${NC}"
-    cd ..
 elif echo "$CHANGED_FILES" | grep -qE '^client-mobile/'; then
     increment_step "Changes in 'client-mobile' directory detected. Only formatting will be done."
 
-    cd ./client-mobile
+    cd "$HOME/client-mobile"
     pnpm format
 
     git add .
     echo -e "${GREEN}[+] Success formatted for client-mobile!${NC}"
-    cd ..
 else
     increment_step "No changes in 'client-mobile' directory. Skipping actions for client-mobile."
-fi
-
-### C# ###
-if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^client-windows/'; then
-    increment_step "Changes in 'client-windows' directory detected."
-
-    echo -e "${GREEN}[|] Running formatted and build for client-windows...${NC}"
-    cd ./client-windows
-    # dotnet restore
-    # dotnet build --configuration Release || { echo -e "${RED}C# build failed${NC}"; exit 1; }
-
-    git add .
-    echo -e "${GREEN}[+] Success formatted and build for client-windows!${NC}"
-    cd ..
-elif echo "$CHANGED_FILES" | grep -qE '^client-windows/'; then
-    increment_step "Changes in 'client-windows' directory detected. Only formatting will be done."
-    cd ./client-windows
-    # format!!!
-
-    git add .
-    echo -e "${GREEN}[+] Success formatted and build for client-windows!${NC}"
-    cd ..
-else
-    increment_step "No changes in 'client-windows' directory. Skipping actions for client-windows."
 fi
 
 ### Scala ###
@@ -77,20 +53,18 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/g
     increment_step "Changes in 'gateway-service' directory detected."
 
     echo -e "${GREEN}[|] Running formatted and build for gateway-service...${NC}"
-    cd ./server/gateway-service
+    cd "$HOME/server/gateway-service"
     sbt scalafmtAll
     sbt test
     sbt clean assembly
 
     git add .
     echo -e "${GREEN}[+] Success formatted and build for gateway-service!${NC}"
-    cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
     increment_step "Changes in 'gateway-service' directory detected. Only formatting will be done."
 
-    cd ./server/gateway-service
+    cd "$HOME/server/gateway-service"
     sbt scalafmtAll
-    cd ../../
 
     git add .
     echo -e "${GREEN}[+] Success formatted for gateway-service!${NC}"
@@ -98,37 +72,12 @@ else
     increment_step "No changes in 'gateway-service' directory. Skipping actions for gateway-service."
 fi
 
-if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/broker-service/'; then
-    increment_step "Changes in 'broker-service' directory detected."
-
-    echo -e "${GREEN}[|] Running formatted and build for broker-service...${NC}"
-    cd ./server/broker-service
-    sbt scalafmtAll
-    # sbt test
-    sbt clean assembly
-
-    git add .
-    echo -e "${GREEN}[+] Success formatted and build for broker-service!${NC}"
-    cd ../../
-elif echo "$CHANGED_FILES" | grep -qE '^server/broker-service/'; then
-   increment_step "Changes in 'broker-service' directory detected. Only formatting will be done."
-
-   cd ./server/broker-service
-   sbt scalafmtAll
-   cd ../../
-
-   git add .
-   echo -e "${GREEN}[+] Success formatted for broker-service!${NC}"
-else
-    increment_step "No changes in 'broker-service' directory. Skipping actions for broker-service."
-fi
-
 ### Golang ###
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
     increment_step "Changes in 'user-service' directory detected."
 
     echo -e "${GREEN}[|] Running formatted and build for user-service...${NC}"
-    cd ./server/user-service
+    cd "$HOME/server/user-service"
 
     # Установка
     go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
@@ -143,16 +92,16 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/u
 
     git add .
     echo -e "${GREEN}[+] Success formatted and build for user-service!${NC}"
-    cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
     increment_step "Changes in 'user-service' directory detected. Only formatting will be done."
+    cd "$HOME/server/user-service"
 
-    cd ./server/user-service
-    gofmt -w .
+    make fmt
+    make check
+    make lint
 
     git add .
     echo -e "${GREEN}[+] Success formatted for user-service!${NC}"
-    cd ../../
 else
     increment_step "No changes in 'user-service' directory. Skipping actions for user-service."
 fi
@@ -162,7 +111,7 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/m
     increment_step "Changes in 'movie-service' directory detected."
 
     echo -e "${GREEN}[|] Running formatted and build for movie-service...${NC}"
-    cd ./server/movie-service
+    cd "$HOME/server/movie-service"
 
     # Установка
     go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
@@ -177,16 +126,16 @@ if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/m
 
     git add .
     echo -e "${GREEN}[+] Success formatted and build for movie-service!${NC}"
-    cd ../../
 elif echo "$CHANGED_FILES" | grep -qE '^server/movie-service/'; then
     increment_step "Changes in 'movie-service' directory detected. Only formatting will be done."
+    cd "$HOME/server/movie-service"
 
-    cd ./server/movie-service
-    gofmt -w .
+    make fmt
+    make check
+    make lint
 
     git add .
     echo -e "${GREEN}[+] Success formatted for movie-service!${NC}"
-    cd ../../
 else
     increment_step "No changes in 'movie-service' directory. Skipping actions for movie-service."
 fi
@@ -196,7 +145,7 @@ fi
 #     increment_step "Changes in 'blog-service' directory detected."
 
 #     echo -e "${GREEN}[|] Running formatted and build for blog-service...${NC}"
-#     cd ./server/blog-service
+#     cd "$HOME/server/blog-service"
 #
 #    # Установка
 #    go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
@@ -211,16 +160,16 @@ fi
 #
 #     git add .
 #     echo -e "${GREEN}[+] Success formatted and build for blog-service!${NC}"
-#     cd ../../
 # elif echo "$CHANGED_FILES" | grep -qE '^server/blog-service/'; then
 #    increment_step "Changes in 'blog-service' directory detected. Only formatting will be done."
+#    cd "$HOME/server/blog-service"
 #
-#    cd ./server/blog-service
-#    gofmt -w .
+#   make fmt
+#   make check
+#   make lint
 #
 #    git add .
 #    echo -e "${GREEN}[+] Success formatted for blog-service!${NC}"
-#    cd ../../
 # else
 #     increment_step "No changes in 'blog-service' directory. Skipping actions for blog-service."
 # fi
