@@ -12,17 +12,12 @@ import (
 	"fmt"
 	"go-user-service/internal/common/packages"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 var key string
 var iv string
 
 func Encrypt(plaintext string) (string, error) {
-	if err := godotenv.Load(); err != nil {
-		packages.ErrorLog(err)
-	}
 	key = os.Getenv("SUPER_SECRET_KEY")
 	iv = os.Getenv("IV")
 
@@ -47,9 +42,6 @@ func Encrypt(plaintext string) (string, error) {
 }
 
 func Decrypt(encodedCiphertext string) (string, error) {
-	if err := godotenv.Load(); err != nil {
-		packages.ErrorLog(err)
-	}
 	key = os.Getenv("SUPER_SECRET_KEY")
 	iv = os.Getenv("IV")
 
