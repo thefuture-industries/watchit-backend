@@ -47,13 +47,11 @@ jobs:
                     issues=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                       "https://api.github.com/repos/${{ github.repository }}/issues?state=closed&per_page=100")
 
-                    echo "$issues"
-
                     bug_count=$(echo "$issues" | jq '[.[] | select(.labels? != null) | select((.labels[]?.name // "") == "bug")] | length')
                     dependencies_count=$(echo "$issues" | jq '[.[] | select(.labels? != null) | select((.labels[]?.name // "") == "dependencies")] | length')
 
                     if [ $bug_count -gt 0 ] || [ $dependencies_count -gt 0 ]; then
-                      patch=$((patch + 1))
+                      patch=$((patch + bug_count + dependencies_count))
                     fi
 
                     minor=$((minor + 1))
@@ -120,14 +118,16 @@ jobs:
                   body: |
                       # [${{ steps.version.outputs.version }}](https://github.com/noneandundefined/flicksfi/tree/${{ steps.version.outputs.version }}) (${{ steps.date.outputs.date }})
 
-                      `FlicksFi this is an application for Android that uses artificial intelligence to search for movies based on the plot and provides personalized recommendations. With FlickFi, you can easily find movies that match your interests and preferences by simply entering keywords or descriptions.`
+                      FlicksFi this is an application for Android that uses artificial intelligence to search for movies based on the plot and provides personalized recommendations. With FlickFi, you can easily find movies that match your interests and preferences by simply entering keywords or descriptions.
 
                       ## Enhancements
 
                       ${{ steps.changelog.outputs.changelog_issue }}
+
+                      ### Pull Requests
                       ${{ steps.changelog.outputs.changelog_pr }}
 
-                      [© flicksfi.](https://t.me/flicksfi)
+                      [©flicksfi](https://t.me/flicksfi)
 
             - name: Create new branch for next version
               run: |
