@@ -52,7 +52,7 @@ jobs:
 
                     echo "→ Сборка бинарника"
                     mkdir -p bin
-                    go build -o bin/${dir}_app main.go
+                    make build
 
-                    cd ..
+                    cd - > /dev/null
                   done
