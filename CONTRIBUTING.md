@@ -1,41 +1,48 @@
-# How to contribute
+# Как внести свой вклад
 
-Thank you for your interest in the project! We welcome any improvements and fixes. To make the process as smooth as possible, please follow the following recommendations.
+Благодарим вас за проявленный интерес к проекту! Мы приветствуем любые улучшения и исправления. Чтобы процесс был максимально плавным, пожалуйста, следуйте следующим рекомендациям.
 
-## Basic steps
+## ВАЖНЫЕ ПРАВИЛА
 
-1. Clone the repository
+1. Ветку main не трогаем и не изменяем!
+2. В репозитории всегда есть версионные ветки (например v0.5.x или v0.17.192), после исправления фитчи или исправления бага надо создать pull request - создается именно в эти ветки. (а не в MAIN!!!)
+   `Как определить текущую версионную ветку?` - Смотрите в репозитории слева последний релиз например v0.4.121 - значит текущая версионная ветка v0.5.x
+
+## Основные шаги
+
+1. Клонируем репозиторий
 
 ```bash
-git clone https://github.com/noneandundefined/flicksfi.git
+git clone https://github.com/thefuture-industries/flicksfi-backend
 ```
 
-2. Create a new branch from the main main branch
+2. Для КАЖДОЙ новой фитчи или испралвения бага, cоздайте новую ветвь из основной ветви main. (По дефолту если делаете по issues - то ВЕТКА уже создана `git fetch`)
 
 ```bash
+git checkout main
 git checkout -b <your-branch-name>
 ```
 
-3. Add changes to the index
+3. Внесите изменения в индекс
 
 ```bash
 git add .
 ```
 
-4. Commit the changes
+4. Зафиксируйте изменения
 
 ```bash
 git commit -m "<summary of changes>"
 ```
 
-5. Submit the changes to your fork repository
+5. Отправьте изменения в свой репозиторий fork
 
 ```bash
 git push origin <your-branch-name>
 ```
 
-6. Create a Pull Request from your branch to the main branch of the project via the GitHub interface.
-7. Wait for verification. Mentors or other project participants will check your changes and leave comments if additional work is required.
-8. After your PR is approved, it will be merged into the main branch!
+6. Создайте запрос (Pull Request) на перенос из вашей ветки в основную ветку проекта через интерфейс GitHub.
+7. Дождитесь подтверждения. Наставники или другие участники проекта проверят ваши изменения и оставят комментарии, если потребуется дополнительная работа.
+8. После того, как ваш Pull Request будет одобрен, он будет объединен с основной веткой!
 
-> We appreciate your time and efforts and hope that this process will be useful and enjoyable!
+> Мы ценим ваше время и усилия и надеемся, что этот процесс будет полезным и приятным!
