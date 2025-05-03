@@ -54,5 +54,5 @@ jobs:
                     mkdir -p bin
                     make build
 
-                    cd ..
+                    cd - > /dev/null
                   done
