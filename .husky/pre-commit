@@ -25,53 +25,6 @@ CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 # Получаем список измененных файлов
 CHANGED_FILES=$(git diff --cached --name-only)
 
-### React Native ###
-if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^client-mobile/'; then
-    increment_step "Changes in 'client-mobile' directory detected."
-
-    echo -e "${GREEN}[|] Running formatted and build for client-mobile...${NC}"
-    cd "$HOME/client-mobile"
-    pnpm format
-    # pnpm test
-
-    git add .
-    echo -e "${GREEN}[+] Success formatted and build for client-mobile!${NC}"
-elif echo "$CHANGED_FILES" | grep -qE '^client-mobile/'; then
-    increment_step "Changes in 'client-mobile' directory detected. Only formatting will be done."
-
-    cd "$HOME/client-mobile"
-    pnpm format
-
-    git add .
-    echo -e "${GREEN}[+] Success formatted for client-mobile!${NC}"
-else
-    increment_step "No changes in 'client-mobile' directory. Skipping actions for client-mobile."
-fi
-
-### Scala ###
-if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
-    increment_step "Changes in 'gateway-service' directory detected."
-
-    echo -e "${GREEN}[|] Running formatted and build for gateway-service...${NC}"
-    cd "$HOME/server/gateway-service"
-    sbt scalafmtAll
-    sbt test
-    sbt clean assembly
-
-    git add .
-    echo -e "${GREEN}[+] Success formatted and build for gateway-service!${NC}"
-elif echo "$CHANGED_FILES" | grep -qE '^server/gateway-service/'; then
-    increment_step "Changes in 'gateway-service' directory detected. Only formatting will be done."
-
-    cd "$HOME/server/gateway-service"
-    sbt scalafmtAll
-
-    git add .
-    echo -e "${GREEN}[+] Success formatted for gateway-service!${NC}"
-else
-    increment_step "No changes in 'gateway-service' directory. Skipping actions for gateway-service."
-fi
-
 ### Golang ###
 if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
     increment_step "Changes in 'user-service' directory detected."

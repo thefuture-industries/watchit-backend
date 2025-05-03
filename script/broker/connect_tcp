@@ -1,5 +1,0 @@
-#!/bin/bash
-
-set -e
-
-telnet localhost 8888

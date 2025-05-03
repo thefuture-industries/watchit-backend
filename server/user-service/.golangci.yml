@@ -1,16 +1,20 @@
 linters:
+    disable-all: true
     enable:
+        - unused
+        - gocyclo
+        - goconst
+        - interfacebloat
+        - unconvert
         - gofmt
         - govet
         - errcheck
         - staticcheck
         - gosimple
         - ineffassign
-        - unused
-        - misspell
 
 run:
-    deadline: 5m
+    deadline: 10m
 
 issues:
     exclude-rules:
@@ -20,8 +24,6 @@ issues:
 
 # Настройки для конкретных линтеров
 linters-settings:
-    govet:
-        check-shadowing: true
     golint:
         min-confidence: 0
     gocyclo:

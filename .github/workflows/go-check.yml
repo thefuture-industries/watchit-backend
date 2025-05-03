@@ -1,0 +1,58 @@
+name: Static Go Check
+
+on:
+    pull_request:
+        branches: [main]
+
+jobs:
+    go_check:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Clone repository
+              uses: actions/checkout@v3
+
+            - name: Install Go
+              uses: actions/setup-go@v4
+              with:
+                  go-version: '1.23.0'
+
+            - name: Install dependencies
+              run: |
+                  go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+                  go install golang.org/x/tools/cmd/goimports@latest
+
+            - name: Check / Build Go package
+              run: |
+                  for dir in server/user-service server/movie-service; do
+                    echo "Обработка директории $dir"
+
+                    cd $dir
+
+                    echo "→ Установка зависимостей"
+                    go mod tidy
+                    go mod download
+
+                    echo "→ Проверка форматирования (gofmt)"
+                    if [ -n "$(gofmt -l .)" ]; then
+                      echo "Файлы не отформатированы в $dir. Запустите 'gofmt -w .'"
+                      gofmt -l .
+                      exit 1
+                    fi
+
+                    echo "→ Проверка импорта (goimports)"
+                    if [ -n "$(goimports -l .)" ]; then
+                      echo "Неверный импорт в $dir. Запустите 'goimports -w .'"
+                      goimports -l .
+                      exit 1
+                    fi
+
+                    echo "→ Проверка lint (golangci-lint)"
+                    make lint
+
+                    echo "→ Сборка бинарника"
+                    mkdir -p bin
+                    go build -o bin/${dir}_app main.go
+
+                    cd ..
+                  done

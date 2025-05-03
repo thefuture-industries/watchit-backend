@@ -7,31 +7,9 @@ services:
             POSTGRES_PASSWORD: password
             POSTGRES_DB: flicksfi
         healthcheck:
-            test: ["CMD", "pg_isready", "-U", "postgres"]
+            test: ['CMD', 'pg_isready', '-U', 'postgres']
             interval: 5s
             retries: 5
-
-    gateway_service:
-        build:
-            context: ./gateway-service
-            dockerfile: Dockerfile.dev
-        ports:
-            - '8080:8080'
-        mem_limit: 1536m
-        mem_reservation: 768m
-        cpus: 2
-        cpu_shares: 1024
-
-    broker_service:
-        build:
-            context: ./broker-service
-            dockerfile: Dockerfile.dev
-        ports:
-            - '8888:8888'
-        mem_limit: 300m
-        mem_reservation: 112m
-        cpus: 0.3
-        cpu_shares: 100
 
     user_service:
         build:
@@ -49,7 +27,7 @@ services:
         cpu_shares: 512
         depends_on:
             db:
-               condition: service_healthy
+                condition: service_healthy
 
     movie_service:
         build:
@@ -67,7 +45,7 @@ services:
         cpu_shares: 1024
         depends_on:
             db:
-               condition: service_healthy
+                condition: service_healthy
 
     # blog_service:
     #     build:
