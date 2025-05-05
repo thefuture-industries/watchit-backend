@@ -12,3 +12,4 @@ scala/
 node/
 sbt/
 java/
+.idea/
