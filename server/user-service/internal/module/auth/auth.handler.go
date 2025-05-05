@@ -1,8 +1,3 @@
-// *---------------------------------------------------------------------------------------------
-//  *  Copyright (c). All rights reserved.
-//  *  Licensed under the MIT License. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*
-
 package auth
 
 import (
@@ -16,19 +11,16 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/noneandundefined/vision-go"
-	"go.uber.org/zap"
 )
 
 type Handler struct {
 	monitor *vision.Vision
-	logger  *zap.Logger
 	errors  *packages.Errors
 }
 
-func NewHandler(monitor *vision.Vision, logger *zap.Logger, errors *packages.Errors) *Handler {
+func NewHandler(monitor *vision.Vision, errors *packages.Errors) *Handler {
 	return &Handler{
 		monitor: monitor,
-		logger:  logger,
 		errors:  errors,
 	}
 }
@@ -38,12 +30,12 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Отправляем пользователю ошибку, что не все поля заполнены
 	if err := utils.ParseJSON(r, &payload); err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
+		utils.WriteJSON(w, r, http.StatusBadRequest, err.Error())
 	}
 
 	// Валидация данных от пользователя
 	if err := utils.Validate.Struct(payload); err != nil {
-		utils.WriteJSON(w, http.StatusBadRequest, "Not all fields are filled in")
+		utils.WriteJSON(w, r, http.StatusBadRequest, "Not all fields are filled in")
 		return
 	}
 
@@ -52,33 +44,33 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 	isUsername, err := actions.GetUserByUsername(payload.Username)
 	if err != nil {
 		h.errors.HandleErrors(err, true)
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 	h.monitor.VisionDBQuery(time.Since(queryStart))
 
 	if isUsername == nil {
-		utils.WriteJSON(w, http.StatusBadRequest, "the user was not found")
+		utils.WriteJSON(w, r, http.StatusBadRequest, "The user was not found")
 		return
 	}
 
-	pincode_hash, err := utils.Encrypt(payload.PINCODE)
+	password_hash, err := utils.Encrypt(payload.Password)
 	if err != nil {
 		h.errors.HandleErrors(err, false)
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	// Проверка на pincode
-	if pincode_hash != isUsername.PINCODE {
-		utils.WriteJSON(w, http.StatusBadRequest, "the user was not found")
+	if password_hash != isUsername.Password {
+		utils.WriteJSON(w, r, http.StatusBadRequest, "The user was not found")
 		return
 	}
 
 	uuid_hash, err := utils.Encrypt(isUsername.UUID)
 	if err != nil {
 		h.errors.HandleErrors(err, false)
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -92,7 +84,7 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, cookie)
 
-	utils.WriteJSON(w, http.StatusOK, map[string]interface{}{
+	utils.WriteJSON(w, r, http.StatusOK, map[string]interface{}{
 		"uuid":     isUsername.UUID,
 		"username": isUsername.Username,
 		"email":    isUsername.Email,
@@ -104,12 +96,12 @@ func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Отправляем пользователю ошибку, что не все поля заполнены
 	if err := utils.ParseJSON(r, &payload); err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
+		utils.WriteJSON(w, r, http.StatusBadRequest, err.Error())
 	}
 
 	// Валидация данных от пользователя
 	if err := utils.Validate.Struct(payload); err != nil {
-		utils.WriteJSON(w, http.StatusBadRequest, "Not all fields are filled in")
+		utils.WriteJSON(w, r, http.StatusBadRequest, "Not all fields are filled in")
 		return
 	}
 
@@ -117,26 +109,26 @@ func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 	isUsername, err := actions.GetUserByUsername(payload.Username)
 	if err != nil {
 		h.errors.HandleErrors(err, true)
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 	h.monitor.VisionDBQuery(time.Since(queryStart))
 
 	if isUsername != nil {
-		utils.WriteJSON(w, http.StatusBadRequest, "this username is busy, try another one")
+		utils.WriteJSON(w, r, http.StatusBadRequest, "This username is busy, try another one")
 		return
 	}
 
-	pincode_hash, err := utils.Encrypt(payload.PINCODE)
+	password_hash, err := utils.Encrypt(payload.Password)
 	if err != nil {
-		utils.WriteJSON(w, http.StatusBadRequest, err)
+		utils.WriteJSON(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	user := database.Users{
 		UUID:      uuid.New().String(),
 		Username:  payload.Username,
-		PINCODE:   pincode_hash,
+		Password:  password_hash,
 		IPAddress: payload.IPAddress,
 		Country:   payload.Country,
 	}
@@ -144,12 +136,12 @@ func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 	queryStart = time.Now()
 	if err := actions.CreateUser(&user); err != nil {
 		h.errors.HandleErrors(err, true)
-		utils.WriteJSON(w, http.StatusBadRequest, err)
+		utils.WriteJSON(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 	h.monitor.VisionDBQuery(time.Since(queryStart))
 
-	utils.WriteJSON(w, http.StatusCreated, "the user has been successfully created!")
+	utils.WriteJSON(w, r, http.StatusCreated, "The user has been successfully created!")
 }
 
 func (h Handler) UpdateHandler(w http.ResponseWriter, r *http.Request) {}
@@ -165,5 +157,5 @@ func (h Handler) SignoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, cookie)
 
-	utils.WriteJSON(w, http.StatusOK, "You have successfully logged out.")
+	utils.WriteJSON(w, r, http.StatusOK, "You have successfully logged out.")
 }

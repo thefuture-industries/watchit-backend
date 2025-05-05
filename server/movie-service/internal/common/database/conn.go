@@ -1,13 +1,7 @@
-// *---------------------------------------------------------------------------------------------
-//  *  Copyright (c). All rights reserved.
-//  *  Licensed under the MIT License. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*
-
 package database
 
 import (
-	"fmt"
-	"log"
+	"go-movie-service/internal/lib"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -16,13 +10,23 @@ import (
 var db *gorm.DB
 
 func ConnectDB(dsn string) {
+	loggerApp := lib.NewLogger()
+
 	var err error
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		loggerApp.Error(err.Error())
+		return
 	}
 
-	fmt.Println("Successfully connected to database!")
+	// err = db.AutoMigrate(&Users{}, &Payments{})
+	// if err != nil {
+	// 	loggerApp.Error(err.Error())
+	// 	return
+	// }
+
+	// loggerApp.Info("Migration completed successfully.")
+	loggerApp.Info("Successfully connected to database!")
 }
 
 func GetDB() *gorm.DB {

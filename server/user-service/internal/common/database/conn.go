@@ -1,39 +1,35 @@
-// *---------------------------------------------------------------------------------------------
-//  *  Copyright (c). All rights reserved.
-//  *  Licensed under the MIT License. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*
-
 package database
 
 import (
-	"fmt"
-	"go-user-service/internal/packages"
-	"log"
+	"go-user-service/internal/lib"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var db *gorm.DB
 
 func ConnectDB(dsn string) {
+	loggerApp := lib.NewLogger()
+
 	var err error
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Discard,
+	})
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
-		packages.ErrorLog(err)
+		loggerApp.Error(err.Error())
 		return
 	}
 
 	err = db.AutoMigrate(&Users{}, &Payments{})
 	if err != nil {
-		log.Fatalf("Failed to migrate to database: %v", err)
-		packages.ErrorLog(err)
+		loggerApp.Error(err.Error())
 		return
 	}
 
-	fmt.Println("Migration completed successfully.")
-	fmt.Println("Successfully connected to database!")
+	loggerApp.Info("Migration completed successfully.")
+	loggerApp.Info("Successfully connected to database!")
 }
 
 func GetDB() *gorm.DB {

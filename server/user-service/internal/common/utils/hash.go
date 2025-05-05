@@ -23,13 +23,13 @@ func Encrypt(plaintext string) (string, error) {
 	// Создание блока шифрования AES
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
-		return "", fmt.Errorf("error creating the encryption block")
+		return "", fmt.Errorf("Error creating the encryption block")
 	}
 
 	// Создание блочного режима шифрования CBC
 	gsm, err := cipher.NewGCM(block)
 	if err != nil {
-		return "", fmt.Errorf("error creating block encryption mode")
+		return "", fmt.Errorf("Error creating block encryption mode")
 	}
 
 	// Шифрование данных
@@ -47,25 +47,25 @@ func Decrypt(encodedCiphertext string) (string, error) {
 	// Декодирование зашифрованных данных из base64
 	ciphertext, err := base64.StdEncoding.DecodeString(encodedCiphertext)
 	if err != nil {
-		return "", fmt.Errorf("error decoding encrypted data")
+		return "", fmt.Errorf("Error decoding encrypted data")
 	}
 
 	// Создание блока шифрования AES
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
-		return "", fmt.Errorf("error creating the encryption block")
+		return "", fmt.Errorf("Error creating the encryption block")
 	}
 
 	// Создание блочного режима шифрования CBC
 	gsm, err := cipher.NewGCM(block)
 	if err != nil {
-		return "", fmt.Errorf("error creating block encryption mode")
+		return "", fmt.Errorf("Error creating block encryption mode")
 	}
 
 	// Расшифровка данных
 	plaintext, err := gsm.Open(nil, []byte(iv), ciphertext, nil)
 	if err != nil {
-		return "", fmt.Errorf("data decryption error")
+		return "", fmt.Errorf("Data decryption error")
 	}
 
 	return string(plaintext), nil

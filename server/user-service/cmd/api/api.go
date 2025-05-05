@@ -1,50 +1,44 @@
-// *---------------------------------------------------------------------------------------------
-//  *  Copyright (c). All rights reserved.
-//  *  Licensed under the MIT License. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*
-
 package api
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/MarceloPetrucio/go-scalar-api-reference"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/noneandundefined/vision-go"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 
+	"go-user-service/internal/lib"
 	"go-user-service/internal/module/admin"
 	"go-user-service/internal/module/auth"
-	"go-user-service/internal/module/sync"
 	"go-user-service/internal/packages"
 )
 
 type APIServer struct {
-	addr string
-	db   *gorm.DB
+	logger *lib.Logger
+	addr   string
+	db     *gorm.DB
 }
 
 func NewAPIServer(addr string, db *gorm.DB) *APIServer {
 	return &APIServer{
-		addr: addr,
-		db:   db,
+		logger: lib.NewLogger(),
+		addr:   addr,
+		db:     db,
 	}
 }
 
 func (s *APIServer) Run() error {
-	// -----------------------------------
+	// -------------------------------------
 	// Создания router и префикс /micro/user
-	// -----------------------------------
-
+	// -------------------------------------
 	router := mux.NewRouter()
 	subrouter := router.PathPrefix("/micro/user").Subrouter()
 
 	// logger
-	logger, _ := zap.NewProduction()
+	// logger, _ := zap.NewProduction()
 
 	// ------
 	// Scalar
@@ -81,14 +75,13 @@ func (s *APIServer) Run() error {
 	// -------------
 	errors := packages.NewErrors(monitoring)
 
-	auth.NewHandler(monitoring, logger, errors).RegisterRoutes(subrouter)
-	admin.NewHandler(monitoring, logger, errors).RegisterRoutes(subrouter)
-	sync.NewHandler(monitoring, logger, errors).RegisterRoutes(subrouter)
+	auth.NewHandler(monitoring, errors).RegisterRoutes(subrouter)
+	admin.NewHandler(monitoring, errors).RegisterRoutes(subrouter)
 
 	// ------------------
 	// Middlewares
 	// ------------------
-	router.Use(packages.NewLogger(logger).LoggerMiddleware)
+	router.Use(packages.NewLogger().LoggerMiddleware)
 
 	// ---------------
 	// подключаем CORS
@@ -100,6 +93,6 @@ func (s *APIServer) Run() error {
 	// --------------------
 	// Возращяем http ответ
 	// --------------------
-	log.Println("Listening on", s.addr)
+	s.logger.Info(fmt.Sprintf("Listening on %s", s.addr))
 	return http.ListenAndServe(s.addr, handlers.CORS(origins, methods, headers)(router))
 }
