@@ -8,7 +8,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"go-user-service/internal/common/packages"
+	"go-user-service/internal/packages"
 	"net/http"
 )
 

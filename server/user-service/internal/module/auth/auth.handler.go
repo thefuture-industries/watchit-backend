@@ -8,9 +8,9 @@ package auth
 import (
 	"go-user-service/internal/common/database"
 	"go-user-service/internal/common/database/actions"
-	"go-user-service/internal/common/packages"
-	"go-user-service/internal/common/types"
 	"go-user-service/internal/common/utils"
+	"go-user-service/internal/packages"
+	"go-user-service/internal/types"
 	"net/http"
 	"time"
 

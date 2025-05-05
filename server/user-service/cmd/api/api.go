@@ -17,10 +17,10 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
-	"go-user-service/internal/common/packages"
 	"go-user-service/internal/module/admin"
 	"go-user-service/internal/module/auth"
 	"go-user-service/internal/module/sync"
+	"go-user-service/internal/packages"
 )
 
 type APIServer struct {
@@ -79,7 +79,7 @@ func (s *APIServer) Run() error {
 	// -------------
 	// ROUTERS PATHS
 	// -------------
-	errors := packages.NewErrors(monitoring, logger)
+	errors := packages.NewErrors(monitoring)
 
 	auth.NewHandler(monitoring, logger, errors).RegisterRoutes(subrouter)
 	admin.NewHandler(monitoring, logger, errors).RegisterRoutes(subrouter)
