@@ -18,17 +18,13 @@ type Users struct {
 	UpdatedAt    time.Time      `json:"updated_at"`
 }
 
-type Recommendations struct {
-}
+type Recommendations struct{}
 
-type Favourites struct {
-}
+type Favourites struct{}
 
-type Limiter struct {
-}
+type Limiter struct{}
 
-type Comments struct {
-}
+type Comments struct{}
 
 type Payments struct {
 	ID        uint      `gorm:"primarykey" json:"id"`
