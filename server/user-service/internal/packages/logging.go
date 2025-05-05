@@ -2,12 +2,11 @@ package packages
 
 import (
 	"fmt"
+	"go-user-service/internal/lib"
 	"net/http"
 	"os"
 	"path/filepath"
 	"time"
-
-	"go-service-user/internal/lib"
 )
 
 type Logger struct {
