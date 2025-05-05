@@ -15,13 +15,13 @@ This service provides functionality for working with user data, including regist
 
 ### Technology stack
 
-- Programming language: Golang
-- Web framework: Gorilla/mux
-- Database: PostgreSQL
-- ORM: GORM
-- Containerization: Docker
+-   Programming language: Golang
+-   Web framework: Gorilla/mux
+-   Database: PostgreSQL
+-   ORM: GORM
+-   Containerization: Docker
 
 ### Setting up
 
-- Works on port 8001/8002
-- API - http://localhost:[8001/8002]/micro/user/adm/doc
+-   Works on port 8001
+-   API - http://localhost:8001/micro/user/adm/doc

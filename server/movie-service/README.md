@@ -23,5 +23,5 @@ This service provides functionality for working with user data, including regist
 
 ### Setting up
 
-- Works on port 8011/8012
-- API - http://localhost:[8011/8012]/micro/movie/adm/doc
+- Works on port 8011
+- API - http://localhost:8011/micro/movie/adm/doc
