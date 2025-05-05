@@ -21,5 +21,5 @@ func NewHandler(monitor *vision.Vision, errors *packages.Errors) *Handler {
 }
 
 func (h Handler) MonitoringHandler(w http.ResponseWriter, r *http.Request) {
-	utils.WriteJSON(w, http.StatusOK, h.monitor.GetVisionStats())
+	utils.WriteJSON(w, r, http.StatusOK, h.monitor.GetVisionStats())
 }
