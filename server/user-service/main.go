@@ -1,14 +1,10 @@
-// *---------------------------------------------------------------------------------------------
-//  *  Copyright (c). All rights reserved.
-//  *  Licensed under the MIT License. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*
-
 package main
 
 import (
 	"fmt"
 	"go-user-service/cmd/api"
 	"go-user-service/internal/common/database"
+	"go-user-service/internal/lib"
 	"go-user-service/internal/packages"
 	"log"
 	"os"
@@ -20,6 +16,8 @@ import (
 )
 
 func main() {
+	loggerApp := lib.NewLogger()
+
 	if err := godotenv.Load(); err != nil {
 		packages.ErrorLog(err)
 	}
@@ -47,6 +45,7 @@ func main() {
 	// Создаем и запускаем основной сервер
 	server := api.NewAPIServer(":8001", db)
 	go func() {
+		loggerApp.Info("Swagger listen :8001/micro/user/adm/doc")
 		fmt.Println("\n" + `██╗   ██╗███████╗███████╗██████╗       ███╗   ███╗██╗ ██████╗██████╗  ██████╗      ██████╗  ██████╗
 ██║   ██║██╔════╝██╔════╝██╔══██╗      ████╗ ████║██║██╔════╝██╔══██╗██╔═══██╗    ██╔════╝ ██╔═══██╗
 ██║   ██║███████╗█████╗  ██████╔╝█████╗██╔████╔██║██║██║     ██████╔╝██║   ██║    ██║  ███╗██║   ██║

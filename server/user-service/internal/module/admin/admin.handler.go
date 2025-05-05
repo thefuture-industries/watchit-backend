@@ -6,19 +6,16 @@ import (
 	"net/http"
 
 	"github.com/noneandundefined/vision-go"
-	"go.uber.org/zap"
 )
 
 type Handler struct {
 	monitor *vision.Vision
-	logger  *zap.Logger
 	errors  *packages.Errors
 }
 
-func NewHandler(monitor *vision.Vision, logger *zap.Logger, errors *packages.Errors) *Handler {
+func NewHandler(monitor *vision.Vision, errors *packages.Errors) *Handler {
 	return &Handler{
 		monitor: monitor,
-		logger:  logger,
 		errors:  errors,
 	}
 }
