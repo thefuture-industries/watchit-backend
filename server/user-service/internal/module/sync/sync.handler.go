@@ -8,8 +8,8 @@ package sync
 import (
 	"net/http"
 
-	"go-user-service/internal/packages"
 	"go-user-service/internal/common/utils"
+	"go-user-service/internal/packages"
 
 	"github.com/noneandundefined/vision-go"
 	"go.uber.org/zap"

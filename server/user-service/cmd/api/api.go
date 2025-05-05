@@ -17,10 +17,10 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
-	"go-user-service/internal/packages"
 	"go-user-service/internal/module/admin"
 	"go-user-service/internal/module/auth"
 	"go-user-service/internal/module/sync"
+	"go-user-service/internal/packages"
 )
 
 type APIServer struct {

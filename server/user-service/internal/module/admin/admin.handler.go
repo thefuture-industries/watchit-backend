@@ -1,8 +1,8 @@
 package admin
 
 import (
-	"go-user-service/internal/packages"
 	"go-user-service/internal/common/utils"
+	"go-user-service/internal/packages"
 	"net/http"
 
 	"github.com/noneandundefined/vision-go"
