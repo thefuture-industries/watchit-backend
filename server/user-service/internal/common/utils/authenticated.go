@@ -1,8 +1,3 @@
-// *---------------------------------------------------------------------------------------------
-//  *  Copyright (c). All rights reserved.
-//  *  Licensed under the MIT License. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*
-
 package utils
 
 import (
@@ -21,24 +16,24 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("auth-token")
 		if err != nil {
-			WriteError(w, http.StatusUnauthorized, fmt.Errorf("log in to your account"))
+			WriteJSON(w, r, http.StatusUnauthorized, fmt.Errorf("Sign in to your account"))
 			return
 		}
 
 		uuid, err := Decrypt(cookie.Value)
 		if err != nil {
-			WriteError(w, http.StatusInternalServerError, err)
+			WriteJSON(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		user, err := actions.GetUserByUUID(uuid)
 		if err != nil {
-			WriteError(w, http.StatusInternalServerError, err)
+			WriteJSON(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		if user == nil {
-			WriteError(w, http.StatusUnauthorized, fmt.Errorf("log in to your account"))
+			WriteJSON(w, r, http.StatusUnauthorized, fmt.Errorf("Sign in to your account"))
 			return
 		}
 

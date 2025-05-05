@@ -30,7 +30,7 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Отправляем пользователю ошибку, что не все поля заполнены
 	if err := utils.ParseJSON(r, &payload); err != nil {
-		utils.WriteJSON(w, r, http.StatusBadRequest, err)
+		utils.WriteJSON(w, r, http.StatusBadRequest, err.Error())
 	}
 
 	// Валидация данных от пользователя
@@ -44,7 +44,7 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 	isUsername, err := actions.GetUserByUsername(payload.Username)
 	if err != nil {
 		h.errors.HandleErrors(err, true)
-		utils.WriteJSON(w, r, http.StatusInternalServerError, err)
+		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 	h.monitor.VisionDBQuery(time.Since(queryStart))
@@ -57,7 +57,7 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 	pincode_hash, err := utils.Encrypt(payload.PINCODE)
 	if err != nil {
 		h.errors.HandleErrors(err, false)
-		utils.WriteJSON(w, r, http.StatusInternalServerError, err)
+		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -70,7 +70,7 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 	uuid_hash, err := utils.Encrypt(isUsername.UUID)
 	if err != nil {
 		h.errors.HandleErrors(err, false)
-		utils.WriteJSON(w, r, http.StatusInternalServerError, err)
+		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -96,7 +96,7 @@ func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Отправляем пользователю ошибку, что не все поля заполнены
 	if err := utils.ParseJSON(r, &payload); err != nil {
-		utils.WriteJSON(w, r, http.StatusBadRequest, err)
+		utils.WriteJSON(w, r, http.StatusBadRequest, err.Error())
 	}
 
 	// Валидация данных от пользователя
@@ -109,7 +109,7 @@ func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 	isUsername, err := actions.GetUserByUsername(payload.Username)
 	if err != nil {
 		h.errors.HandleErrors(err, true)
-		utils.WriteJSON(w, r, http.StatusInternalServerError, err)
+		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 	h.monitor.VisionDBQuery(time.Since(queryStart))
@@ -121,7 +121,7 @@ func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 
 	pincode_hash, err := utils.Encrypt(payload.PINCODE)
 	if err != nil {
-		utils.WriteJSON(w, r, http.StatusBadRequest, err)
+		utils.WriteJSON(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -136,7 +136,7 @@ func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 	queryStart = time.Now()
 	if err := actions.CreateUser(&user); err != nil {
 		h.errors.HandleErrors(err, true)
-		utils.WriteJSON(w, r, http.StatusBadRequest, err)
+		utils.WriteJSON(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 	h.monitor.VisionDBQuery(time.Since(queryStart))
