@@ -1,8 +1,3 @@
-// *---------------------------------------------------------------------------------------------
-//  *  Copyright (c). All rights reserved.
-//  *  Licensed under the MIT License. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*
-
 package api
 
 import (
@@ -17,7 +12,6 @@ import (
 	"gorm.io/gorm"
 
 	"go-movie-service/internal/common/packages"
-	"go-movie-service/internal/module/sync"
 )
 
 type APIServer struct {
@@ -78,7 +72,7 @@ func (s *APIServer) Run() error {
 	// -------------
 	// errors := packages.NewErrors(monitoring, logger)
 
-	sync.RegisterRoutes(subrouter)
+	// sync.RegisterRoutes(subrouter)
 
 	// ------------------
 	// Логирование server
