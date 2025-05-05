@@ -54,7 +54,7 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pincode_hash, err := utils.Encrypt(payload.PINCODE)
+	password_hash, err := utils.Encrypt(payload.Password)
 	if err != nil {
 		h.errors.HandleErrors(err, false)
 		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
@@ -62,7 +62,7 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Проверка на pincode
-	if pincode_hash != isUsername.PINCODE {
+	if password_hash != isUsername.Password {
 		utils.WriteJSON(w, r, http.StatusBadRequest, "The user was not found")
 		return
 	}
@@ -119,7 +119,7 @@ func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pincode_hash, err := utils.Encrypt(payload.PINCODE)
+	password_hash, err := utils.Encrypt(payload.Password)
 	if err != nil {
 		utils.WriteJSON(w, r, http.StatusBadRequest, err.Error())
 		return
@@ -128,7 +128,7 @@ func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 	user := database.Users{
 		UUID:      uuid.New().String(),
 		Username:  payload.Username,
-		PINCODE:   pincode_hash,
+		Password:  password_hash,
 		IPAddress: payload.IPAddress,
 		Country:   payload.Country,
 	}
