@@ -1,34 +1,40 @@
-// *---------------------------------------------------------------------------------------------
-//  *  Copyright (c). All rights reserved.
-//  *  Licensed under the MIT License. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*
-
 package database
 
 import (
 	"database/sql"
-
-	"gorm.io/gorm"
+	"time"
 )
 
 type Users struct {
-	gorm.Model
-	UUID         string         `gorm:"unique;size:255;not null"`
-	Username     string         `gorm:"unique;size:20;not null"`
-	Email        sql.NullString `gorm:"unique;type:varchar(100);default:null"`
-	PINCODE      string         `gorm:"size:50;not null"`
-	IPAddress    string         `gorm:"size:15;not null"`
-	Country      string         `gorm:"size:50;not null"`
-	Subscription bool           `gorm:"default:false;not null"`
+	ID           uint           `gorm:"primarykey" json:"id"`
+	UUID         string         `gorm:"unique;size:255;not null" json:"uuid"`
+	Username     string         `gorm:"unique;size:20;not null" json:"username"`
+	Email        sql.NullString `gorm:"unique;type:varchar(100);default:null" json:"email"`
+	Password     string         `gorm:"size:50;not null" json:"password"`
+	IPAddress    string         `gorm:"size:15;not null" json:"ip_address"`
+	Country      string         `gorm:"size:50;not null" json:"country"`
+	Subscription bool           `gorm:"default:false;not null" json:"subscription"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
 }
 
+type Recommendations struct{}
+
+type Favourites struct{}
+
+type Limiter struct{}
+
+type Comments struct{}
+
 type Payments struct {
-	gorm.Model
-	UUID      string  `gorm:"unique;size:255;not null"`
-	Email     string  `gorm:"size:100;not null"`
-	Card      string  `gorm:"size:50;not null"`
-	CardEnd   string  `gorm:"size:3;not null"`
-	Total     float64 `gorm:"size:5;not null"`
-	PaymentAt string  `gorm:"size:255;not null"`
-	EndingAt  string  `gorm:"size:255;not null"`
+	ID        uint      `gorm:"primarykey" json:"id"`
+	UUID      string    `gorm:"unique;size:255;not null" json:"uuid"`
+	Email     string    `gorm:"size:100;not null" json:"email"`
+	Card      string    `gorm:"size:50;not null" json:"card"`
+	CardEnd   string    `gorm:"size:3;not null" json:"card_end"`
+	Total     float64   `gorm:"size:5;not null" json:"total"`
+	PaymentAt string    `gorm:"size:255;not null" json:"payment_at"`
+	EndingAt  string    `gorm:"size:255;not null" json:"ending_at"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
