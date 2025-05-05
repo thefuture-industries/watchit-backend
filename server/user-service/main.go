@@ -19,6 +19,10 @@ import (
 	"go.uber.org/zap"
 )
 
+type Test struct {
+	test string
+}
+
 func main() {
 	if err := godotenv.Load(); err != nil {
 		packages.ErrorLog(err)
