@@ -2,24 +2,22 @@ package packages
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"time"
 
-	"go.uber.org/zap"
+	"go-service-user/internal/lib"
 )
 
 type Logger struct {
-	logger        *zap.Logger
+	logger        *lib.Logger
 	currentLogDir string
 }
 
-func NewLogger(logger *zap.Logger) *Logger {
+func NewLogger() *Logger {
 	return &Logger{
-		logger:        logger,
-		currentLogDir: getCurrentLogDir(),
+		logger: lib.NewLogger(),
 	}
 }
 
@@ -29,17 +27,17 @@ type responseWriter struct {
 	size   int64
 }
 
-func getCurrentLogDir() string {
+func (l *Logger) getCurrentLogDir() string {
 	dateFormatFolder := time.Now().Format("02.01")
-	dir := filepath.Join("logs", dateFormatFolder)
+	dir := filepath.Join(os.Getenv("LOG_DIR"), "logs", dateFormatFolder)
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		ErrorLog(err)
+		l.logger.Error(err.Error())
 	}
 	return dir
 }
 
 func (l *Logger) updateLogDirIfNeeded() {
-	newLogDir := getCurrentLogDir()
+	newLogDir := l.getCurrentLogDir()
 	if newLogDir != l.currentLogDir {
 		l.currentLogDir = newLogDir
 	}
@@ -94,12 +92,12 @@ func getHTTPVersion(r *http.Request) string {
 // Запись логов в папку logs/date/app.log
 // ---------------------------------------
 func (l *Logger) productionLogging(log string) {
-	APP_DIR := filepath.Join(l.currentLogDir, "app.log")
+	APP_DIR := filepath.Join(l.currentLogDir, "server.log")
 
 	// Открытие или создание файла
 	appLogFile, err := os.OpenFile(APP_DIR, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
-		l.logger.Error("failed to open app log file: %v", zap.Error(err))
+		l.logger.Error(fmt.Sprintf("failed to open app log file: %v", err))
 		return
 	}
 	defer appLogFile.Close()
@@ -107,7 +105,7 @@ func (l *Logger) productionLogging(log string) {
 	// Запись данных в файл
 	_, err = appLogFile.WriteString(log)
 	if err != nil {
-		l.logger.Error("error writing to log file: %v", zap.Error(err))
+		l.logger.Error(fmt.Sprintf("error writing to log file: %v", err))
 		return // Важно выйти, если не смогли записать
 	}
 }
@@ -125,21 +123,4 @@ func (rw *responseWriter) Write(b []byte) (int, error) {
 	size, err := rw.ResponseWriter.Write(b)
 	rw.size += int64(size)
 	return size, err
-}
-
-func ErrorLog(err error) {
-	dateFormatFolder := time.Now().Format("02-01")
-	APP_DIR := filepath.Join(getCurrentLogDir(), fmt.Sprintf("errors-%s.log", dateFormatFolder))
-
-	file, fileErr := os.OpenFile(APP_DIR, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if fileErr != nil {
-		log.Fatalf("Ошибка при открытии файла: %v", err)
-	}
-	defer file.Close()
-
-	logger := log.New(file, "", 0)
-	currentTime := time.Now().Format("[02/Jan/2006:15:04:05 -0700]")
-
-	fmt.Printf("%s %s\n", currentTime, err.Error())
-	logger.Printf("%s \"%s\"\n", currentTime, err.Error())
 }
