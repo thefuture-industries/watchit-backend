@@ -1,7 +1,7 @@
 package admin
 
 import (
-	"go-user-service/internal/common/packages"
+	"go-user-service/internal/packages"
 	"go-user-service/internal/common/utils"
 	"net/http"
 

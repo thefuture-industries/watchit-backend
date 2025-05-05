@@ -7,7 +7,7 @@ package database
 
 import (
 	"fmt"
-	"go-user-service/internal/common/packages"
+	"go-user-service/internal/packages"
 	"log"
 
 	"gorm.io/driver/postgres"

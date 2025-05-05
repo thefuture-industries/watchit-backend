@@ -1,27 +1,27 @@
 package packages
 
 import (
+	"go-user-service/internal/lib"
+
 	"github.com/noneandundefined/vision-go"
-	"go.uber.org/zap"
 )
 
 type Errors struct {
 	monitor *vision.Vision
-	logger  *zap.Logger
+	logger  *lib.Logger
 }
 
-func NewErrors(monitor *vision.Vision, logger *zap.Logger) *Errors {
+func NewErrors(monitor *vision.Vision) *Errors {
 	return &Errors{
 		monitor: monitor,
-		logger:  logger,
+		logger:  lib.NewLogger(),
 	}
 }
 
 func (h Errors) HandleErrors(err error, isDBError bool) {
-	ErrorLog(err)
+	h.logger.Error(err.Error())
 	h.monitor.VisionError(err)
 	if isDBError {
 		h.monitor.VisionDBError()
 	}
-	h.logger.Error(err.Error(), zap.Error(err))
 }

@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"go-user-service/cmd/api"
 	"go-user-service/internal/common/database"
-	"go-user-service/internal/common/packages"
+	"go-user-service/internal/packages"
 	"log"
 	"os"
 	"os/signal"

@@ -8,7 +8,7 @@ package sync
 import (
 	"net/http"
 
-	"go-user-service/internal/common/packages"
+	"go-user-service/internal/packages"
 	"go-user-service/internal/common/utils"
 
 	"github.com/noneandundefined/vision-go"
