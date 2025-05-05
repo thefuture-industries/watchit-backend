@@ -14,6 +14,10 @@ import (
 	"go.uber.org/zap"
 )
 
+type Test struct {
+	test string
+}
+
 func main() {
 	loggerApp := lib.NewLogger()
 
