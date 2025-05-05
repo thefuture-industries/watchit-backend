@@ -45,3 +45,20 @@ blog-service/ - Комментарии/Лайки к фильмам/Подпис
 
 1. Для быстрого вхождения в разработку прочти CONTRIBUTING.md
 2. Для быстрой разработки рекомендуем использовать [git auto-commit](https://github.com/thefuture-industries/git-auto-commit)
+
+## Перед началом разработке
+
+1. Запустите script создания .env файлов:
+
+```bash
+cd scripts
+bash create_envs
+```
+
+2. Установите pre-commit
+
+```bash
+npx husky install
+```
+
+3. Установите auto-commit через [https://github.com/thefuture-industries/git-auto-commit]
