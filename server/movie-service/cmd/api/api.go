@@ -2,27 +2,27 @@ package api
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/MarceloPetrucio/go-scalar-api-reference"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 
-	"go-movie-service/internal/common/packages"
+	"go-movie-service/internal/lib"
 )
 
 type APIServer struct {
-	addr string
-	db   *gorm.DB
+	logger *lib.Logger
+	addr   string
+	db     *gorm.DB
 }
 
 func NewAPIServer(addr string, db *gorm.DB) *APIServer {
 	return &APIServer{
-		addr: addr,
-		db:   db,
+		logger: lib.NewLogger(),
+		addr:   addr,
+		db:     db,
 	}
 }
 
@@ -30,12 +30,11 @@ func (s *APIServer) Run() error {
 	// --------------------------------------
 	// Создания router и префикс /micro/movie
 	// --------------------------------------
-
 	router := mux.NewRouter()
 	subrouter := router.PathPrefix("/micro/movie").Subrouter()
 
 	// logger
-	logger, _ := zap.NewProduction()
+	// logger, _ := zap.NewProduction()
 
 	// Vision monitoring
 	// monitoring := vision.NewVision()
@@ -77,7 +76,7 @@ func (s *APIServer) Run() error {
 	// ------------------
 	// Логирование server
 	// ------------------
-	router.Use(packages.NewLogger(logger).LoggerMiddleware)
+	// router.Use(packages.NewLogger().LoggerMiddleware)
 
 	// ---------------
 	// подключаем CORS
@@ -89,6 +88,6 @@ func (s *APIServer) Run() error {
 	// --------------------
 	// Возращяем http ответ
 	// --------------------
-	log.Println("Listening on", s.addr)
+	s.logger.Info(fmt.Sprintf("Listening on %s", s.addr))
 	return http.ListenAndServe(s.addr, handlers.CORS(origins, methods, headers)(router))
 }

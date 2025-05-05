@@ -5,7 +5,6 @@ import (
 	"go-user-service/cmd/api"
 	"go-user-service/internal/common/database"
 	"go-user-service/internal/lib"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,10 +12,6 @@ import (
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 )
-
-type Test struct {
-	test string
-}
 
 func main() {
 	loggerApp := lib.NewLogger()
@@ -28,7 +23,7 @@ func main() {
 	// Инициализация логгера
 	logger, err := zap.NewProduction()
 	if err != nil {
-		log.Fatal(err)
+		loggerApp.Error(err.Error())
 	}
 	if err := logger.Sync(); err != nil {
 		loggerApp.Error(err.Error())
