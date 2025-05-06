@@ -1,6 +1,7 @@
 package database
 
 import (
+	"go-movie-service/internal/common/constants"
 	"go-movie-service/internal/lib"
 
 	"gorm.io/driver/postgres"
@@ -26,6 +27,15 @@ func ConnectDB(dsn string) {
 	if err != nil {
 		loggerApp.Error(err.Error())
 		return
+	}
+
+	for name, index := range constants.GENRES {
+		genre := Genres{
+			GenreID:   index,
+			GenreName: name,
+		}
+
+		db.FirstOrCreate(&genre, Genres{GenreID: index})
 	}
 
 	loggerApp.Info("Migration completed successfully.")

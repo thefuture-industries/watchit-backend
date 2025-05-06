@@ -3,9 +3,9 @@ package database
 import "time"
 
 type Genres struct {
-	ID        uint `gorm:"primarykey" json:"id"`
-	GenreID   uint `gorm:"unique;not null" json:"genre_id"`
-	GenreName uint `gorm:"unique;not null" json:"genre_name"`
+	ID        uint   `gorm:"primarykey" json:"id"`
+	GenreID   uint   `gorm:"unique;not null" json:"genre_id"`
+	GenreName string `gorm:"unique;not null" json:"genre_name"`
 }
 
 type Recommendations struct {
