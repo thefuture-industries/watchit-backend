@@ -58,11 +58,10 @@ func main() {
 
 	select {
 	case err := <-errChan:
-		logger.Error("server error", zap.Error(err))
+		loggerApp.Error(fmt.Sprintf("server error: %s", err.Error()))
 		os.Exit(1)
 	case sig := <-signals:
-		logger.Info("received shutdown signal", zap.String("signal", sig.String()))
-
-		logger.Info("shutdown completed")
+		loggerApp.Warning(fmt.Sprintf("received shutdown signal: %s", sig.String()))
+		loggerApp.Warning("shutdown completed")
 	}
 }
