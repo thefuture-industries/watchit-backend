@@ -1,36 +1,17 @@
 package types
 
-type Limiter struct {
-	ID           int    `json:"id"`
-	UUID         string `json:"uuid"`
-	TextLimiter  int    `json:"text_limit"`
-	YoutubeLimit int    `json:"youtube_limit"`
-	UpdateAt     string `json:"update_at"`
+type RecommendationAddPayload struct {
+	UUID   string `json:"uuid" validate:"required"`
+	Genres []uint `json:"genres" validate:"required"`
 }
 
-type Favourites struct {
-	ID          int    `json:"id"`
-	UUID        string `json:"uuid"`
-	MovieID     int    `json:"movieId"`
-	MoviePoster string `json:"moviePoster"`
-	CreatedAt   string `json:"createdAt"`
-}
-
-type Recommendations struct {
-	ID    int    `json:"id"`
-	UUID  string `json:"uuid"`
-	Title string `json:"title"`
-	Genre string `json:"genre"`
-}
-
-type JsonMovies struct {
+type Movies struct {
 	Page         int     `json:"page"`
 	Results      []Movie `json:"results"`
 	TotalPages   int     `json:"total_pages"`
 	TotalResults int     `json:"total_results"`
 }
 
-// Movie: Модель для JsonMovies данные для Result json
 type Movie struct {
 	Adult            bool    `json:"adult"`
 	BackdropPath     string  `json:"backdrop_path"`
