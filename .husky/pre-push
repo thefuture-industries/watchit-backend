@@ -39,9 +39,10 @@ go mod tidy
 make fmt
 make check
 make lint
-make build
 
 git add .
+make build
+
 echo -e "${GREEN}[+] Success formatted and build for user-service!${NC}"
 
 increment_step "Changes in 'movie-service' directory detected."
@@ -54,9 +55,10 @@ go mod tidy
 make fmt
 make check
 make lint
-make build
 
 git add .
+make build
+
 echo -e "${GREEN}[+] Success formatted and build for movie-service!${NC}"
 
 ### Golang ###
@@ -93,4 +95,5 @@ echo -e "${GREEN}[+] Success formatted and build for movie-service!${NC}"
 #     increment_step "No changes in 'blog-service' directory. Skipping actions for blog-service."
 # fi
 
+git add .
 echo "Husky is successfully!"
