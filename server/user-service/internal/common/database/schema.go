@@ -18,11 +18,31 @@ type Users struct {
 	UpdatedAt    time.Time      `json:"updated_at"`
 }
 
-type Recommendations struct{}
+type Recommendations struct {
+	ID        uint      `gorm:"primarykey" json:"id"`
+	UUID      string    `gorm:"unique;size:255;not null" json:"uuid"`
+	GenreID   uint      `gorm:"not null" json:"genre_id"`
+	Count     uint      `gorm:"not null" json:"count"`
+	CreatedAt time.Time `json:"created_at"`
+}
 
-type Favourites struct{}
+type Favourites struct {
+	ID          uint      `gorm:"primarykey" json:"id"`
+	UUID        string    `gorm:"unique;size:255;not null" json:"uuid"`
+	MovieID     uint      `gorm:"not null" json:"movie_id"`
+	MoviePoster string    `gorm:"size:255;not null" json:"movie_poster"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
 
-type Limiter struct{}
+type Limiter struct {
+	ID           uint      `gorm:"primarykey" json:"id"`
+	UUID         string    `gorm:"unique;size:255;not null" json:"uuid"`
+	TextLimit    uint      `gorm:"default:3;not null;" json:"text_limit"`
+	YoutubeLimit uint      `gorm:"default:2;not null" json:"youtube_limit"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
 
 type Comments struct{}
 
