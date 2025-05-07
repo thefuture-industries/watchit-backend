@@ -1,35 +1,13 @@
 version: 2
 updates:
-    - package-ecosystem: 'npm'
-      directory: './client-mobile'
-      schedule:
-          interval: 'daily'
-          time: '19:00' # UTC(+5)
-      commit-message:
-          prefix: 'chore'
-          include: 'scope'
-      open-pull-requests-limit: 10
-      ignore:
-          - dependency-name: 'tailwindcss'
-          - dependency-name: 'postcss'
-          - dependency-name: 'react-router-dom'
-
-    - package-ecosystem: 'nuget'
-      directory: './client-windows'
-      schedule:
-          interval: 'daily'
-          time: '19:00' # UTC(+5)
-      commit-message:
-          prefix: 'chore'
-          include: 'scope'
-      open-pull-requests-limit: 10
-
     - package-ecosystem: 'gomod'
       directory: './server'
       schedule:
           interval: 'daily'
           time: '19:00' # UTC(+5)
+      allow:
+          - dependency-type: 'all'
       commit-message:
           prefix: 'chore'
           include: 'scope'
-      open-pull-requests-limit: 10
+      open-pull-requests-limit: 7
