@@ -30,9 +30,7 @@ func main() {
 		loggerApp.Error(err.Error())
 	}
 
-	// ----------------------------
 	// Найстрока и подключение к бд
-	// ----------------------------
 	database.ConnectDB(os.Getenv("DSN"))
 	db := database.GetDB()
 

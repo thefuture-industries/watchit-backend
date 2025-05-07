@@ -53,7 +53,7 @@ func (s *System) StartDBMonitoring() error {
 				s.logger.System(fmt.Sprintf("'Database' -> Idle: %d", stats.Idle))
 				s.logger.System(fmt.Sprintf("'Database' -> WaitCount: %d", stats.WaitCount))
 				s.logger.System(fmt.Sprintf("'Database' -> WaitDuration: %d", stats.WaitDuration))
-				s.logger.System(fmt.Sprintf("'Database' -> WaitDuration: %d", stats.WaitDuration))
+				s.logger.System(fmt.Sprintf("'Database' -> MaxIdleClosed: %d", stats.MaxIdleClosed))
 				s.logger.System(fmt.Sprintf("'Database' -> MaxLifetimeClosed: %d", stats.MaxLifetimeClosed))
 
 			case <-done:

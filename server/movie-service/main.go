@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"go-movie-service/cmd/api"
+	"go-movie-service/cmd/system"
 	"go-movie-service/internal/common/database"
 	"go-movie-service/internal/lib"
 	"os"
@@ -29,11 +30,13 @@ func main() {
 		loggerApp.Error(err.Error())
 	}
 
-	// ----------------------------
 	// Найстрока и подключение к бд
-	// ----------------------------
 	database.ConnectDB(os.Getenv("DSN"))
 	db := database.GetDB()
+
+	// Конфигурация приложения (метрики и мониторинг)
+	system := system.NewSystem(db)
+	system.StartDBMonitoring()
 
 	// Создаем каналы для сигналов и ошибок
 	signals := make(chan os.Signal, 1)
