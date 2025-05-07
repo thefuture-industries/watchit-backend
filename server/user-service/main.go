@@ -36,7 +36,9 @@ func main() {
 
 	// Конфигурация приложения (метрики и мониторинг)
 	system := system.NewSystem(db)
-	system.StartDBMonitoring()
+	if err := system.StartDBMonitoring(); err != nil {
+		loggerApp.Error(err.Error())
+	}
 
 	// Создаем каналы для сигналов и ошибок
 	signals := make(chan os.Signal, 1)
