@@ -24,7 +24,7 @@ func NewMovie() *Movie {
 func (m *Movie) GetMovies() (types.Movies, error) {
 	index := LoadIDX()
 
-	rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	var pages []uint
 	for p := range index {
 		if p <= 500 {
@@ -36,7 +36,7 @@ func (m *Movie) GetMovies() (types.Movies, error) {
 		return types.Movies{}, fmt.Errorf("No movies found!")
 	}
 
-	randomPage := pages[rand.Uint32()%uint32(len(pages))]
+	randomPage := pages[r.Intn(len(pages))]
 	offset := index[uint32(randomPage)]
 
 	file, _ := os.Open(constants.MOVIE_JSON_PATH)
