@@ -25,49 +25,41 @@ CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 # Получаем список измененных файлов
 CHANGED_FILES=$(git diff --cached --name-only)
 
-if echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
-    increment_step "Changes in 'user-service' directory detected."
+increment_step "Changes in 'user-service' directory detected."
 
-    echo -e "${GREEN}[|] Running formatted and build for user-service...${NC}"
-    cd "$HOME/server/user-service"
+echo -e "${GREEN}[|] Running formatted and build for user-service...${NC}"
+cd "$HOME/server/user-service"
 
-    # Установка
-    # go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-    # go install golang.org/x/tools/cmd/goimports@latest
+# Установка
+# go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+# go install golang.org/x/tools/cmd/goimports@latest
 
-    go mod tidy
+go mod tidy
 
-    make fmt
-    make check
-    make lint
+make fmt
+make check
+make lint
 
-    git add .
-    make build
+git add .
+make build
 
-    echo -e "${GREEN}[+] Success formatted and build for user-service!${NC}"
-else
-    increment_step "No changes in 'user-service' directory. Skipping actions for user-service."
-fi
+echo -e "${GREEN}[+] Success formatted and build for user-service!${NC}"
 
-if echo "$CHANGED_FILES" | grep -qE '^server/movie-service/'; then
-    increment_step "Changes in 'movie-service' directory detected."
+increment_step "Changes in 'movie-service' directory detected."
 
-    echo -e "${GREEN}[|] Running formatted and build for movie-service...${NC}"
-    cd "$HOME/server/movie-service"
+echo -e "${GREEN}[|] Running formatted and build for movie-service...${NC}"
+cd "$HOME/server/movie-service"
 
-    go mod tidy
+go mod tidy
 
-    make fmt
-    make check
-    make lint
+make fmt
+make check
+make lint
 
-    git add .
-    make build
+git add .
+make build
 
-    echo -e "${GREEN}[+] Success formatted and build for movie-service!${NC}"
-else
-    increment_step "No changes in 'movie-service' directory. Skipping actions for movie-service."
-fi
+echo -e "${GREEN}[+] Success formatted and build for movie-service!${NC}"
 
 ### Golang ###
 # if [ "$CURRENT_BRANCH" = "main" ] && echo "$CHANGED_FILES" | grep -qE '^server/blog-service/'; then
