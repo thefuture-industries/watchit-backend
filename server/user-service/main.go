@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"go-user-service/cmd/api"
+	"go-user-service/cmd/system"
 	"go-user-service/internal/common/database"
 	"go-user-service/internal/lib"
 	"os"
@@ -34,6 +35,10 @@ func main() {
 	// ----------------------------
 	database.ConnectDB(os.Getenv("DSN"))
 	db := database.GetDB()
+
+	// Конфигурация приложения (метрики и мониторинг)
+	system := system.NewSystem(db)
+	system.StartDBMonitoring()
 
 	// Создаем каналы для сигналов и ошибок
 	signals := make(chan os.Signal, 1)
