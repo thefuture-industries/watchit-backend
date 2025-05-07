@@ -1,7 +1,8 @@
 package recommendation
 
 import (
-	"go-movie-service/internal/common/database"
+	"go-movie-service/internal/common/database/action"
+	"go-movie-service/internal/common/database/schema"
 	"go-movie-service/internal/common/utils"
 	"go-movie-service/internal/packages"
 	"go-movie-service/internal/types"
@@ -25,7 +26,7 @@ func NewHandler(monitor *vision.Vision, errors *packages.Errors) *Handler {
 func (h Handler) RecommendationGetHandler(w http.ResponseWriter, r *http.Request) {}
 
 func (h Handler) RecommendationAddHandler(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value("identity").(*database.Users)
+	user := r.Context().Value("identity").(*schema.Users)
 
 	var payload *types.RecommendationAddPayload
 
@@ -38,4 +39,20 @@ func (h Handler) RecommendationAddHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	for _, genreID := range payload.Genres {
+		updated, err := action.UpdateRecommendation(user.UUID, genreID)
+		if err != nil {
+			utils.WriteJSON(w, r, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		if !updated {
+			if err := action.CreateRecommendation(user.UUID, genreID); err != nil {
+				utils.WriteJSON(w, r, http.StatusBadRequest, err.Error())
+				return
+			}
+		}
+	}
+
+	utils.WriteJSON(w, r, http.StatusNoContent, "")
 }

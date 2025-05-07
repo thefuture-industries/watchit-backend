@@ -1,7 +1,7 @@
 package types
 
 type RecommendationAddPayload struct {
-	UUID   string `json:"uuid" validate:"required"`
+	// UUID   string `json:"uuid" validate:"required"`
 	Genres []uint `json:"genres" validate:"required"`
 }
 
