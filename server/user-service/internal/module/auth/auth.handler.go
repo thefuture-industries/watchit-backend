@@ -79,7 +79,7 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 		Name:     "auth-token",
 		Value:    uuid_hash,
 		Path:     "/",
-		Expires:  time.Now().Add(2 * 24 * time.Hour),
+		Expires:  time.Now().AddDate(0, 6, 0),
 		SameSite: http.SameSiteStrictMode,
 	}
 	http.SetCookie(w, cookie)

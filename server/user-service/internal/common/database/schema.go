@@ -20,7 +20,7 @@ type Users struct {
 
 type Recommendations struct {
 	ID        uint      `gorm:"primarykey" json:"id"`
-	UUID      string    `gorm:"unique;size:255;not null" json:"uuid"`
+	UUID      string    `gorm:"size:255;not null" json:"uuid"`
 	GenreID   uint      `gorm:"not null" json:"genre_id"`
 	Count     uint      `gorm:"not null" json:"count"`
 	CreatedAt time.Time `json:"created_at"`

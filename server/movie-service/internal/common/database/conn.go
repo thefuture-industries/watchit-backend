@@ -2,6 +2,7 @@ package database
 
 import (
 	"go-movie-service/internal/common/constants"
+	schema "go-movie-service/internal/common/database/schema"
 	"go-movie-service/internal/lib"
 
 	"gorm.io/driver/postgres"
@@ -23,19 +24,19 @@ func ConnectDB(dsn string) {
 		return
 	}
 
-	err = db.AutoMigrate(&Recommendations{}, &Genres{})
+	err = db.AutoMigrate(&schema.Recommendations{}, &schema.Genres{})
 	if err != nil {
 		loggerApp.Error(err.Error())
 		return
 	}
 
 	for name, index := range constants.GENRES {
-		genre := Genres{
+		genre := schema.Genres{
 			GenreID:   index,
 			GenreName: name,
 		}
 
-		db.FirstOrCreate(&genre, Genres{GenreID: index})
+		db.FirstOrCreate(&genre, schema.Genres{GenreID: index})
 	}
 
 	loggerApp.Info("Migration completed successfully.")
