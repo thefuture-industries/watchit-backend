@@ -45,6 +45,8 @@ if echo "$CHANGED_FILES" | grep -qE '^server/user-service/'; then
     make build
 
     echo -e "${GREEN}[+] Success formatted and build for user-service!${NC}"
+else
+    increment_step "No changes in 'user-service' directory. Skipping actions for user-service."
 fi
 
 if echo "$CHANGED_FILES" | grep -qE '^server/movie-service/'; then
@@ -63,6 +65,8 @@ if echo "$CHANGED_FILES" | grep -qE '^server/movie-service/'; then
     make build
 
     echo -e "${GREEN}[+] Success formatted and build for movie-service!${NC}"
+else
+    increment_step "No changes in 'movie-service' directory. Skipping actions for movie-service."
 fi
 
 ### Golang ###
