@@ -100,6 +100,7 @@ func (l *Logger) System(message string) {
 		return
 	}
 
+	
 	now := time.Now().In(location)
 	logMessage := fmt.Sprintf("[\033[94m%02d.%02d.%d %02d:%02d:%02d\033[0m] [\033[33mSYSTEM\033[0m] \033[33m%s\033[0m",
 		now.Day(), now.Month(), now.Year(),
