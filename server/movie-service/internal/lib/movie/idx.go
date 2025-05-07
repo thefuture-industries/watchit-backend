@@ -33,7 +33,7 @@ func MovieIDX() {
 	index := make(map[int]uint64)
 	for decoder.More() {
 		offset, _ := file.Seek(0, os.SEEK_CUR)
-		var page types.MoviePage
+		var page types.Movies
 		if err := decoder.Decode(&page); err != nil {
 			logger.Error(err.Error())
 			return
