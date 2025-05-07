@@ -5,6 +5,10 @@ type RecommendationAddPayload struct {
 	Genres []uint `json:"genres" validate:"required"`
 }
 
+type MoviePage struct {
+	Page uint64 `json:"page"`
+}
+
 type Movies struct {
 	Page         int     `json:"page"`
 	Results      []Movie `json:"results"`

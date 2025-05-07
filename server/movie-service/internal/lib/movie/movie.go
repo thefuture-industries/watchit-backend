@@ -1,1 +1,5 @@
 package movie
+
+func Movie() {
+
+}
