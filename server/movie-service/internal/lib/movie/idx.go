@@ -7,6 +7,7 @@ import (
 	"go-movie-service/internal/common/constants"
 	"go-movie-service/internal/lib"
 	"go-movie-service/internal/types"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -32,7 +33,7 @@ func MovieIDX() {
 
 	index := make(map[int]uint64)
 	for decoder.More() {
-		offset, _ := file.Seek(0, os.SEEK_CUR)
+		offset, _ := file.Seek(0, io.SeekCurrent)
 		var page types.Movies
 		if err := decoder.Decode(&page); err != nil {
 			logger.Error(err.Error())

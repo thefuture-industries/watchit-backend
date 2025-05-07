@@ -4,22 +4,27 @@ import (
 	"encoding/json"
 	"fmt"
 	"go-movie-service/internal/common/constants"
+	"go-movie-service/internal/lib"
 	"go-movie-service/internal/types"
 	"math/rand"
 	"os"
 	"time"
 )
 
-type Movie struct{}
+type Movie struct {
+	logger *lib.Logger
+}
 
 func NewMovie() *Movie {
-	return &Movie{}
+	return &Movie{
+		logger: lib.NewLogger(),
+	}
 }
 
 func (m *Movie) GetMovies() (types.Movies, error) {
 	index := LoadIDX()
 
-	rand.Seed(time.Now().UnixNano())
+	rand.New(rand.NewSource(time.Now().UnixNano()))
 	var pages []uint
 	for p := range index {
 		if p <= 500 {
@@ -36,11 +41,17 @@ func (m *Movie) GetMovies() (types.Movies, error) {
 
 	file, _ := os.Open(constants.MOVIE_JSON_PATH)
 	defer file.Close()
-	file.Seek(int64(offset), 0)
+	if _, err := file.Seek(int64(offset), 0); err != nil {
+		m.logger.Error(err.Error())
+		return types.Movies{}, err
+	}
 
 	decoder := json.NewDecoder(file)
 	var movies types.Movies
-	decoder.Decode(&movies)
+	if err := decoder.Decode(&movies); err != nil {
+		m.logger.Error(err.Error())
+		return types.Movies{}, err
+	}
 
 	return movies, nil
 }
