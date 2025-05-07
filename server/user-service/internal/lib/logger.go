@@ -93,3 +93,21 @@ func (l *Logger) Error(message string) {
 	fmt.Println(logMessage)
 	l.logFile("errors.log", logFile)
 }
+
+func (l *Logger) System(message string) {
+	location, err := time.LoadLocation("Asia/Yekaterinburg")
+	if err != nil {
+		return
+	}
+
+	now := time.Now().In(location)
+	logMessage := fmt.Sprintf("[\033[94m%02d.%02d.%d %02d:%02d:%02d\033[0m] [\033[33mSYSTEM\033[0m] \033[33m%s\033[0m",
+		now.Day(), now.Month(), now.Year(),
+		now.Hour(), now.Minute(), now.Second(), message)
+	logFile := fmt.Sprintf("[%02d.%02d.%d %02d:%02d:%02d] [SYSTEM] %s",
+		now.Day(), now.Month(), now.Year(),
+		now.Hour(), now.Minute(), now.Second(), message)
+
+	fmt.Println(logMessage)
+	l.logFile("system.log", logFile)
+}
