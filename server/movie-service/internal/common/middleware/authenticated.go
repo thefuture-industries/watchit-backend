@@ -10,7 +10,7 @@ import (
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("auth-token")
-		if err != nil {
+		if err != nil || cookie.Value == "" {
 			utils.WriteJSON(w, r, http.StatusUnauthorized, "Sign in to your account")
 			return
 		}
@@ -34,16 +34,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		//nolint
 		ctx := context.WithValue(r.Context(), "identity", user)
-		r = r.WithContext(ctx)
-
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
-
-// func GetUserFromContext(ctx context.Context) *User {
-// 	user, ok := ctx.Value(UserKey).(*User)
-// 	if !ok {
-// 		return nil // Или panic, если это критическая ошибка
-// 	}
-// 	return user
-// }

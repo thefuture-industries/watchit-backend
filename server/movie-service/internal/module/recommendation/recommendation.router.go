@@ -1,6 +1,7 @@
 package recommendation
 
 import (
+	"go-movie-service/internal/common/middleware"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -9,7 +10,7 @@ import (
 func (h Handler) RegisterRoutes(router *mux.Router) {
 	recommendationRouter := router.PathPrefix("/recommendation").Subrouter()
 
-	recommendationRouter.Use(middleware)
+	recommendationRouter.Use(middleware.AuthMiddleware)
 
 	recommendationRouter.HandleFunc("/{uuid}", h.RecommendationGetHandler).Methods(http.MethodGet)
 	recommendationRouter.HandleFunc("", h.RecommendationAddHandler).Methods(http.MethodPost)

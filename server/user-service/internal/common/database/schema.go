@@ -18,7 +18,13 @@ type Users struct {
 	UpdatedAt    time.Time      `json:"updated_at"`
 }
 
-type Recommendations struct{}
+type Recommendations struct {
+	ID        uint      `gorm:"primarykey" json:"id"`
+	UUID      string    `gorm:"size:255;not null" json:"uuid"`
+	GenreID   uint      `gorm:"not null" json:"genre_id"`
+	Count     uint      `gorm:"not null" json:"count"`
+	CreatedAt time.Time `json:"created_at"`
+}
 
 type Favourites struct{}
 

@@ -26,26 +26,3 @@ func GetUserByUUID(uuid string) (*schema.Users, error) {
 
 	return &user, nil
 }
-
-func UpdateRecommendation(uuid string, genreID uint) (bool, error) {
-	logger := lib.NewLogger()
-	db := database.GetDB()
-
-	var recommendation schema.Recommendations
-	if err := db.Where("uuid = ? and genre_id = ?", uuid, genreID).First(&recommendation).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return false, nil
-		}
-
-		logger.Error(fmt.Sprintf("Database -> 'Failed to query recommendation: %v'", err))
-		return false, fmt.Errorf("Failed to query recommendation")
-	}
-
-	recommendation.Count++
-	if err := db.Save(&recommendation).Error; err != nil {
-		logger.Error(fmt.Sprintf("Database -> 'Failed to query recommendation: %v'", err))
-		return false, fmt.Errorf("Failed to query recommendation")
-	}
-
-	return true, nil
-}

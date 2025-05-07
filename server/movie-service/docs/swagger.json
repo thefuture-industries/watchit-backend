@@ -1,0 +1,69 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"description": "API service for working with the flicksfi application for fast movie and video search. tg [https://t.me/flicksfi]",
+		"title": "movie microservice API",
+		"version": "0.1.2"
+	},
+	"host": "localhost:8011",
+	"basePath": "/micro/movie",
+	"schemes": ["http"],
+	"paths": {
+		"/recommendation": {
+			"post": {
+				"summary": "Add recommendations",
+				"tags": ["Recommendation"],
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"security": [
+					{
+						"cookieAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/RecommendationAddPayload"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Successfully updated or created recommendations"
+					},
+					"400": {
+						"description": "Invalid input or failed to process recommendation",
+						"schema": {
+							"type": "string"
+						}
+					}
+				}
+			}
+		}
+	},
+	"securityDefinitions": {
+		"cookieAuth": {
+			"type": "apiKey",
+			"in": "cookie",
+			"name": "auth-token"
+		}
+	},
+	"definitions": {
+		"RecommendationAddPayload": {
+			"type": "object",
+			"required": ["genres"],
+			"properties": {
+				"genres": {
+					"type": "array",
+					"items": {
+						"type": "integer"
+					},
+					"example": [28, 36, 53]
+				}
+			}
+		}
+	}
+}
