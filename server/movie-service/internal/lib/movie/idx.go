@@ -13,10 +13,10 @@ import (
 	"strings"
 )
 
-func MovieIDX() {
+func pidx() {
 	logger := lib.NewLogger()
 
-	file, err := os.Open(constants.MOVIE_JSON_PATH)
+	file, err := os.Open(constants.MOVIE_JSON_PATH_WRITE)
 	if err != nil {
 		logger.Error(err.Error())
 		return
@@ -43,17 +43,22 @@ func MovieIDX() {
 		index[int(page.Page)] = uint64(offset)
 	}
 
-	idxFile, _ := os.Create(constants.MOVIE_IDX_PATH)
+	idxFile, _ := os.Create(constants.MOVIE_PIDX_PATH_WRITE)
 	defer idxFile.Close()
 	for page, offset := range index {
 		fmt.Fprintf(idxFile, "%d %d\n", page, offset)
 	}
 }
 
-func LoadIDX() map[uint32]uint32 {
+func LoadPIDX() map[uint32]uint32 {
+	logger := lib.NewLogger()
 	idx := make(map[uint32]uint32)
 
-	file, _ := os.Open(constants.MOVIE_IDX_PATH)
+	file, err := os.Open(constants.MOVIE_PIDX_PATH_WRITE)
+	if err != nil {
+		logger.Error(err.Error())
+		return nil
+	}
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)

@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+const (
+	MAX_COUNT_MOVIES uint16 = 500
+)
+
 type Movie struct {
 	logger *lib.Logger
 }
@@ -22,36 +26,29 @@ func NewMovie() *Movie {
 }
 
 func (m *Movie) GetMovies() (types.Movies, error) {
-	index := LoadIDX()
-
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	var pages []uint
-	for p := range index {
-		if p <= 500 {
-			pages = append(pages, uint(p))
+	randomPage := uint16(r.Intn(int(MAX_COUNT_MOVIES)))
+
+	movieFile, err := os.Open(constants.MOVIE_JSON_PATH_READ)
+	if err != nil {
+		m.logger.Error(err.Error())
+		return types.Movies{}, err
+	}
+	defer movieFile.Close()
+
+	var moviesJson []types.Movies
+	// var movies []types.Movie
+
+	if err := json.NewDecoder(movieFile).Decode(&moviesJson); err != nil {
+		m.logger.Error(err.Error())
+		return types.Movies{}, fmt.Errorf("Error get list movies!")
+	}
+
+	for _, movies := range moviesJson {
+		if movies.Page == randomPage {
+			return movies, nil // RETURNS MOVIES
 		}
 	}
 
-	if len(pages) == 0 {
-		return types.Movies{}, fmt.Errorf("No movies found!")
-	}
-
-	randomPage := pages[r.Intn(len(pages))]
-	offset := index[uint32(randomPage)]
-
-	file, _ := os.Open(constants.MOVIE_JSON_PATH)
-	defer file.Close()
-	if _, err := file.Seek(int64(offset), 0); err != nil {
-		m.logger.Error(err.Error())
-		return types.Movies{}, err
-	}
-
-	decoder := json.NewDecoder(file)
-	var movies types.Movies
-	if err := decoder.Decode(&movies); err != nil {
-		m.logger.Error(err.Error())
-		return types.Movies{}, err
-	}
-
-	return movies, nil
+	return types.Movies{}, fmt.Errorf("No movies found!")
 }
