@@ -54,5 +54,5 @@ func (h Handler) RecommendationAddHandler(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	utils.WriteJSON(w, r, http.StatusNoContent, "")
+	utils.WriteJSON(w, r, http.StatusCreated, "Recommendation added successfully")
 }

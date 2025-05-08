@@ -7,7 +7,7 @@
 		"version": "0.1.2"
 	},
 	"host": "localhost:8001",
-	"basePath": "/micro/user",
+	"basePath": "/microservice/user-service",
 	"paths": {
 		"/auth/signup": {
 			"post": {
