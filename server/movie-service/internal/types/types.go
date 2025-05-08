@@ -17,7 +17,7 @@ type Movies struct {
 
 type Movie struct {
 	Adult            bool     `json:"adult"`
-	BackdropPath     *string   `json:"backdrop_path"`
+	BackdropPath     *string  `json:"backdrop_path"`
 	GenreIds         []uint16 `json:"genre_ids"`
 	Id               uint32   `json:"id"`
 	OriginalLanguage string   `json:"original_language"`

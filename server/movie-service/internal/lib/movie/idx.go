@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func pidx() {
+func Pidx() {
 	logger := lib.NewLogger()
 
 	file, err := os.Open(constants.MOVIE_JSON_PATH_WRITE)
