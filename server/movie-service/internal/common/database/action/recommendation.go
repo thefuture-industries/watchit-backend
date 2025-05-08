@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateRecommendation(uuid string, genreID uint) error {
+func CreateRecommendation(uuid string, genreID uint16) error {
 	logger := lib.NewLogger()
 	db := database.GetDB()
 
@@ -34,7 +34,7 @@ func CreateRecommendation(uuid string, genreID uint) error {
 	return nil
 }
 
-func UpdateRecommendation(uuid string, genreID uint) (bool, error) {
+func UpdateRecommendation(uuid string, genreID uint16) (bool, error) {
 	logger := lib.NewLogger()
 	db := database.GetDB()
 
