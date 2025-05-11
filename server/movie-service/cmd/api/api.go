@@ -7,9 +7,12 @@ import (
 	"github.com/MarceloPetrucio/go-scalar-api-reference"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/noneandundefined/vision-go"
 	"gorm.io/gorm"
 
 	"go-movie-service/internal/lib"
+	"go-movie-service/internal/module/movie"
+	"go-movie-service/internal/packages"
 )
 
 type APIServer struct {
@@ -69,9 +72,11 @@ func (s *APIServer) Run() error {
 	// -------------
 	// ROUTERS PATHS
 	// -------------
-	// errors := packages.NewErrors(monitoring, logger)
 
-	// sync.RegisterRoutes(subrouter)
+	monitoring := vision.NewVision()
+	errors := packages.NewErrors(monitoring)
+
+	movie.NewHandler(monitoring, errors).MovieRoutes(subrouter)
 
 	// ------------------
 	// Логирование server
