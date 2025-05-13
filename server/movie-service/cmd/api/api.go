@@ -77,8 +77,6 @@ func (s *APIServer) Run() error {
 
 	recommendation.NewHandler(monitoring, errors).RegisterRoutes(subrouter)
 	// sync.RegisterRoutes(subrouter)
-	monitoring := vision.NewVision()
-	errors := packages.NewErrors(monitoring)
 
 	movie.NewHandler(monitoring, errors).MovieRoutes(subrouter)
 
