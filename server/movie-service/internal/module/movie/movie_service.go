@@ -33,7 +33,7 @@ func movieDetails(id int) (types.Movie, error) {
 	if err != nil {
 		return types.Movie{}, fmt.Errorf("error reading compressed data: %v", err)
 	}
-	var movieData types.JsonMovies
+	var movieData types.Movies
 	var response types.Movie
 
 	err = json.Unmarshal(data, &movieData)

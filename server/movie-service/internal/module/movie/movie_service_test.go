@@ -12,7 +12,7 @@ import (
 )
 
 func setupTestData(t *testing.T) {
-	testData := types.JsonMovies{
+	testData := types.Movies{
 		Page: 1,
 		Results: []types.Movie{
 			{
@@ -41,8 +41,9 @@ func setupTestData(t *testing.T) {
 	setupTestDataWithContent(t, testData)
 }
 
-func setupTestDataWithContent(t *testing.T, testData types.JsonMovies) {
-	dataDir := filepath.Join("test_data")
+func setupTestDataWithContent(t *testing.T, testData types.Movies) {
+
+	dataDir := filepath.Join("internal", "data")
 	err := os.MkdirAll(dataDir, 0755)
 	if err != nil {
 		t.Fatalf("Failed to create data directory: %v", err)
@@ -65,8 +66,19 @@ func setupTestDataWithContent(t *testing.T, testData types.JsonMovies) {
 	}
 }
 
+func cleanupTestData(t *testing.T) {
+	filePath := filepath.Join("internal", "data", "movies.json.gz")
+	err := os.Remove(filePath)
+	if err != nil && !os.IsNotExist(err) {
+		t.Logf("Warning: Failed to remove test data file: %v", err)
+	}
+}
+
 func TestMovieDetails(t *testing.T) {
+
 	setupTestData(t)
+
+	defer cleanupTestData(t)
 
 	tests := []struct {
 		name     string
