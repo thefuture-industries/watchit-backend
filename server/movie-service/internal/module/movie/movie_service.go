@@ -10,8 +10,10 @@ import (
 	"path/filepath"
 )
 
-// MovieDetails получает детали фильма по ID
-func MovieDetails(id int) (types.Movie, error) {
+var MovieDetails = movieDetails
+
+// movieDetails получает детали фильма по ID
+func movieDetails(id int) (types.Movie, error) {
 
 	filePath := filepath.Join("internal", "data", "movies.json.gz")
 
