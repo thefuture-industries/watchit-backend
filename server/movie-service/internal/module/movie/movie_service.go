@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"go-movie-service/internal/types"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 )
@@ -29,7 +29,7 @@ func movieDetails(id int) (types.Movie, error) {
 	}
 	defer zr.Close()
 
-	data, err := ioutil.ReadAll(zr)
+	data, err := io.ReadAll(zr)
 	if err != nil {
 		return types.Movie{}, fmt.Errorf("error reading compressed data: %v", err)
 	}

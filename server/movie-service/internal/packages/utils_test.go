@@ -89,7 +89,7 @@ func TestCacheJSON(t *testing.T) {
 			// Проверяем только, что заголовок Expires установлен и находится в будущем
 			now := time.Now()
 			if expiresTime.Before(now) {
-				t.Errorf("CacheJSON() set Expires time in the past: got %v, current time %v", 
+				t.Errorf("CacheJSON() set Expires time in the past: got %v, current time %v",
 					expiresTime, now)
 			}
 
