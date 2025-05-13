@@ -12,6 +12,7 @@ import (
 
 	"go-movie-service/internal/lib"
 	"go-movie-service/internal/module/movie"
+	"go-movie-service/internal/module/recommendation"
 	"go-movie-service/internal/packages"
 )
 
@@ -40,7 +41,7 @@ func (s *APIServer) Run() error {
 	// logger, _ := zap.NewProduction()
 
 	// Vision monitoring
-	// monitoring := vision.NewVision()
+	monitoring := vision.NewVision()
 	subrouter.HandleFunc("/admin/vision", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./docs/vision/index.html")
 	}).Methods("GET")
@@ -72,8 +73,9 @@ func (s *APIServer) Run() error {
 	// -------------
 	// ROUTERS PATHS
 	// -------------
-	// errors := packages.NewErrors(monitoring, logger)
+	errors := packages.NewErrors(monitoring)
 
+	recommendation.NewHandler(monitoring, errors).RegisterRoutes(subrouter)
 	// sync.RegisterRoutes(subrouter)
 	monitoring := vision.NewVision()
 	errors := packages.NewErrors(monitoring)
@@ -83,7 +85,7 @@ func (s *APIServer) Run() error {
 	// ------------------
 	// Логирование server
 	// ------------------
-	// router.Use(packages.NewLogger().LoggerMiddleware)
+	router.Use(packages.NewLogger().LoggerMiddleware)
 
 	// ---------------
 	// подключаем CORS
@@ -91,10 +93,11 @@ func (s *APIServer) Run() error {
 	origins := handlers.AllowedOrigins([]string{"*"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
 	headers := handlers.AllowedHeaders([]string{"Content-Type", "X-Requested-With", "Authorization"})
+	allowCredentials := handlers.AllowCredentials()
 
 	// --------------------
 	// Возращяем http ответ
 	// --------------------
 	s.logger.Info(fmt.Sprintf("Listening on %s", s.addr))
-	return http.ListenAndServe(s.addr, handlers.CORS(origins, methods, headers)(router))
+	return http.ListenAndServe(s.addr, handlers.CORS(origins, methods, headers, allowCredentials)(router))
 }

@@ -89,10 +89,11 @@ func (s *APIServer) Run() error {
 	origins := handlers.AllowedOrigins([]string{"*"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
 	headers := handlers.AllowedHeaders([]string{"Content-Type", "X-Requested-With", "Authorization"})
+	allowCredentials := handlers.AllowCredentials()
 
 	// --------------------
 	// Возращяем http ответ
 	// --------------------
 	s.logger.Info(fmt.Sprintf("Listening on %s", s.addr))
-	return http.ListenAndServe(s.addr, handlers.CORS(origins, methods, headers)(router))
+	return http.ListenAndServe(s.addr, handlers.CORS(origins, methods, headers, allowCredentials)(router))
 }
