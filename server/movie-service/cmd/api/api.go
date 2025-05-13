@@ -72,7 +72,9 @@ func (s *APIServer) Run() error {
 	// -------------
 	// ROUTERS PATHS
 	// -------------
+	// errors := packages.NewErrors(monitoring, logger)
 
+	// sync.RegisterRoutes(subrouter)
 	monitoring := vision.NewVision()
 	errors := packages.NewErrors(monitoring)
 
