@@ -2,6 +2,7 @@ package packages
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -23,5 +24,7 @@ func CacheJSON(w http.ResponseWriter, seconds int, status int, v any) error {
 }
 
 func WriteError(w http.ResponseWriter, status int, err error) {
-	WriteJSON(w, status, map[string]string{"error": err.Error()})
+	if jsonErr := WriteJSON(w, status, map[string]string{"error": err.Error()}); jsonErr != nil {
+		log.Printf("Failed to write error JSON: %v", jsonErr)
+	}
 }

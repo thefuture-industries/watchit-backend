@@ -60,5 +60,8 @@ func (h Handler) MovieDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	packages.CacheJSON(w, 3600, http.StatusOK, movie)
+	if err := packages.CacheJSON(w, 3600, http.StatusOK, movie); err != nil {
+		packages.WriteError(w, http.StatusInternalServerError, fmt.Errorf("error writing response: %w", err))
+		return
+	}
 }
