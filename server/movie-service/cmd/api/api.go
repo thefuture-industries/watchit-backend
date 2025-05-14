@@ -31,9 +31,7 @@ func NewAPIServer(addr string, db *gorm.DB) *APIServer {
 }
 
 func (s *APIServer) Run() error {
-	// --------------------------------------
 	// Создания router и префикс /micro/movie
-	// --------------------------------------
 	router := mux.NewRouter()
 	subrouter := router.PathPrefix("/micro/movie").Subrouter()
 
