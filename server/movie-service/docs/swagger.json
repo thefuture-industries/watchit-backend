@@ -46,7 +46,7 @@
 		"/movie/{id}": {
 			"get": {
 				"summary": "Get movie details",
-				"tags": ["Movie"],
+				"tags": ["Movies"],
 				"consumes": ["application/json"],
 				"produces": ["application/json"],
 				"security": [
@@ -68,7 +68,11 @@
 						"description": "Movie details"
 					},
 					"400": {
-						"description": "Invalid input or failed to process movie",
+						"description": "Invalid input or failed to process movie"
+					}
+				}
+			}
+		},
 		"/movie": {
 			"get": {
 				"summary": "Get list of movies",
