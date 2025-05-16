@@ -26,9 +26,7 @@ func ParseJSON(r *http.Request, payload any) error {
 	return json.NewDecoder(r.Body).Decode(payload)
 }
 
-// ---------------------------
 // Функция ответа пользователю
-// ---------------------------
 func WriteJSON(w http.ResponseWriter, r *http.Request, status int, v any) {
 	logger := lib.NewLogger()
 

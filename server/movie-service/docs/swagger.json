@@ -43,6 +43,32 @@
 				}
 			}
 		},
+		"/movie/{id}": {
+			"get": {
+				"summary": "Get movie details",
+				"tags": ["Movie"],
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"security": [
+					{
+						"cookieAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"type": "integer",
+						"format": "int32"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Movie details"
+					},
+					"400": {
+						"description": "Invalid input or failed to process movie",
 		"/movie": {
 			"get": {
 				"summary": "Get list of movies",

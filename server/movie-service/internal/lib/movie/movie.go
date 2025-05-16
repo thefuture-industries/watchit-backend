@@ -41,7 +41,7 @@ func (m *Movie) GetMovies() (types.Movies, error) {
 
 	if err := json.NewDecoder(movieFile).Decode(&moviesJson); err != nil {
 		m.logger.Error(err.Error())
-		return types.Movies{}, fmt.Errorf("Error get list movies!")
+		return types.Movies{}, fmt.Errorf("error get list movies!")
 	}
 
 	for _, movies := range moviesJson {
@@ -50,5 +50,31 @@ func (m *Movie) GetMovies() (types.Movies, error) {
 		}
 	}
 
-	return types.Movies{}, fmt.Errorf("No movies found!")
+	return types.Movies{}, fmt.Errorf("we didn't find any movies.")
+}
+
+func (m *Movie) GetDetailsMovies(id uint32) (types.Movie, error) {
+	movieFile, err := os.Open(constants.MOVIE_JSON_PATH_READ)
+	if err != nil {
+		m.logger.Error(err.Error())
+		return types.Movie{}, err
+	}
+	defer movieFile.Close()
+
+	var moviesJson []types.Movies
+
+	if err := json.NewDecoder(movieFile).Decode(&moviesJson); err != nil {
+		m.logger.Error(err.Error())
+		return types.Movie{}, fmt.Errorf("error get list movies!")
+	}
+
+	for _, movies := range moviesJson {
+		for _, movie := range movies.Results {
+			if movie.Id == id {
+				return movie, nil
+			}
+		}
+	}
+
+	return types.Movie{}, fmt.Errorf("we didn't find any movies with id: %d", id)
 }
