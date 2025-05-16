@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"go-movie-service/cmd/api"
+	"go-movie-service/cmd/system"
 	"go-movie-service/internal/common/database"
 	"go-movie-service/internal/lib"
 	"os"
@@ -29,11 +30,15 @@ func main() {
 		loggerApp.Error(err.Error())
 	}
 
-	// ----------------------------
 	// Найстрока и подключение к бд
-	// ----------------------------
 	database.ConnectDB(os.Getenv("DSN"))
 	db := database.GetDB()
+
+	// Конфигурация приложения (метрики и мониторинг)
+	system := system.NewSystem(db)
+	if err := system.StartDBMonitoring(); err != nil {
+		loggerApp.Error(err.Error())
+	}
 
 	// Создаем каналы для сигналов и ошибок
 	signals := make(chan os.Signal, 1)
@@ -43,7 +48,7 @@ func main() {
 	// Создаем и запускаем основной сервер
 	server := api.NewAPIServer(":8011", db)
 	go func() {
-		loggerApp.Info("Swagger listen :8011/micro/movie/adm/doc")
+		loggerApp.Info("Swagger listen :8011/microservice/movie-service/adm/doc")
 		fmt.Println("\n" + `███╗   ███╗ ██████╗ ██╗   ██╗██╗███████╗    ███╗   ███╗██╗ ██████╗██████╗  ██████╗      ██████╗  ██████╗
 ████╗ ████║██╔═══██╗██║   ██║██║██╔════╝    ████╗ ████║██║██╔════╝██╔══██╗██╔═══██╗    ██╔════╝ ██╔═══██╗
 ██╔████╔██║██║   ██║██║   ██║██║█████╗█████╗██╔████╔██║██║██║     ██████╔╝██║   ██║    ██║  ███╗██║   ██║

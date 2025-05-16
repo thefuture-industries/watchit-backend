@@ -10,14 +10,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateRecommendation(uuid string, genreID uint) error {
+func CreateRecommendation(uuid string, genreID uint16) error {
 	logger := lib.NewLogger()
 	db := database.GetDB()
 
 	var genres schema.Genres
 	if err := db.Where("genre_id = ?", genreID).First(&genres).Error; err != nil {
 		logger.Error(fmt.Sprintf("Database -> 'Failed to create recommendation: %v'", err))
-		return fmt.Errorf("Failed to create recommendation.")
+		return fmt.Errorf("failed to create recommendation.")
 	}
 
 	recomSchemaPrepare := schema.Recommendations{
@@ -28,20 +28,20 @@ func CreateRecommendation(uuid string, genreID uint) error {
 
 	if err := db.Create(&recomSchemaPrepare).Error; err != nil {
 		logger.Error(fmt.Sprintf("Database -> 'Failed to create recommendation: %v'", err))
-		return fmt.Errorf("Failed to create recommendation.")
+		return fmt.Errorf("failed to create recommendation.")
 	}
 
 	return nil
 }
 
-func UpdateRecommendation(uuid string, genreID uint) (bool, error) {
+func UpdateRecommendation(uuid string, genreID uint16) (bool, error) {
 	logger := lib.NewLogger()
 	db := database.GetDB()
 
 	var genres schema.Genres
 	if err := db.Where("genre_id = ?", genreID).First(&genres).Error; err != nil {
 		logger.Error(fmt.Sprintf("Database -> 'Failed to create recommendation: %v'", err))
-		return false, fmt.Errorf("Failed to create recommendation.")
+		return false, fmt.Errorf("failed to create recommendation.")
 	}
 
 	var recommendation schema.Recommendations
@@ -51,13 +51,13 @@ func UpdateRecommendation(uuid string, genreID uint) (bool, error) {
 		}
 
 		logger.Error(fmt.Sprintf("Database -> 'Failed to query recommendation: %v'", err))
-		return false, fmt.Errorf("Failed to query recommendation")
+		return false, fmt.Errorf("failed to query recommendation")
 	}
 
 	recommendation.Count++
 	if err := db.Save(&recommendation).Error; err != nil {
 		logger.Error(fmt.Sprintf("Database -> 'Failed to query recommendation: %v'", err))
-		return false, fmt.Errorf("Failed to query recommendation")
+		return false, fmt.Errorf("failed to query recommendation")
 	}
 
 	return true, nil

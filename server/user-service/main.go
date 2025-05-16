@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"go-user-service/cmd/api"
+	"go-user-service/cmd/system"
 	"go-user-service/internal/common/database"
 	"go-user-service/internal/lib"
 	"os"
@@ -29,11 +30,15 @@ func main() {
 		loggerApp.Error(err.Error())
 	}
 
-	// ----------------------------
 	// Найстрока и подключение к бд
-	// ----------------------------
 	database.ConnectDB(os.Getenv("DSN"))
 	db := database.GetDB()
+
+	// Конфигурация приложения (метрики и мониторинг)
+	system := system.NewSystem(db)
+	if err := system.StartDBMonitoring(); err != nil {
+		loggerApp.Error(err.Error())
+	}
 
 	// Создаем каналы для сигналов и ошибок
 	signals := make(chan os.Signal, 1)
@@ -43,7 +48,7 @@ func main() {
 	// Создаем и запускаем основной сервер
 	server := api.NewAPIServer(":8001", db)
 	go func() {
-		loggerApp.Info("Swagger listen :8001/micro/user/adm/doc")
+		loggerApp.Info("Swagger listen :8001/microservice/user-service/adm/doc")
 		fmt.Println("\n" + `██╗   ██╗███████╗███████╗██████╗       ███╗   ███╗██╗ ██████╗██████╗  ██████╗      ██████╗  ██████╗
 ██║   ██║██╔════╝██╔════╝██╔══██╗      ████╗ ████║██║██╔════╝██╔══██╗██╔═══██╗    ██╔════╝ ██╔═══██╗
 ██║   ██║███████╗█████╗  ██████╔╝█████╗██╔████╔██║██║██║     ██████╔╝██║   ██║    ██║  ███╗██║   ██║

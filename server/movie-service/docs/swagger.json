@@ -6,7 +6,7 @@
 		"version": "0.1.2"
 	},
 	"host": "localhost:8011",
-	"basePath": "/micro/movie",
+	"basePath": "/microservice/movie-service",
 	"schemes": ["http"],
 	"paths": {
 		"/recommendation": {
@@ -42,6 +42,56 @@
 					}
 				}
 			}
+		},
+		"/movie/{id}": {
+			"get": {
+				"summary": "Get movie details",
+				"tags": ["Movies"],
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"security": [
+					{
+						"cookieAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"type": "integer",
+						"format": "int32"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Movie details"
+					},
+					"400": {
+						"description": "Invalid input or failed to process movie"
+					}
+				}
+			}
+		},
+		"/movie": {
+			"get": {
+				"summary": "Get list of movies",
+				"tags": ["Movies"],
+				"responses": {
+					"200": {
+						"description": "Successful response with a list of movies",
+						"schema": {
+							"$ref": "#/definitions/Movies"
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"schema": {
+							"type": "string"
+						}
+					}
+				}
+			}
 		}
 	},
 	"securityDefinitions": {
@@ -62,6 +112,102 @@
 						"type": "integer"
 					},
 					"example": [28, 36, 53]
+				}
+			}
+		},
+		"Movies": {
+			"type": "object",
+			"properties": {
+				"page": {
+					"type": "integer",
+					"format": "uint16",
+					"description": "Current page number"
+				},
+				"results": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Movie"
+					},
+					"description": "List of movies on the current page"
+				},
+				"total_pages": {
+					"type": "integer",
+					"format": "uint32",
+					"description": "Total number of pages available"
+				},
+				"total_results": {
+					"type": "integer",
+					"format": "uint32",
+					"description": "Total number of results available"
+				}
+			}
+		},
+		"Movie": {
+			"type": "object",
+			"properties": {
+				"adult": {
+					"type": "boolean",
+					"description": "Indicates if this is an adult movie"
+				},
+				"backdrop_path": {
+					"type": "string",
+					"description": "URL to backdrop image"
+				},
+				"genre_ids": {
+					"type": "array",
+					"items": {
+						"type": "integer",
+						"format": "uint16"
+					},
+					"description": "List of genre IDs associated with the movie"
+				},
+				"id": {
+					"type": "integer",
+					"format": "uint32",
+					"description": "Unique identifier for the movie"
+				},
+				"original_language": {
+					"type": "string",
+					"description": "Original language of the movie"
+				},
+				"original_title": {
+					"type": "string",
+					"description": "Original title of the movie"
+				},
+				"overview": {
+					"type": "string",
+					"description": "Brief overview or summary of the movie"
+				},
+				"popularity": {
+					"type": "number",
+					"format": "float",
+					"description": "Popularity score of the movie"
+				},
+				"poster_path": {
+					"type": "string",
+					"description": "URL to poster image"
+				},
+				"release_date": {
+					"type": "string",
+					"description": "Release date of the movie in ISO format (YYYY-MM-DD)"
+				},
+				"title": {
+					"type": "string",
+					"description": "Translated title of the movie"
+				},
+				"video": {
+					"type": "boolean",
+					"description": "Indicates if there is a video trailer available"
+				},
+				"vote_average": {
+					"type": "number",
+					"format": "double",
+					"description": "Average rating given by users"
+				},
+				"vote_count": {
+					"type": "integer",
+					"format": "uint16",
+					"description": "Number of votes received"
 				}
 			}
 		}
