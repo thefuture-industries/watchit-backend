@@ -52,3 +52,19 @@ func (m *Movie) GetMovies() (types.Movies, error) {
 
 	return types.Movies{}, fmt.Errorf("No movies found!")
 }
+
+func (m *Movie) GetDetailsMovies(id uint32) (types.Movie, error) {
+	movieFile, err := os.Open(constants.MOVIE_JSON_PATH_READ)
+	if err != nil {
+		m.logger.Error(err.Error())
+		return types.Movie{}, err
+	}
+	defer movieFile.Close()
+
+	var moviesJson []types.Movies
+
+	if err := json.NewDecoder(movieFile).Decode(&moviesJson); err != nil {
+		m.logger.Error(err.Error())
+		return types.Movie{}, fmt.Errorf("Error get list movies!")
+	}
+}
