@@ -28,29 +28,27 @@ func (h Handler) MovieDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
-		utils.WriteJSON(w, r, http.StatusBadRequest, "movie ID is required")
+		utils.WriteJSON(w, r, http.StatusBadRequest, "couldn't find the movie by ID")
 		return
 	}
 
 	idINT, err := strconv.Atoi(id)
 	if err != nil {
-		packages.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid movie ID format"))
+		utils.WriteJSON(w, r, http.StatusBadRequest, "movie ID conversion error")
 		return
 	}
 
 	movie, err := MovieDetails(idINT)
 	if err != nil {
-		packages.WriteError(w, http.StatusInternalServerError, err)
+		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	if movie.Id == 0 || movie.Title == "" {
-		packages.WriteError(w, http.StatusNotFound, fmt.Errorf("movie not found"))
+		utils.WriteJSON(w, r, http.StatusNotFound, fmt.Errorf("we didn't find any movies with id: %d", idINT))
 		return
 	}
 
-	if err := packages.CacheJSON(w, 3600, http.StatusOK, movie); err != nil {
-		packages.WriteError(w, http.StatusInternalServerError, fmt.Errorf("error writing response: %w", err))
-		return
-	}
+	utils.CacheJSON(w, 1800) // 30 min.
+	utils.WriteJSON(w, r, http.StatusOK, movie)
 }
