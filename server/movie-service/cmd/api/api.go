@@ -71,7 +71,6 @@ func (s *APIServer) Run() error {
 
 	movie.NewHandler(monitoring, errors).RegisterRoutes(subrouter)
 	recommendation.NewHandler(monitoring, errors).RegisterRoutes(subrouter)
-	movie.NewHandler(monitoring, errors).MovieRoutes(subrouter)
 
 	// Логирование server
 	router.Use(packages.NewLogger().LoggerMiddleware)
