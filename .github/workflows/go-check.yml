@@ -2,7 +2,9 @@ name: Static Go Check
 
 on:
     pull_request:
-        branches: [main]
+        branches:
+            - main
+            - 'v*'
 
 jobs:
     go_check:

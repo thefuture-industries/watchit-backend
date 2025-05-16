@@ -31,9 +31,9 @@ func NewAPIServer(addr string, db *gorm.DB) *APIServer {
 }
 
 func (s *APIServer) Run() error {
-	// Создания router и префикс /micro/movie
+	// Создания router и префикс /microservice/movie-service
 	router := mux.NewRouter()
-	subrouter := router.PathPrefix("/micro/movie").Subrouter()
+	subrouter := router.PathPrefix("/microservice/movie-service").Subrouter()
 
 	// logger
 	// logger, _ := zap.NewProduction()
@@ -52,7 +52,7 @@ func (s *APIServer) Run() error {
 
 	subrouter.HandleFunc("/adm/doc", func(w http.ResponseWriter, r *http.Request) {
 		htmlContent, err := scalar.ApiReferenceHTML(&scalar.Options{
-			SpecURL: "http://localhost:8011/micro/movie/docs",
+			SpecURL: "http://localhost:8011/microservice/movie-service/docs",
 			CustomOptions: scalar.CustomOptions{
 				PageTitle: "Movie Microservice",
 			},
@@ -69,6 +69,7 @@ func (s *APIServer) Run() error {
 	// ROUTERS PATHS
 	errors := packages.NewErrors(monitoring)
 
+	movie.NewHandler(monitoring, errors).RegisterRoutes(subrouter)
 	recommendation.NewHandler(monitoring, errors).RegisterRoutes(subrouter)
 	movie.NewHandler(monitoring, errors).MovieRoutes(subrouter)
 

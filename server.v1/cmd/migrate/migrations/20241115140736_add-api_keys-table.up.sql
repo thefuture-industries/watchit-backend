@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS api_keys (
+  id SERIAL PRIMARY KEY,
+  uuid VARCHAR(255) NOT NULL,
+  api_key VARCHAR(60) NOT NULL,
+  createdAt VARCHAR(50) NOT NULL,
+
+  UNIQUE (api_key)
+);

@@ -49,3 +49,13 @@ func (h Handler) MovieDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	utils.CacheJSON(w, 1800) // 30 min.
 	utils.WriteJSON(w, r, http.StatusOK, movie)
 }
+
+func (h Handler) MovieGetHandler(w http.ResponseWriter, r *http.Request) {
+	movies, err := h.movie.GetMovies()
+	if err != nil {
+		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.WriteJSON(w, r, http.StatusOK, movies)
+}

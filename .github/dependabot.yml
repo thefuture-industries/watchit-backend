@@ -1,7 +1,7 @@
 version: 2
 updates:
     - package-ecosystem: 'gomod'
-      directory: './server'
+      directory: './server/movie-service'
       schedule:
           interval: 'daily'
           time: '19:00' # UTC(+5)
@@ -10,4 +10,16 @@ updates:
       commit-message:
           prefix: 'chore'
           include: 'scope'
-      open-pull-requests-limit: 7
+      open-pull-requests-limit: 4
+
+    - package-ecosystem: 'gomod'
+      directory: './server/user-service'
+      schedule:
+          interval: 'daily'
+          time: '19:00' # UTC(+5)
+      allow:
+          - dependency-type: 'all'
+      commit-message:
+          prefix: 'chore'
+          include: 'scope'
+      open-pull-requests-limit: 4
