@@ -1,30 +1,44 @@
 package packages
 
 import (
+	"compress/gzip"
 	"encoding/json"
-	"log"
+	"fmt"
+	"go-movie-service/internal/lib"
+	"io"
 	"net/http"
-	"strconv"
-	"time"
+	"strings"
 )
 
-func WriteJSON(w http.ResponseWriter, status int, v any) error {
+func WriteJSON(w http.ResponseWriter, r *http.Request, status int, v any) {
+	logger := lib.NewLogger()
+
+	accept := r.Header.Get("Accept-Encoding")
+	shouldGzip := strings.Contains(accept, "gzip")
+
+	var writer io.Writer = w
+	var gzipWriter *gzip.Writer
+
+	if shouldGzip {
+		w.Header().Set("Content-Encoding", "gzip")
+		w.Header().Set("Vary", "Accept-Encoding")
+
+		gzipWriter = gzip.NewWriter(w)
+		defer gzipWriter.Close()
+
+		writer = gzipWriter
+	}
+
 	w.Header().Set("Content-Security-Policy", "script-src 'self';")
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(status)
 
-	return json.NewEncoder(w).Encode(v)
-}
-
-func CacheJSON(w http.ResponseWriter, seconds int, status int, v any) error {
-	w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(seconds))
-	w.Header().Set("Expires", time.Now().Add(time.Duration(seconds)*time.Second).Format(http.TimeFormat))
-
-	return WriteJSON(w, status, v)
-}
-
-func WriteError(w http.ResponseWriter, status int, err error) {
-	if jsonErr := WriteJSON(w, status, map[string]string{"error": err.Error()}); jsonErr != nil {
-		log.Printf("Failed to write error JSON: %v", jsonErr)
+	if err := json.NewEncoder(writer).Encode(map[string]any{"message": v}); err != nil {
+		logger.Error(err.Error())
+		http.Error(w, "Unknown error from the server", http.StatusBadGateway)
 	}
+}
+
+func CacheJSON(w http.ResponseWriter, limit int) {
+	w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%d", limit))
 }
