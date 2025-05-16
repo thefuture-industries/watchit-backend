@@ -1,11 +1,11 @@
 package movie
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"go-movie-service/internal/common/utils"
+	"go-movie-service/internal/lib/movie"
 	"go-movie-service/internal/packages"
 
 	"github.com/gorilla/mux"
@@ -15,12 +15,14 @@ import (
 type Handler struct {
 	monitor *vision.Vision
 	errors  *packages.Errors
+	movie   *movie.Movie
 }
 
 func NewHandler(monitor *vision.Vision, errors *packages.Errors) *Handler {
 	return &Handler{
 		monitor: monitor,
 		errors:  errors,
+		movie:   movie.NewMovie(),
 	}
 }
 
@@ -38,14 +40,9 @@ func (h Handler) MovieDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	movie, err := MovieDetails(idINT)
+	movie, err := h.movie.GetDetailsMovies(uint32(idINT))
 	if err != nil {
 		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	if movie.Id == 0 || movie.Title == "" {
-		utils.WriteJSON(w, r, http.StatusNotFound, fmt.Errorf("we didn't find any movies with id: %d", idINT))
 		return
 	}
 
