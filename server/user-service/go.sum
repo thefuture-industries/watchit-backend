@@ -42,8 +42,8 @@ github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 h1:ZqeYNhU3OH
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/reflect2 v1.0.2 h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9Gz0M=
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
-github.com/noneandundefined/vision-go v0.0.0-20250219150203-41594b45a6d1 h1:kJbR8ul/7xPbJPhU1maRgRseolPwj9apHO9WgwTmPwU=
-github.com/noneandundefined/vision-go v0.0.0-20250219150203-41594b45a6d1/go.mod h1:B65aiBNDj1wiDcK018tq1X2xYigpgobL4+9CB0lkpEg=
+github.com/noneandundefined/vision-go v1.1.6 h1:U2Yib0jrAqx+FB+4eSutlVniAyte+OEd5YNIQbfWIiU=
+github.com/noneandundefined/vision-go v1.1.6/go.mod h1:tpFgZqtWg1FTY71eB2bxzalidrG9+0ChtzdXlqzGF8U=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/shirou/gopsutil v3.21.11+incompatible h1:+1+c1VGhc88SSonWP6foOcLhvnKlUeu/erjjvaPEYiI=
