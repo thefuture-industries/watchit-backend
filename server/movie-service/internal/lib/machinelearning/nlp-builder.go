@@ -60,6 +60,7 @@ func (this *NLPBuilder) Preprocess(input string) []string {
 	return output
 }
 
+// nolint
 func (this *NLPBuilder) lemmatize(word string) string {
 	switch word {
 	case "am", "is", "are", "was", "were":
@@ -109,6 +110,7 @@ func (this *NLPBuilder) lemmatize(word string) string {
 	}
 }
 
+// nolint
 func (this *NLPBuilder) stemming(word string) string {
 	switch {
 	case strings.HasSuffix(word, "fulness"):
