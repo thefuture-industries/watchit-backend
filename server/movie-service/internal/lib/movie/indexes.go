@@ -1,12 +1,13 @@
 package movie
 
 import (
+	"go-movie-service/internal/types"
 	"io"
 	"os"
 )
 
-func getPageByOffset(filePath string, offset int64) (Page, error) {
-	var page Page
+func getPageByOffset(filePath string, offset int64) (types.Movies, error) {
+	var page types.Movies
 
 	f, err := os.Open(filePath)
 	if err != nil {
