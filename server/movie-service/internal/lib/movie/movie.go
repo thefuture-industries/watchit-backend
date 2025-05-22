@@ -36,7 +36,8 @@ func (m *Movie) GetMovies() (types.Movies, error) {
 	}
 	defer movieFile.Close()
 
-	var moviesJson []types.Movies
+	// var moviesJson []types.Movies
+	var moviesJson types.Movies
 	// var movies []types.Movie
 
 	if err := json.NewDecoder(movieFile).Decode(&moviesJson); err != nil {

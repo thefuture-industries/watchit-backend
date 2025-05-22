@@ -2,13 +2,34 @@ package movie
 
 import (
 	"bufio"
+	"fmt"
+	"go-movie-service/internal/common/constants"
 	"go-movie-service/internal/common/utils"
+	"go-movie-service/internal/lib"
 	"go-movie-service/internal/types"
 	"io"
 	"os"
 	"strconv"
 	"strings"
 )
+
+func PIDX(page int) uint64 {
+	logger := lib.NewLogger()
+
+	index, err := loadIndex(constants.MOVIE_PIDX_PATH_READ)
+	if err != nil {
+		logger.Error(fmt.Sprintf("error loading indexes: %s", err.Error()))
+		return 3
+	}
+
+	offset, ok := index[page]
+	if !ok {
+		logger.Error(fmt.Sprintf("page %s not found in index", page))
+		return 3
+	}
+
+	return uint64(offset)
+}
 
 func loadIndex(path string) (map[int]int64, error) {
 	file, err := os.Open(path)
@@ -25,14 +46,15 @@ func loadIndex(path string) (map[int]int64, error) {
 		if line == "" {
 			continue
 		}
+
 		parts := strings.Fields(line)
 		if len(parts) < 2 {
 			continue
 		}
 
-		page, err1 := strconv.Atoi(parts[0])
-		offset, err2 := strconv.ParseInt(parts[1], 10, 64)
-		if err1 != nil || err2 != nil {
+		page, pageErr := strconv.Atoi(parts[0])
+		offset, offsetErr := strconv.ParseInt(parts[1], 10, 64)
+		if pageErr != nil || offsetErr != nil {
 			continue
 		}
 
