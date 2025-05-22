@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func PIDX(page int) uint64 {
+func PIDX(page uint16) uint64 {
 	logger := lib.NewLogger()
 
 	index, err := loadIndex(constants.MOVIE_PIDX_PATH_READ)
@@ -31,7 +31,7 @@ func PIDX(page int) uint64 {
 	return uint64(offset)
 }
 
-func loadIndex(path string) (map[int]int64, error) {
+func loadIndex(path string) (map[int]uint16, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err

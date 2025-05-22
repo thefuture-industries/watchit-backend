@@ -40,10 +40,14 @@ func (m *Movie) GetMovies() (types.Movies, error) {
 	var moviesJson types.Movies
 	// var movies []types.Movie
 
-	if err := json.NewDecoder(movieFile).Decode(&moviesJson); err != nil {
-		m.logger.Error(err.Error())
-		return types.Movies{}, fmt.Errorf("error get list movies!")
-	}
+	// if err := json.NewDecoder(movieFile).Decode(&moviesJson); err != nil {
+	// 	m.logger.Error(err.Error())
+	// 	return types.Movies{}, fmt.Errorf("error get list movies!")
+	// }
+
+	offset := PIDX(randomPage)
+
+	_, err := movieFile.Seek()
 
 	for _, movies := range moviesJson {
 		if movies.Page == randomPage {
