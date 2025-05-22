@@ -6,6 +6,7 @@ import (
 	"go-movie-service/internal/common/constants"
 	"go-movie-service/internal/lib"
 	"go-movie-service/internal/types"
+	"io"
 	"math/rand"
 	"os"
 	"time"
@@ -47,7 +48,10 @@ func (m *Movie) GetMovies() (types.Movies, error) {
 
 	offset := PIDX(randomPage)
 
-	_, err := movieFile.Seek()
+	_, err := movieFile.Seek(offset, io.SeekStart)
+	if err != nil {
+		return 
+	}
 
 	for _, movies := range moviesJson {
 		if movies.Page == randomPage {

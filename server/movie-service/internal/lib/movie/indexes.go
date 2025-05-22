@@ -31,14 +31,14 @@ func PIDX(page uint16) uint64 {
 	return uint64(offset)
 }
 
-func loadIndex(path string) (map[int]uint16, error) {
+func loadIndex(path string) (map[uint16]int64, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
-	index := make(map[int]int64)
+	index := make(map[uint16]int64)
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
@@ -58,7 +58,7 @@ func loadIndex(path string) (map[int]uint16, error) {
 			continue
 		}
 
-		index[page] = offset
+		index[uint16(page)] = offset
 	}
 
 	if err := scanner.Err(); err != nil {
