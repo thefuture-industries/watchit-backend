@@ -4,10 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"go-movie-service/internal/common/constants"
-	"go-movie-service/internal/common/utils"
 	"go-movie-service/internal/lib"
-	"go-movie-service/internal/types"
-	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -66,26 +63,4 @@ func loadIndex(path string) (map[uint16]int64, error) {
 	}
 
 	return index, nil
-}
-
-func getPageByOffset(filePath string, offset int64) (types.Movies, error) {
-	var page types.Movies
-
-	file, err := os.Open(filePath)
-	if err != nil {
-		return page, err
-	}
-	defer file.Close()
-
-	_, err = file.Seek(offset, io.SeekStart)
-	if err != nil {
-		return page, err
-	}
-
-	decoder := utils.JSON.NewDecoder(file)
-	if err := decoder.Decode(&page); err != nil {
-		return page, err
-	}
-
-	return page, nil
 }

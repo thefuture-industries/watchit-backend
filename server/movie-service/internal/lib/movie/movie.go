@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"go-movie-service/internal/common/constants"
+	"go-movie-service/internal/common/utils"
 	"go-movie-service/internal/lib"
 	"go-movie-service/internal/types"
 	"io"
@@ -26,40 +27,32 @@ func NewMovie() *Movie {
 	}
 }
 
-func (m *Movie) GetMovies() (types.Movies, error) {
+func (m *Movie) GetMovies() ([]types.Movie, error) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	randomPage := uint16(r.Intn(int(MAX_COUNT_MOVIES)))
 
 	movieFile, err := os.Open(constants.MOVIE_JSON_PATH_READ)
 	if err != nil {
 		m.logger.Error(err.Error())
-		return types.Movies{}, err
+		return nil, err
 	}
 	defer movieFile.Close()
 
-	// var moviesJson []types.Movies
 	var moviesJson types.Movies
-	// var movies []types.Movie
-
-	// if err := json.NewDecoder(movieFile).Decode(&moviesJson); err != nil {
-	// 	m.logger.Error(err.Error())
-	// 	return types.Movies{}, fmt.Errorf("error get list movies!")
-	// }
 
 	offset := PIDX(randomPage)
 
-	_, err := movieFile.Seek(offset, io.SeekStart)
-	if err != nil {
-		return 
+	_, errSeek := movieFile.Seek(int64(offset), io.SeekStart)
+	if errSeek != nil {
+		return nil, fmt.Errorf("error getting movies by %d", randomPage)
 	}
 
-	for _, movies := range moviesJson {
-		if movies.Page == randomPage {
-			return movies, nil // RETURNS MOVIES
-		}
+	decoder := utils.JSON.NewDecoder(movieFile)
+	if err := decoder.Decode(&moviesJson); err != nil {
+		return nil, fmt.Errorf("we didn't find any movies.")
 	}
 
-	return types.Movies{}, fmt.Errorf("we didn't find any movies.")
+	return moviesJson.Results, nil
 }
 
 func (m *Movie) GetDetailsMovies(id uint32) (types.Movie, error) {
