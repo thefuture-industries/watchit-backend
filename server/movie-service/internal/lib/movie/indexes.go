@@ -21,7 +21,7 @@ func PIDX(page uint16) uint64 {
 
 	offset, ok := index[page]
 	if !ok {
-		logger.Error(fmt.Sprintf("page %s not found in index", page))
+		logger.Error(fmt.Sprintf("page %d not found in index", page))
 		return 3
 	}
 
