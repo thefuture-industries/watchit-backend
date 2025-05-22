@@ -1,13 +1,7 @@
-// *---------------------------------------------------------------------------------------------
-//  *  Copyright (c). All rights reserved.
-//  *  Licensed under the MIT License. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*
-
 package utils
 
 import (
 	"compress/gzip"
-	"encoding/json"
 	"fmt"
 	"go-movie-service/internal/lib"
 	"io"
@@ -15,9 +9,9 @@ import (
 	"strings"
 )
 
-// ---------------------------------------
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
+
 // Проверка и декодирование данных от user
-// ---------------------------------------
 func ParseJSON(r *http.Request, payload any) error {
 	if r.Body == nil {
 		return fmt.Errorf("missing request body")

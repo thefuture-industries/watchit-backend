@@ -1,6 +1,7 @@
 package movie
 
 import (
+	"encoding/json"
 	"go-movie-service/internal/types"
 	"io"
 	"os"
@@ -9,13 +10,13 @@ import (
 func getPageByOffset(filePath string, offset int64) (types.Movies, error) {
 	var page types.Movies
 
-	f, err := os.Open(filePath)
+	file, err := os.Open(filePath)
 	if err != nil {
 		return page, err
 	}
-	defer f.Close()
+	defer file.Close()
 
-	_, err = f.Seek(offset, io.SeekStart)
+	_, err = file.Seek(offset, io.SeekStart)
 	if err != nil {
 		return page, err
 	}
