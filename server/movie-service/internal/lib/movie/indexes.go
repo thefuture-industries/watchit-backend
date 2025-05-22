@@ -13,41 +13,15 @@ import (
 	"strings"
 )
 
-func Pidx() {
+func Pidx(page uint16) {
 	logger := lib.NewLogger()
 
-	file, err := os.Open(constants.MOVIE_JSON_PATH_WRITE)
+	file, err := os.Open(constants.MOVIE_PIDX_PATH_WRITE)
 	if err != nil {
 		logger.Error(err.Error())
-		return
+		return nil
 	}
 	defer file.Close()
-
-	decoder := json.NewDecoder(bufio.NewReader(file))
-
-	token, err := decoder.Token()
-	if err != nil || token != json.Delim('[') {
-		logger.Error("Not an array")
-		return
-	}
-
-	index := make(map[int]uint64)
-	for decoder.More() {
-		offset, _ := file.Seek(0, io.SeekCurrent)
-		var page types.Movies
-		if err := decoder.Decode(&page); err != nil {
-			logger.Error(err.Error())
-			return
-		}
-
-		index[int(page.Page)] = uint64(offset)
-	}
-
-	idxFile, _ := os.Create(constants.MOVIE_PIDX_PATH_WRITE)
-	defer idxFile.Close()
-	for page, offset := range index {
-		fmt.Fprintf(idxFile, "%d %d\n", page, offset)
-	}
 }
 
 func LoadPIDX() map[uint32]uint32 {
