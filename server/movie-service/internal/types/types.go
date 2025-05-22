@@ -31,3 +31,8 @@ type Movie struct {
 	VoteAverage      float64  `json:"vote_average"`
 	VoteCount        uint16   `json:"vote_count"`
 }
+
+type IndexEntry struct {
+	Page   int32
+	Offset int64
+}

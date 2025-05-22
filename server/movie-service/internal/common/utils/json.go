@@ -1,29 +1,25 @@
-// *---------------------------------------------------------------------------------------------
-//  *  Copyright (c). All rights reserved.
-//  *  Licensed under the MIT License. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*
-
 package utils
 
 import (
 	"compress/gzip"
-	"encoding/json"
 	"fmt"
 	"go-movie-service/internal/lib"
 	"io"
 	"net/http"
 	"strings"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
-// ---------------------------------------
+var JSON = jsoniter.ConfigCompatibleWithStandardLibrary
+
 // Проверка и декодирование данных от user
-// ---------------------------------------
 func ParseJSON(r *http.Request, payload any) error {
 	if r.Body == nil {
 		return fmt.Errorf("missing request body")
 	}
 
-	return json.NewDecoder(r.Body).Decode(payload)
+	return JSON.NewDecoder(r.Body).Decode(payload)
 }
 
 // Функция ответа пользователю
@@ -50,7 +46,7 @@ func WriteJSON(w http.ResponseWriter, r *http.Request, status int, v any) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(status)
 
-	if err := json.NewEncoder(writer).Encode(map[string]any{"message": v}); err != nil {
+	if err := JSON.NewEncoder(writer).Encode(map[string]any{"message": v}); err != nil {
 		logger.Error(err.Error())
 		http.Error(w, "Unknown error from the server", http.StatusBadGateway)
 	}
