@@ -35,7 +35,7 @@ func (h Handler) RecommendationAddHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	if err := utils.Validate.Struct(payload); err != nil {
-		utils.WriteJSON(w, r, http.StatusBadRequest, "Not all fields are filled in")
+		utils.WriteJSON(w, r, http.StatusBadRequest, "not all fields are filled in")
 		return
 	}
 
@@ -54,5 +54,5 @@ func (h Handler) RecommendationAddHandler(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	utils.WriteJSON(w, r, http.StatusCreated, "Recommendation added successfully")
+	utils.WriteJSON(w, r, http.StatusCreated, "recommendation added successfully")
 }
