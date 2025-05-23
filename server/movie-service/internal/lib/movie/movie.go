@@ -11,11 +11,13 @@ import (
 	"io"
 	"math/rand"
 	"os"
+	"sort"
 	"time"
 )
 
 const (
 	MAX_COUNT_MOVIES uint16 = 500
+	MAX_TOP_TOP
 )
 
 type Movie struct {
@@ -121,5 +123,21 @@ func (m *Movie) GetMoviesByText(textInput string) ([]types.Movie, error) {
 		rowVec := matrix.RawRowView(i)
 		sim := m.lsaBuilder.CosineSimilarity(rowVec, inputVec)
 		sims = append(sims, types.LSASimilarity{i, sim})
+	}
+
+	sort.Slice(sims, func(i, j int) bool {
+		return sims[i].Similarity > sims[j].Similarity
+	})
+
+	if len(sims) < top {
+		top = len(sims)
+	}
+
+	for i := 0; i < top; i++ {
+		idx := sims[i].index
+		sim := sims[i].similarity
+		movie := docs[idx]
+
+		fmt.Printf("[%e] %s\n", sim, movie.Title)
 	}
 }
