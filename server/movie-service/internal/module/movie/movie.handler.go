@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"go-movie-service/internal/common/database/schema"
 	"go-movie-service/internal/common/utils"
 	"go-movie-service/internal/lib/movie"
 	"go-movie-service/internal/packages"
@@ -62,10 +63,18 @@ func (h Handler) MovieGetHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h Handler) MovieTextHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, ok := vars["id"]
-	if !ok {
-		utils.WriteJSON(w, r, http.StatusBadRequest, "couldn't find the movie by ID")
+	pUUID, okUUID := vars["uuid"]
+	if !okUUID {
+		utils.WriteJSON(w, r, http.StatusBadRequest, "couldn't find the user by uuid.")
 		return
 	}
 
+	user := r.Context().Value("identity").(*schema.Users)
+
+	if pUUID != user.UUID {
+		utils.WriteJSON(w, r, http.StatusBadRequest, "the uuid was transmitted incorrectly.")
+		return
+	}
+
+	
 }

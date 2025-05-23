@@ -32,6 +32,16 @@ type Movie struct {
 	VoteCount        uint16   `json:"vote_count"`
 }
 
+type TextPayload struct {
+	IMEI                          string `json:"imei" validate:"required"`
+	Model                         string `json:"model" validate:"required"`
+	Phone                         string `json:"phone,omitempty"`
+	Password                      string `json:"password,omitempty"`
+	AutoUpdate                    bool   `json:"auto_update,omitempty"`
+	RequestConfigurationOnConnect bool   `json:"request_configuration_on_connect,omitempty"`
+	Group                         string `json:"group,omitempty"`
+}
+
 type IndexEntry struct {
 	Page   int32
 	Offset int64
