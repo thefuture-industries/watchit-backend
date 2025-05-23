@@ -116,5 +116,10 @@ func (m *Movie) GetMoviesByText(textInput string) ([]types.Movie, error) {
 	rows, _ := matrix.Dims()
 	inputVec := matrix.RawRowView(rows - 1)
 
-	sims := make([]docSim, 0, rows-1)
+	sims := make([]types.LSASimilarity, 0, rows-1)
+	for i := 0; i < rows-1; i++ {
+		rowVec := matrix.RawRowView(i)
+		sim := m.lsaBuilder.CosineSimilarity(rowVec, inputVec)
+		sims = append(sims, types.LSASimilarity{i, sim})
+	}
 }
