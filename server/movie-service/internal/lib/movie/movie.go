@@ -6,6 +6,7 @@ import (
 	"go-movie-service/internal/common/constants"
 	"go-movie-service/internal/common/utils"
 	"go-movie-service/internal/lib"
+	"go-movie-service/internal/lib/machinelearning"
 	"go-movie-service/internal/types"
 	"io"
 	"math/rand"
@@ -19,12 +20,14 @@ const (
 
 type Movie struct {
 	logger        *lib.Logger
+	lsaBuilder    *machinelearning.LSABuilder
 	moviesByCache []types.Movies
 }
 
 func NewMovie() *Movie {
 	return &Movie{
 		logger:        lib.NewLogger(),
+		lsaBuilder:    machinelearning.NewLSABuilder(),
 		moviesByCache: nil,
 	}
 }
@@ -87,13 +90,29 @@ func (m *Movie) GetMoviesByText(textInput string) ([]types.Movie, error) {
 		movieFile, err := os.Open(constants.MOVIE_JSON_PATH_READ)
 		if err != nil {
 			m.logger.Error(err.Error())
-			return types.Movie{}, err
+			return nil, err
 		}
 		defer movieFile.Close()
 
 		if err := json.NewDecoder(movieFile).Decode(&m.moviesByCache); err != nil {
 			m.logger.Error(err.Error())
-			return types.Movie{}, fmt.Errorf("error get list movies!")
+			return nil, fmt.Errorf("error get list movies!")
 		}
 	}
+
+	var movieList []types.Movie
+
+	for _, movies := range m.moviesByCache {
+		for _, movie := range movies.Results {
+			movieList = append(movieList, movie)
+		}
+	}
+
+	matrix, docs := m.lsaBuilder.AnalyzeByMovie(movieList, textInput)
+	if matrix == nil {
+		return nil, fmt.Errorf("we didn't find any movies.")
+	}
+
+	rows, _ := matrix.Dims()
+	inputVec := matrix.RawRowView(rows - 1)
 }
