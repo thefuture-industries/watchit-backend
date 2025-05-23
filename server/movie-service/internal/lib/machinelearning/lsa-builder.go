@@ -144,7 +144,7 @@ func (this *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string
 
 				if okIDF && okIDX && idx < nTerms && i < nDocs {
 					tf := this.tfidfBuilder.TF(count, total)
-					tfidf := this.tfidfBuilderTFIDF(tf, idf)
+					tfidf := this.tfidfBuilder.TFIDF(tf, idf)
 
 					data[i*nTerms+idx] = tfidf
 				}
@@ -167,7 +167,7 @@ func (this *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string
 	return U, documentsTake
 }
 
-func (this *LSABuilder) cosineSimilarity(a, b []float64) float64 {
+func (this *LSABuilder) CosineSimilarity(a, b []float64) float64 {
 	var dot, normA, normB float64
 	for i := range a {
 		dot += a[i] * b[i]

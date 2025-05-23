@@ -18,18 +18,22 @@ const (
 )
 
 type Movie struct {
-	logger *lib.Logger
+	logger        *lib.Logger
+	moviesByCache []types.Movies
 }
 
 func NewMovie() *Movie {
 	return &Movie{
-		logger: lib.NewLogger(),
+		logger:        lib.NewLogger(),
+		moviesByCache: nil,
 	}
 }
 
 func (m *Movie) GetMovies() ([]types.Movie, error) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	randomPage := uint16(r.Intn(int(MAX_COUNT_MOVIES)))
+
+	if 
 
 	movieFile, err := os.Open(constants.MOVIE_JSON_PATH_READ)
 	if err != nil {
@@ -79,4 +83,8 @@ func (m *Movie) GetDetailsMovies(id uint32) (types.Movie, error) {
 	}
 
 	return types.Movie{}, fmt.Errorf("we didn't find any movies with id: %d", id)
+}
+
+func (this *Movie) GetMoviesByText(textInput string) ([]types.Movie, error) {
+
 }
