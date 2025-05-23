@@ -41,3 +41,8 @@ type WC struct {
 	Word  string
 	Count int
 }
+
+type DocSimilarity struct {
+	index      int
+	similarity float64
+}
