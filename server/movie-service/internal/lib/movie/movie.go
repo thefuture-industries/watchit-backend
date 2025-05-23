@@ -103,6 +103,8 @@ func (m *Movie) GetMoviesByText(textInput string) ([]types.Movie, error) {
 		}
 	}
 
+	err := 
+
 	var movieList []types.Movie
 
 	for _, movies := range m.moviesByCache {
@@ -134,13 +136,28 @@ func (m *Movie) GetMoviesByText(textInput string) ([]types.Movie, error) {
 		m.maxTopMovies = len(sims)
 	}
 
+	var moviesTops []types.Movie
+
 	for i := 0; i < m.maxTopMovies; i++ {
 		idx := sims[i].Index
-		sim := sims[i].Similarity
+		// sim := sims[i].Similarity
 		movie := docs[idx]
 
-		fmt.Printf("[%e] %s\n", sim, movie.Title)
+		moviesTops = append(moviesTops, movie)
 	}
 
-	return docs, nil
+	return moviesTops, nil
+}
+
+func (m *Movie) shuffleMovies() error {
+	if m.moviesByCache == nil {
+		return fmt.Errorf("array movie is empty sorry...")
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(m.moviesByCache), func(i, j int) {
+		m.moviesByCache[i], m.moviesByCache[j] = m.moviesByCache[j], m.moviesByCache[i]
+	})
+
+	return nil
 }
