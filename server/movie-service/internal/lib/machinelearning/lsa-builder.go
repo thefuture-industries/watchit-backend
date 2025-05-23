@@ -3,7 +3,7 @@ package machinelearning
 import "sort"
 
 type LSABuilder struct {
-	_nlp
+	nlpBuilder         *NLPBuilder
 	avgOverview        uint8
 	top                int
 	vocabularyIndexMap map[string]int
@@ -14,6 +14,7 @@ type LSABuilder struct {
 
 func NewLSABuilder() *LSABuilder {
 	return &LSABuilder{
+		nlpBuilder:         NewNLPBuilder(),
 		avgOverview:        39,
 		top:                25,
 		vocabularyIndexMap: nil,
@@ -32,17 +33,12 @@ func (this *LSABuilder) AddVocabulary(documents []string) {
 	wCount := make(map[string]int)
 
 	for i, doc := range documents {
-		tokens := Preprocess(doc)
-		tokenizedDocs[i] = tokens
+		tokens := this.nlpBuilder.Preprocess(doc)
+		this.tokenizedDocs[i] = tokens
 
 		for _, token := range tokens {
 			wCount[token]++
 		}
-	}
-
-	type wc struct {
-		word  string
-		count int
 	}
 
 	wcList := make([]wc, 0, len(wCount))

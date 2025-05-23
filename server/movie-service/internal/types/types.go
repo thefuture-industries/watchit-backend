@@ -36,3 +36,8 @@ type IndexEntry struct {
 	Page   int32
 	Offset int64
 }
+
+type WC struct {
+	word  string
+	count int
+}
