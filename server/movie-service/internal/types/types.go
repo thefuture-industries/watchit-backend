@@ -38,6 +38,6 @@ type IndexEntry struct {
 }
 
 type WC struct {
-	word  string
-	count int
+	Word  string
+	Count int
 }

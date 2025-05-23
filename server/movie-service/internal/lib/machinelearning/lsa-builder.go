@@ -50,7 +50,7 @@ func (this *LSABuilder) AddVocabulary(documents []string) {
 	}
 
 	sort.Slice(wcList, func(i, j int) bool {
-		return wcList[i].count > wcList[j].count
+		return wcList[i].Count > wcList[j].Count
 	})
 
 	limit := int(this.avgOverview) * len(documents)
@@ -62,7 +62,33 @@ func (this *LSABuilder) AddVocabulary(documents []string) {
 	this.vocabularyIndexMap = make(map[string]int, limit)
 
 	for i := 0; i < limit; i++ {
-		this.vocabulary[i] = wcList[i].word
-		this.vocabularyIndexMap[wcList[i].word] = i
+		this.vocabulary[i] = wcList[i].Word
+		this.vocabularyIndexMap[wcList[i].Word] = i
+	}
+}
+
+func CalcIDF() {
+	N := len(tokenizedDocs)
+	idfCache = make(map[string]float64, len(vocabulary))
+	dfCount := make(map[string]int)
+
+	for _, doc := range tokenizedDocs {
+		seen := make(map[string]bool)
+		for _, token := range doc {
+			if !seen[token] {
+				dfCount[token]++
+				seen[token] = true
+			}
+		}
+	}
+
+	for word := range vocabularyIndexMap {
+		df := dfCount[word]
+
+		if df == 0 {
+			df = 1
+		}
+
+		idfCache[word] = IDF(N, df)
 	}
 }
