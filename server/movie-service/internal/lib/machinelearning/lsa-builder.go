@@ -2,7 +2,11 @@ package machinelearning
 
 import (
 	"go-movie-service/internal/types"
+	"math"
 	"sort"
+	"sync"
+
+	"gonum.org/v1/gonum/mat"
 )
 
 type LSABuilder struct {
@@ -95,7 +99,7 @@ func (this *LSABuilder) calcIDF() {
 	}
 }
 
-func AnalyzeByDocs(documents []Movie, inputText string) (*mat.Dense, []Movie) {
+func (this *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string) (*mat.Dense, []types.Movie) {
 	documentsTake := documents
 	if len(documents) > 0 {
 		documentsTake = documents[:len(documents)/5]
@@ -107,11 +111,11 @@ func AnalyzeByDocs(documents []Movie, inputText string) (*mat.Dense, []Movie) {
 	}
 	dOverview[len(dOverview)-1] = inputText
 
-	AddVocabulary(dOverview)
-	CalcIDF()
+	this.addVocabulary(dOverview)
+	this.calcIDF()
 
 	nDocs := len(dOverview)
-	nTerms := len(vocabulary)
+	nTerms := len(this.vocabulary)
 
 	data := make([]float64, nDocs*nTerms)
 
@@ -126,7 +130,7 @@ func AnalyzeByDocs(documents []Movie, inputText string) (*mat.Dense, []Movie) {
 			defer wg.Done()
 			defer func() { <-sem }()
 
-			tokens := tokenizedDocs[i]
+			tokens := this.tokenizedDocs[i]
 
 			termFreq := make(map[string]int)
 			for _, token := range tokens {
@@ -135,12 +139,12 @@ func AnalyzeByDocs(documents []Movie, inputText string) (*mat.Dense, []Movie) {
 
 			total := len(tokens)
 			for token, count := range termFreq {
-				idf, okIDF := idfCache[token]
-				idx, okIDX := vocabularyIndexMap[token]
+				idf, okIDF := this.idfCache[token]
+				idx, okIDX := this.vocabularyIndexMap[token]
 
 				if okIDF && okIDX && idx < nTerms && i < nDocs {
-					tf := TF(count, total)
-					tfidf := TFIDF(tf, idf)
+					tf := this.tfidfBuilder.TF(count, total)
+					tfidf := this.tfidfBuilderTFIDF(tf, idf)
 
 					data[i*nTerms+idx] = tfidf
 				}
@@ -163,7 +167,7 @@ func AnalyzeByDocs(documents []Movie, inputText string) (*mat.Dense, []Movie) {
 	return U, documentsTake
 }
 
-func cosineSimilarity(a, b []float64) float64 {
+func (this *LSABuilder) cosineSimilarity(a, b []float64) float64 {
 	var dot, normA, normB float64
 	for i := range a {
 		dot += a[i] * b[i]
