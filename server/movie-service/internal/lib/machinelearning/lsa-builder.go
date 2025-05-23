@@ -1,6 +1,9 @@
 package machinelearning
 
-import "sort"
+import (
+	"go-movie-service/internal/types"
+	"sort"
+)
 
 type LSABuilder struct {
 	nlpBuilder         *NLPBuilder
@@ -41,9 +44,9 @@ func (this *LSABuilder) AddVocabulary(documents []string) {
 		}
 	}
 
-	wcList := make([]wc, 0, len(wCount))
+	wcList := make([]types.WC, 0, len(wCount))
 	for w, c := range wCount {
-		wcList = append(wcList, wc{w, c})
+		wcList = append(wcList, types.WC{w, c})
 	}
 
 	sort.Slice(wcList, func(i, j int) bool {
