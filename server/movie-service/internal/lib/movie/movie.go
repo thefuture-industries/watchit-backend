@@ -115,4 +115,6 @@ func (m *Movie) GetMoviesByText(textInput string) ([]types.Movie, error) {
 
 	rows, _ := matrix.Dims()
 	inputVec := matrix.RawRowView(rows - 1)
+
+	sims := make([]docSim, 0, rows-1)
 }

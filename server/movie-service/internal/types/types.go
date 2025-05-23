@@ -42,7 +42,7 @@ type WC struct {
 	Count int
 }
 
-type DocSimilarity struct {
-	index      int
-	similarity float64
+type LSASimilarity struct {
+	Index      int
+	Similarity float64
 }
