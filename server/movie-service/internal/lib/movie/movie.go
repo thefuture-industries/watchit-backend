@@ -103,7 +103,9 @@ func (m *Movie) GetMoviesByText(textInput string) ([]types.Movie, error) {
 		}
 	}
 
-	err := 
+	if err := m.shuffleMovies(); err != nil {
+		return nil, err
+	}
 
 	var movieList []types.Movie
 
