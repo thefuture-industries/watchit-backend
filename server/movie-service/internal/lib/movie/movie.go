@@ -33,16 +33,12 @@ func (m *Movie) GetMovies() ([]types.Movie, error) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	randomPage := uint16(r.Intn(int(MAX_COUNT_MOVIES)))
 
-	if 
-
 	movieFile, err := os.Open(constants.MOVIE_JSON_PATH_READ)
 	if err != nil {
 		m.logger.Error(err.Error())
 		return nil, err
 	}
 	defer movieFile.Close()
-
-	var moviesJson types.Movies
 
 	offset := PIDX(randomPage)
 
@@ -51,6 +47,7 @@ func (m *Movie) GetMovies() ([]types.Movie, error) {
 		return nil, fmt.Errorf("error getting movies by %d", randomPage)
 	}
 
+	var moviesJson types.Movies
 	decoder := utils.JSON.NewDecoder(movieFile)
 	if err := decoder.Decode(&moviesJson); err != nil {
 		return nil, fmt.Errorf("we didn't find any movies.")
@@ -60,21 +57,21 @@ func (m *Movie) GetMovies() ([]types.Movie, error) {
 }
 
 func (m *Movie) GetDetailsMovies(id uint32) (types.Movie, error) {
-	movieFile, err := os.Open(constants.MOVIE_JSON_PATH_READ)
-	if err != nil {
-		m.logger.Error(err.Error())
-		return types.Movie{}, err
+	if m.moviesByCache == nil {
+		movieFile, err := os.Open(constants.MOVIE_JSON_PATH_READ)
+		if err != nil {
+			m.logger.Error(err.Error())
+			return types.Movie{}, err
+		}
+		defer movieFile.Close()
+
+		if err := json.NewDecoder(movieFile).Decode(&m.moviesByCache); err != nil {
+			m.logger.Error(err.Error())
+			return types.Movie{}, fmt.Errorf("error get list movies!")
+		}
 	}
-	defer movieFile.Close()
 
-	var moviesJson []types.Movies
-
-	if err := json.NewDecoder(movieFile).Decode(&moviesJson); err != nil {
-		m.logger.Error(err.Error())
-		return types.Movie{}, fmt.Errorf("error get list movies!")
-	}
-
-	for _, movies := range moviesJson {
+	for _, movies := range m.moviesByCache {
 		for _, movie := range movies.Results {
 			if movie.Id == id {
 				return movie, nil

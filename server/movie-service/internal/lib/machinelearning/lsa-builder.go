@@ -99,7 +99,7 @@ func (this *LSABuilder) calcIDF() {
 	}
 }
 
-func (this *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string) (*mat.Dense, []types.Movie) {
+func (lsa *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string) (*mat.Dense, []types.Movie) {
 	documentsTake := documents
 	if len(documents) > 0 {
 		documentsTake = documents[:len(documents)/5]
@@ -111,11 +111,11 @@ func (this *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string
 	}
 	dOverview[len(dOverview)-1] = inputText
 
-	this.addVocabulary(dOverview)
-	this.calcIDF()
+	lsa.addVocabulary(dOverview)
+	lsa.calcIDF()
 
 	nDocs := len(dOverview)
-	nTerms := len(this.vocabulary)
+	nTerms := len(lsa.vocabulary)
 
 	data := make([]float64, nDocs*nTerms)
 
@@ -130,7 +130,7 @@ func (this *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string
 			defer wg.Done()
 			defer func() { <-sem }()
 
-			tokens := this.tokenizedDocs[i]
+			tokens := lsa.tokenizedDocs[i]
 
 			termFreq := make(map[string]int)
 			for _, token := range tokens {
@@ -139,12 +139,12 @@ func (this *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string
 
 			total := len(tokens)
 			for token, count := range termFreq {
-				idf, okIDF := this.idfCache[token]
-				idx, okIDX := this.vocabularyIndexMap[token]
+				idf, okIDF := lsa.idfCache[token]
+				idx, okIDX := lsa.vocabularyIndexMap[token]
 
 				if okIDF && okIDX && idx < nTerms && i < nDocs {
-					tf := this.tfidfBuilder.TF(count, total)
-					tfidf := this.tfidfBuilder.TFIDF(tf, idf)
+					tf := lsa.tfidfBuilder.TF(count, total)
+					tfidf := lsa.tfidfBuilder.TFIDF(tf, idf)
 
 					data[i*nTerms+idx] = tfidf
 				}
@@ -167,7 +167,7 @@ func (this *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string
 	return U, documentsTake
 }
 
-func (this *LSABuilder) CosineSimilarity(a, b []float64) float64 {
+func (lsa *LSABuilder) CosineSimilarity(a, b []float64) float64 {
 	var dot, normA, normB float64
 	for i := range a {
 		dot += a[i] * b[i]
