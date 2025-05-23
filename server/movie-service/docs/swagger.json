@@ -93,9 +93,9 @@
 				}
 			}
 		},
-		"/movie/{id}": {
-			"get": {
-				"summary": "Get movie details",
+		"/movie/t/{uuid}": {
+			"post": {
+				"summary": "Get movies by text user",
 				"tags": ["Movies"],
 				"consumes": ["application/json"],
 				"produces": ["application/json"],
@@ -107,15 +107,30 @@
 				"parameters": [
 					{
 						"in": "path",
-						"name": "id",
+						"name": "uuid",
 						"required": true,
-						"type": "integer",
-						"format": "int32"
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "payload",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/TMoviesPayload"
+						}
 					}
 				],
 				"responses": {
 					"200": {
-						"description": "Movie details"
+						"description": "List of similar movies",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/Movie"
+							}
+						}
 					},
 					"400": {
 						"description": "Invalid input or failed to process movie"
@@ -238,6 +253,16 @@
 					"type": "integer",
 					"format": "uint16",
 					"description": "Number of votes received"
+				}
+			}
+		},
+		"TMoviesPayload": {
+			"type": "object",
+			"required": ["text"],
+			"properties": {
+				"text": {
+					"type": "string",
+					"example": "I want a fantasy movie with dragons and adventure"
 				}
 			}
 		}
