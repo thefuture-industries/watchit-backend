@@ -17,13 +17,13 @@ import (
 
 const (
 	MAX_COUNT_MOVIES uint16 = 500
-	MAX_TOP_TOP
 )
 
 type Movie struct {
 	logger        *lib.Logger
 	lsaBuilder    *machinelearning.LSABuilder
 	moviesByCache []types.Movies
+	maxTopMovies  int
 }
 
 func NewMovie() *Movie {
@@ -31,6 +31,7 @@ func NewMovie() *Movie {
 		logger:        lib.NewLogger(),
 		lsaBuilder:    machinelearning.NewLSABuilder(),
 		moviesByCache: nil,
+		maxTopMovies:  25,
 	}
 }
 
@@ -129,15 +130,17 @@ func (m *Movie) GetMoviesByText(textInput string) ([]types.Movie, error) {
 		return sims[i].Similarity > sims[j].Similarity
 	})
 
-	if len(sims) < top {
-		top = len(sims)
+	if len(sims) < m.maxTopMovies {
+		m.maxTopMovies = len(sims)
 	}
 
-	for i := 0; i < top; i++ {
-		idx := sims[i].index
-		sim := sims[i].similarity
+	for i := 0; i < m.maxTopMovies; i++ {
+		idx := sims[i].Index
+		sim := sims[i].Similarity
 		movie := docs[idx]
 
 		fmt.Printf("[%e] %s\n", sim, movie.Title)
 	}
+
+	return docs, nil
 }

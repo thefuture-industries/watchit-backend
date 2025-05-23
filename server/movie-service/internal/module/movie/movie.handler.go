@@ -59,3 +59,13 @@ func (h Handler) MovieGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	utils.WriteJSON(w, r, http.StatusOK, movies)
 }
+
+func (h Handler) MovieTextHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		utils.WriteJSON(w, r, http.StatusBadRequest, "couldn't find the movie by ID")
+		return
+	}
+
+}
