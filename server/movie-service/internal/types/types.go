@@ -33,13 +33,7 @@ type Movie struct {
 }
 
 type TMoviesPayload struct {
-	IMEI                          string `json:"imei" validate:"required"`
-	Model                         string `json:"model" validate:"required"`
-	Phone                         string `json:"phone,omitempty"`
-	Password                      string `json:"password,omitempty"`
-	AutoUpdate                    bool   `json:"auto_update,omitempty"`
-	RequestConfigurationOnConnect bool   `json:"request_configuration_on_connect,omitempty"`
-	Group                         string `json:"group,omitempty"`
+	Text string `json:"text" validate:"required"`
 }
 
 type IndexEntry struct {

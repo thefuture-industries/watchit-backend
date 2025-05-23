@@ -8,6 +8,7 @@ import (
 	"go-movie-service/internal/common/utils"
 	"go-movie-service/internal/lib/movie"
 	"go-movie-service/internal/packages"
+	"go-movie-service/internal/types"
 
 	"github.com/gorilla/mux"
 	"github.com/noneandundefined/vision-go"
@@ -76,5 +77,16 @@ func (h Handler) MovieTextHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	
+	var payload *types.TMoviesPayload
+
+	// Отправляем пользователю ошибку, что не все поля заполнены
+	if err := utils.ParseJSON(r, &payload); err != nil {
+		utils.WriteJSON(w, r, http.StatusBadRequest, err)
+	}
+
+	// Валидация данных от пользователя
+	if err := utils.Validate.Struct(payload); err != nil {
+		utils.WriteJSON(w, r, http.StatusBadRequest, "тot all fields are filled in")
+		return
+	}
 }
