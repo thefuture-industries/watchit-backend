@@ -82,6 +82,18 @@ func (m *Movie) GetDetailsMovies(id uint32) (types.Movie, error) {
 	return types.Movie{}, fmt.Errorf("we didn't find any movies with id: %d", id)
 }
 
-func (this *Movie) GetMoviesByText(textInput string) ([]types.Movie, error) {
+func (m *Movie) GetMoviesByText(textInput string) ([]types.Movie, error) {
+	if m.moviesByCache == nil {
+		movieFile, err := os.Open(constants.MOVIE_JSON_PATH_READ)
+		if err != nil {
+			m.logger.Error(err.Error())
+			return types.Movie{}, err
+		}
+		defer movieFile.Close()
 
+		if err := json.NewDecoder(movieFile).Decode(&m.moviesByCache); err != nil {
+			m.logger.Error(err.Error())
+			return types.Movie{}, fmt.Errorf("error get list movies!")
+		}
+	}
 }
