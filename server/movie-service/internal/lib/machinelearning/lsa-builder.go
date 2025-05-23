@@ -7,6 +7,7 @@ import (
 
 type LSABuilder struct {
 	nlpBuilder         *NLPBuilder
+	tfidfBuilder       *TFIDFBuilder
 	avgOverview        uint8
 	top                int
 	vocabularyIndexMap map[string]int
@@ -18,6 +19,7 @@ type LSABuilder struct {
 func NewLSABuilder() *LSABuilder {
 	return &LSABuilder{
 		nlpBuilder:         NewNLPBuilder(),
+		tfidfBuilder:       NewTFIDFBuilder(),
 		avgOverview:        39,
 		top:                25,
 		vocabularyIndexMap: nil,
@@ -27,7 +29,7 @@ func NewLSABuilder() *LSABuilder {
 	}
 }
 
-func (this *LSABuilder) AddVocabulary(documents []string) {
+func (this *LSABuilder) addVocabulary(documents []string) {
 	if this.vocabulary != nil {
 		return
 	}
@@ -67,12 +69,12 @@ func (this *LSABuilder) AddVocabulary(documents []string) {
 	}
 }
 
-func CalcIDF() {
-	N := len(tokenizedDocs)
-	idfCache = make(map[string]float64, len(vocabulary))
+func (this *LSABuilder) calcIDF() {
+	N := len(this.tokenizedDocs)
+	this.idfCache = make(map[string]float64, len(this.vocabulary))
 	dfCount := make(map[string]int)
 
-	for _, doc := range tokenizedDocs {
+	for _, doc := range this.tokenizedDocs {
 		seen := make(map[string]bool)
 		for _, token := range doc {
 			if !seen[token] {
@@ -82,13 +84,96 @@ func CalcIDF() {
 		}
 	}
 
-	for word := range vocabularyIndexMap {
+	for word := range this.vocabularyIndexMap {
 		df := dfCount[word]
 
 		if df == 0 {
 			df = 1
 		}
 
-		idfCache[word] = IDF(N, df)
+		this.idfCache[word] = this.tfidfBuilder.IDF(N, df)
 	}
+}
+
+func AnalyzeByDocs(documents []Movie, inputText string) (*mat.Dense, []Movie) {
+	documentsTake := documents
+	if len(documents) > 0 {
+		documentsTake = documents[:len(documents)/5]
+	}
+
+	dOverview := make([]string, len(documentsTake)+1)
+	for i, movie := range documentsTake {
+		dOverview[i] = movie.Overview
+	}
+	dOverview[len(dOverview)-1] = inputText
+
+	AddVocabulary(dOverview)
+	CalcIDF()
+
+	nDocs := len(dOverview)
+	nTerms := len(vocabulary)
+
+	data := make([]float64, nDocs*nTerms)
+
+	var wg sync.WaitGroup
+	sem := make(chan struct{}, 100)
+
+	for i := 0; i < nDocs; i++ {
+		wg.Add(1)
+		sem <- struct{}{}
+
+		go func(i int) {
+			defer wg.Done()
+			defer func() { <-sem }()
+
+			tokens := tokenizedDocs[i]
+
+			termFreq := make(map[string]int)
+			for _, token := range tokens {
+				termFreq[token]++
+			}
+
+			total := len(tokens)
+			for token, count := range termFreq {
+				idf, okIDF := idfCache[token]
+				idx, okIDX := vocabularyIndexMap[token]
+
+				if okIDF && okIDX && idx < nTerms && i < nDocs {
+					tf := TF(count, total)
+					tfidf := TFIDF(tf, idf)
+
+					data[i*nTerms+idx] = tfidf
+				}
+			}
+		}(i)
+	}
+	wg.Wait()
+
+	matrix := mat.NewDense(nDocs, nTerms, data)
+
+	var svd mat.SVD
+	ok := svd.Factorize(matrix, mat.SVDThin)
+	if !ok {
+		return nil, nil
+	}
+
+	U := mat.NewDense(nDocs, nDocs, nil)
+	svd.UTo(U)
+
+	return U, documentsTake
+}
+
+func cosineSimilarity(a, b []float64) float64 {
+	var dot, normA, normB float64
+	for i := range a {
+		dot += a[i] * b[i]
+		normA += a[i] * a[i]
+		normB += b[i] * b[i]
+	}
+
+	if normA == 0 || normB == 0 {
+		return 0
+	}
+
+	return dot / (math.Sqrt(normA) * math.Sqrt(normB))
 }
