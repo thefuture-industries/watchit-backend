@@ -32,7 +32,7 @@ type Movie struct {
 	VoteCount        uint16   `json:"vote_count"`
 }
 
-type TextPayload struct {
+type TMoviesPayload struct {
 	IMEI                          string `json:"imei" validate:"required"`
 	Model                         string `json:"model" validate:"required"`
 	Phone                         string `json:"phone,omitempty"`
