@@ -31,7 +31,7 @@ func NewNLPBuilder() *NLPBuilder {
 	}
 }
 
-func (this *NLPBuilder) Preprocess(input string) []string {
+func (nlp *NLPBuilder) Preprocess(input string) []string {
 	if input == "" {
 		return []string{}
 	}

@@ -33,17 +33,17 @@ func NewLSABuilder() *LSABuilder {
 	}
 }
 
-func (this *LSABuilder) addVocabulary(documents []string) {
-	if this.vocabulary != nil {
+func (lsa *LSABuilder) addVocabulary(documents []string) {
+	if lsa.vocabulary != nil {
 		return
 	}
 
-	this.tokenizedDocs = make([][]string, len(documents))
+	lsa.tokenizedDocs = make([][]string, len(documents))
 	wCount := make(map[string]int)
 
 	for i, doc := range documents {
-		tokens := this.nlpBuilder.Preprocess(doc)
-		this.tokenizedDocs[i] = tokens
+		tokens := lsa.nlpBuilder.Preprocess(doc)
+		lsa.tokenizedDocs[i] = tokens
 
 		for _, token := range tokens {
 			wCount[token]++
@@ -59,26 +59,26 @@ func (this *LSABuilder) addVocabulary(documents []string) {
 		return wcList[i].Count > wcList[j].Count
 	})
 
-	limit := int(this.avgOverview) * len(documents)
+	limit := int(lsa.avgOverview) * len(documents)
 	if limit > len(wcList) {
 		limit = len(wcList)
 	}
 
-	this.vocabulary = make([]string, limit)
-	this.vocabularyIndexMap = make(map[string]int, limit)
+	lsa.vocabulary = make([]string, limit)
+	lsa.vocabularyIndexMap = make(map[string]int, limit)
 
 	for i := 0; i < limit; i++ {
-		this.vocabulary[i] = wcList[i].Word
-		this.vocabularyIndexMap[wcList[i].Word] = i
+		lsa.vocabulary[i] = wcList[i].Word
+		lsa.vocabularyIndexMap[wcList[i].Word] = i
 	}
 }
 
-func (this *LSABuilder) calcIDF() {
-	N := len(this.tokenizedDocs)
-	this.idfCache = make(map[string]float64, len(this.vocabulary))
+func (lsa *LSABuilder) calcIDF() {
+	N := len(lsa.tokenizedDocs)
+	lsa.idfCache = make(map[string]float64, len(lsa.vocabulary))
 	dfCount := make(map[string]int)
 
-	for _, doc := range this.tokenizedDocs {
+	for _, doc := range lsa.tokenizedDocs {
 		seen := make(map[string]bool)
 		for _, token := range doc {
 			if !seen[token] {
@@ -88,14 +88,14 @@ func (this *LSABuilder) calcIDF() {
 		}
 	}
 
-	for word := range this.vocabularyIndexMap {
+	for word := range lsa.vocabularyIndexMap {
 		df := dfCount[word]
 
 		if df == 0 {
 			df = 1
 		}
 
-		this.idfCache[word] = this.tfidfBuilder.IDF(N, df)
+		lsa.idfCache[word] = lsa.tfidfBuilder.IDF(N, df)
 	}
 }
 
