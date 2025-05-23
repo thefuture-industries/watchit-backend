@@ -79,14 +79,20 @@ func (h Handler) MovieTextHandler(w http.ResponseWriter, r *http.Request) {
 
 	var payload *types.TMoviesPayload
 
-	// Отправляем пользователю ошибку, что не все поля заполнены
 	if err := utils.ParseJSON(r, &payload); err != nil {
 		utils.WriteJSON(w, r, http.StatusBadRequest, err)
 	}
 
-	// Валидация данных от пользователя
 	if err := utils.Validate.Struct(payload); err != nil {
-		utils.WriteJSON(w, r, http.StatusBadRequest, "тot all fields are filled in")
+		utils.WriteJSON(w, r, http.StatusBadRequest, "not all fields are filled in!")
 		return
 	}
+
+	movies, err := h.movie.GetMoviesByText(payload.Text)
+	if err != nil {
+		utils.WriteJSON(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	utils.WriteJSON(w, r, http.StatusOK, movies)
 }
