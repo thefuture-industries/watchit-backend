@@ -45,12 +45,41 @@ func (lsa *LSABuilder) addVocabulary(documents []string) {
 	var mu sync.Mutex
 	var wg sync.WaitGroup
 
-	for i, doc := range documents {
-		tokens := lsa.nlpBuilder.Preprocess(doc)
-		lsa.tokenizedDocs[i] = tokens
+	for i := range documents {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
 
-		for _, token := range tokens {
-			wCount[token]++
+			tokens := lsa.nlpBuilder.Preprocess(documents[i])
+			lsa.tokenizedDocs[i] = tokens
+
+			localCount := make(map[string]int)
+			for _, token := range tokens {
+				localCount[token]++
+			}
+
+			mu.Lock()
+			for token, count := range localCount {
+				wCount[token] += count
+			}
+			mu.Unlock()
+		}(i)
+	}
+	wg.Wait()
+
+	// for i, doc := range documents {
+	// 	tokens := lsa.nlpBuilder.Preprocess(doc)
+	// 	lsa.tokenizedDocs[i] = tokens
+
+	// 	for _, token := range tokens {
+	// 		wCount[token]++
+	// 	}
+	// }
+
+	filtered := make([]types.WC, 0, len(wCount))
+	for w, c := range wCount {
+		if c >= minTokenCount {
+			filtered = append(filtered, types.WC{w, c})
 		}
 	}
 
