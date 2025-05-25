@@ -67,15 +67,6 @@ func (lsa *LSABuilder) addVocabulary(documents []string) {
 	}
 	wg.Wait()
 
-	// for i, doc := range documents {
-	// 	tokens := lsa.nlpBuilder.Preprocess(doc)
-	// 	lsa.tokenizedDocs[i] = tokens
-
-	// 	for _, token := range tokens {
-	// 		wCount[token]++
-	// 	}
-	// }
-
 	filtered := make([]types.WC, 0, len(wCount))
 	for w, c := range wCount {
 		if c >= minTokenCount {
@@ -85,29 +76,20 @@ func (lsa *LSABuilder) addVocabulary(documents []string) {
 
 	limit := int(lsa.avgOverview) * len(documents)
 	if limit > len(filtered) {
-		
+		limit = len(filtered)
 	}
 
-	// wcList := make([]types.WC, 0, len(wCount))
-	// for w, c := range wCount {
-	// 	wcList = append(wcList, types.WC{w, c})
-	// }
-
-	sort.Slice(wcList, func(i, j int) bool {
-		return wcList[i].Count > wcList[j].Count
+	sort.Slice(filtered, func(i, j int) bool {
+		return filtered[i].Count > filtered[j].Count
 	})
-
-	limit := int(lsa.avgOverview) * len(documents)
-	if limit > len(wcList) {
-		limit = len(wcList)
-	}
+	filtered = filtered[:limit]
 
 	lsa.vocabulary = make([]string, limit)
 	lsa.vocabularyIndexMap = make(map[string]int, limit)
 
-	for i := 0; i < limit; i++ {
-		lsa.vocabulary[i] = wcList[i].Word
-		lsa.vocabularyIndexMap[wcList[i].Word] = i
+	for i, wc := range filtered {
+		lsa.vocabulary[i] = wc.Word
+		lsa.vocabularyIndexMap[wc.Word] = i
 	}
 }
 
@@ -150,13 +132,8 @@ func (lsa *LSABuilder) calcIDF() {
 }
 
 func (lsa *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string) (*mat.Dense, []types.Movie) {
-	documentsTake := documents
-	if len(documents) > 0 {
-		documentsTake = documents[:len(documents)/5]
-	}
-
-	overviews := make([]string, len(documentsTake)+1)
-	for i, movie := range documentsTake {
+	overviews := make([]string, len(documents)+1)
+	for i, movie := range documents {
 		overviews[i] = movie.Overview
 	}
 	overviews[len(overviews)-1] = inputText
@@ -205,16 +182,24 @@ func (lsa *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string)
 
 	matrix := mat.NewDense(nDocs, nTerms, data)
 
+	var mm = int(float64(len(documents)) * 0.14)
+	rows, cols := matrix.Dims()
+	if cols > mm {
+		sliced := matrix.Slice(0, rows, 0, mm)
+		matrix = mat.DenseCopyOf(sliced)
+	}
+
 	var svd mat.SVD
 	ok := svd.Factorize(matrix, mat.SVDThin)
 	if !ok {
 		return nil, nil
 	}
 
-	U := mat.NewDense(nDocs, nDocs, nil)
+	k := svd.Rank(1e-10)
+	U := mat.NewDense(nDocs, k, nil)
 	svd.UTo(U)
 
-	return U, documentsTake
+	return U, documents
 }
 
 func (lsa *LSABuilder) CosineSimilarity(a, b []float64) float64 {
