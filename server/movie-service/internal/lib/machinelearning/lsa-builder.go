@@ -38,8 +38,12 @@ func (lsa *LSABuilder) addVocabulary(documents []string) {
 		return
 	}
 
+	const minTokenCount = 3
 	lsa.tokenizedDocs = make([][]string, len(documents))
-	wCount := mke(map[string]int)a
+	wCount := make(map[string]int)
+
+	var mu sync.Mutex
+	var wg sync.WaitGroup
 
 	for i, doc := range documents {
 		tokens := lsa.nlpBuilder.Preprocess(doc)
