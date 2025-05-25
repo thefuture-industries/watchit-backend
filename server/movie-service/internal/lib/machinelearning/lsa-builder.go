@@ -39,7 +39,7 @@ func (lsa *LSABuilder) addVocabulary(documents []string) {
 	}
 
 	lsa.tokenizedDocs = make([][]string, len(documents))
-	wCount := make(map[string]int)
+	wCount := mke(map[string]int)a
 
 	for i, doc := range documents {
 		tokens := lsa.nlpBuilder.Preprocess(doc)
@@ -76,17 +76,29 @@ func (lsa *LSABuilder) addVocabulary(documents []string) {
 func (lsa *LSABuilder) calcIDF() {
 	N := len(lsa.tokenizedDocs)
 	lsa.idfCache = make(map[string]float64, len(lsa.vocabulary))
-	dfCount := make(map[string]int)
 
+	dfCount := make(map[string]int)
+	var mu sync.Mutex
+
+	var wg sync.WaitGroup
 	for _, doc := range lsa.tokenizedDocs {
-		seen := make(map[string]bool)
-		for _, token := range doc {
-			if !seen[token] {
-				dfCount[token]++
+		wg.Add(1)
+		go func(doc []string) {
+			defer wg.Done()
+
+			seen := make(map[string]bool)
+			for _, token := range doc {
 				seen[token] = true
 			}
-		}
+
+			mu.Lock()
+			for token := range seen {
+				dfCount[token]++
+			}
+			mu.Unlock()
+		}(doc)
 	}
+	wg.Wait()
 
 	for word := range lsa.vocabularyIndexMap {
 		df := dfCount[word]
@@ -105,30 +117,30 @@ func (lsa *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string)
 		documentsTake = documents[:len(documents)/5]
 	}
 
-	dOverview := make([]string, len(documentsTake)+1)
+	overviews := make([]string, len(documentsTake)+1)
 	for i, movie := range documentsTake {
-		dOverview[i] = movie.Overview
+		overviews[i] = movie.Overview
 	}
-	dOverview[len(dOverview)-1] = inputText
+	overviews[len(overviews)-1] = inputText
 
-	lsa.addVocabulary(dOverview)
+	lsa.addVocabulary(overviews)
 	lsa.calcIDF()
 
-	nDocs := len(dOverview)
+	nDocs := len(overviews)
 	nTerms := len(lsa.vocabulary)
 
 	data := make([]float64, nDocs*nTerms)
 
 	var wg sync.WaitGroup
-	sem := make(chan struct{}, 100)
+	// sem := make(chan struct{}, 100)
 
 	for i := 0; i < nDocs; i++ {
 		wg.Add(1)
-		sem <- struct{}{}
+		// sem <- struct{}{}
 
 		go func(i int) {
 			defer wg.Done()
-			defer func() { <-sem }()
+			// defer func() { <-sem }()
 
 			tokens := lsa.tokenizedDocs[i]
 

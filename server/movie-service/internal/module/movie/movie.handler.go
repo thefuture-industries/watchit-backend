@@ -97,21 +97,7 @@ func (h Handler) MovieTextHandler(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, r, http.StatusOK, movies)
 }
 
-func (h Handler) MovieTextHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	pUUID, okUUID := vars["uuid"]
-	if !okUUID {
-		utils.WriteJSON(w, r, http.StatusBadRequest, "couldn't find the user by uuid.")
-		return
-	}
-
-	user := r.Context().Value("identity").(*schema.Users)
-
-	if pUUID != user.UUID {
-		utils.WriteJSON(w, r, http.StatusBadRequest, "the uuid was transmitted incorrectly.")
-		return
-	}
-
+func (h Handler) MovieTextFREEHandler(w http.ResponseWriter, r *http.Request) {
 	var payload *types.TMoviesPayload
 
 	if err := utils.ParseJSON(r, &payload); err != nil {
