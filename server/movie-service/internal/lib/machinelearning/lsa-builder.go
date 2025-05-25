@@ -83,10 +83,15 @@ func (lsa *LSABuilder) addVocabulary(documents []string) {
 		}
 	}
 
-	wcList := make([]types.WC, 0, len(wCount))
-	for w, c := range wCount {
-		wcList = append(wcList, types.WC{w, c})
+	limit := int(lsa.avgOverview) * len(documents)
+	if limit > len(filtered) {
+		
 	}
+
+	// wcList := make([]types.WC, 0, len(wCount))
+	// for w, c := range wCount {
+	// 	wcList = append(wcList, types.WC{w, c})
+	// }
 
 	sort.Slice(wcList, func(i, j int) bool {
 		return wcList[i].Count > wcList[j].Count
