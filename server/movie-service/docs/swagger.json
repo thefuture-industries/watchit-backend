@@ -5,9 +5,9 @@
 		"title": "movie microservice API",
 		"version": "0.1.2"
 	},
-	"host": "localhost:8011",
+	"host": "stunning-adventure-4jjjwvxj7wv5cj65v-8011.app.github.dev",
 	"basePath": "/microservice/movie-service",
-	"schemes": ["http"],
+	"schemes": ["https"],
 	"paths": {
 		"/recommendation": {
 			"post": {
@@ -113,6 +113,43 @@
 							"type": "string"
 						}
 					},
+					{
+						"name": "payload",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/TMoviesPayload"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "List of similar movies",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/Movie"
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input or failed to process movie"
+					}
+				}
+			}
+		},
+		"/movie/f/t/gost": {
+			"post": {
+				"summary": "Get movies by text user",
+				"tags": ["Movies"],
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"security": [
+					{
+						"cookieAuth": []
+					}
+				],
+				"parameters": [
 					{
 						"name": "payload",
 						"in": "body",

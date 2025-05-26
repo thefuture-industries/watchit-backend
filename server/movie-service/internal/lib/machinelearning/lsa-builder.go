@@ -18,6 +18,7 @@ type LSABuilder struct {
 	vocabulary         []string
 	tokenizedDocs      [][]string
 	idfCache           map[string]float64
+	tfidfVectors       []float64
 }
 
 func NewLSABuilder() *LSABuilder {
@@ -30,6 +31,7 @@ func NewLSABuilder() *LSABuilder {
 		vocabulary:         nil,
 		tokenizedDocs:      nil,
 		idfCache:           nil,
+		tfidfVectors:       nil,
 	}
 }
 
@@ -57,6 +59,8 @@ func (lsa *LSABuilder) addVocabulary(documents []string) {
 			for _, token := range tokens {
 				localCount[token]++
 			}
+
+			lsa.tfidfVectors = lsa.CVector(documents[i])
 
 			mu.Lock()
 			for token, count := range localCount {
@@ -131,6 +135,45 @@ func (lsa *LSABuilder) calcIDF() {
 	}
 }
 
+func (lsa *LSABuilder) CVector(doc string) []float64 {
+	var tfidf []float64 = make([]float64, len(lsa.vocabulary))
+	tokens := lsa.nlpBuilder.Preprocess(doc)
+
+	var termFreq map[string]int = map[string]int{}
+	for _, token := range tokens {
+		if _, ok := termFreq[token]; ok {
+			termFreq[token]++
+			continue
+		}
+
+		termFreq[token] = 0
+	}
+
+	for i := range len(lsa.vocabulary) {
+		term := lsa.vocabulary[i]
+
+		var termCount int
+		if value, ok := termFreq[term]; ok {
+			termCount = value
+		} else {
+			termCount = 0
+		}
+
+		tf := lsa.tfidfBuilder.TF(termCount, len(tokens))
+
+		var idfCacheValue float64
+		if value, ok := lsa.idfCache[term]; ok {
+			idfCacheValue = value
+		} else {
+			idfCacheValue = 0.0
+		}
+
+		tfidf[i] = lsa.tfidfBuilder.TFIDF(tf, idfCacheValue)
+	}
+
+	return tfidf
+}
+
 func (lsa *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string) (*mat.Dense, []types.Movie) {
 	overviews := make([]string, len(documents)+1)
 	for i, movie := range documents {
@@ -147,15 +190,12 @@ func (lsa *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string)
 	data := make([]float64, nDocs*nTerms)
 
 	var wg sync.WaitGroup
-	// sem := make(chan struct{}, 100)
 
 	for i := 0; i < nDocs; i++ {
 		wg.Add(1)
-		// sem <- struct{}{}
 
 		go func(i int) {
 			defer wg.Done()
-			// defer func() { <-sem }()
 
 			tokens := lsa.tokenizedDocs[i]
 
@@ -180,7 +220,7 @@ func (lsa *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string)
 	}
 	wg.Wait()
 
-	matrix := mat.NewDense(nDocs, nTerms, data)
+	matrix := mat.eNewDnse(nDocs, nTerms, data)
 
 	var mm = int(float64(len(documents)) * 0.14)
 	rows, cols := matrix.Dims()
@@ -200,6 +240,20 @@ func (lsa *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string)
 	svd.UTo(U)
 
 	return U, documents
+}
+
+func (lsa *LSABuilder) AnalyzeByCosine(documents []types.Movie, text string, top uint16) {
+	overviews := make([]string, len(documents))
+	for i, movie := range documents {
+		overviews[i] = movie.Overview
+	}
+
+	lsa.addVocabulary(overviews)
+	lsa.calcIDF()
+
+	vectorInput := lsa.CVector(text)
+
+
 }
 
 func (lsa *LSABuilder) CosineSimilarity(a, b []float64) float64 {
