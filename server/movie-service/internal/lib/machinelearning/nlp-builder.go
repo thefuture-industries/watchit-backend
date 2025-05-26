@@ -31,7 +31,7 @@ func NewNLPBuilder() *NLPBuilder {
 	}
 }
 
-func (this *NLPBuilder) Preprocess(input string) []string {
+func (nlp *NLPBuilder) Preprocess(input string) []string {
 	if input == "" {
 		return []string{}
 	}
@@ -46,11 +46,11 @@ func (this *NLPBuilder) Preprocess(input string) []string {
 	var output []string
 	for _, word := range words {
 		for _, part := range strings.Split(word, "-") {
-			if len(part) <= 2 || this.isStopWord(part) || hasDigit(part) {
+			if len(part) <= 2 || nlp.isStopWord(part) || hasDigit(part) {
 				continue
 			}
-			stemmed := this.stemming(part)
-			lemmatized := this.lemmatize(stemmed)
+			stemmed := nlp.stemming(part)
+			lemmatized := nlp.lemmatize(stemmed)
 			if len(lemmatized) > 2 {
 				output = append(output, lemmatized)
 			}
@@ -61,7 +61,7 @@ func (this *NLPBuilder) Preprocess(input string) []string {
 }
 
 // nolint
-func (this *NLPBuilder) lemmatize(word string) string {
+func (nlp *NLPBuilder) lemmatize(word string) string {
 	switch word {
 	case "am", "is", "are", "was", "were":
 		return "be"
@@ -111,7 +111,7 @@ func (this *NLPBuilder) lemmatize(word string) string {
 }
 
 // nolint
-func (this *NLPBuilder) stemming(word string) string {
+func (nlp *NLPBuilder) stemming(word string) string {
 	switch {
 	case strings.HasSuffix(word, "fulness"):
 		return word[:len(word)-7]
@@ -164,8 +164,8 @@ func (this *NLPBuilder) stemming(word string) string {
 	}
 }
 
-func (this *NLPBuilder) isStopWord(word string) bool {
-	_, exists := this.stopWords[word]
+func (nlp *NLPBuilder) isStopWord(word string) bool {
+	_, exists := nlp.stopWords[word]
 	return exists
 }
 

@@ -4,9 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
+	"go-movie-service/internal/common/database/schema"
 	"go-movie-service/internal/common/utils"
 	"go-movie-service/internal/lib/movie"
 	"go-movie-service/internal/packages"
+	"go-movie-service/internal/types"
 
 	"github.com/gorilla/mux"
 	"github.com/noneandundefined/vision-go"
@@ -54,6 +56,62 @@ func (h Handler) MovieGetHandler(w http.ResponseWriter, r *http.Request) {
 	movies, err := h.movie.GetMovies()
 	if err != nil {
 		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.WriteJSON(w, r, http.StatusOK, movies)
+}
+
+func (h Handler) MovieTextHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	pUUID, okUUID := vars["uuid"]
+	if !okUUID {
+		utils.WriteJSON(w, r, http.StatusBadRequest, "couldn't find the user by uuid.")
+		return
+	}
+
+	user := r.Context().Value("identity").(*schema.Users)
+
+	if pUUID != user.UUID {
+		utils.WriteJSON(w, r, http.StatusBadRequest, "the uuid was transmitted incorrectly.")
+		return
+	}
+
+	var payload *types.TMoviesPayload
+
+	if err := utils.ParseJSON(r, &payload); err != nil {
+		utils.WriteJSON(w, r, http.StatusBadRequest, err)
+	}
+
+	if err := utils.Validate.Struct(payload); err != nil {
+		utils.WriteJSON(w, r, http.StatusBadRequest, "not all fields are filled in!")
+		return
+	}
+
+	movies, err := h.movie.GetMoviesByText(payload.Text)
+	if err != nil {
+		utils.WriteJSON(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	utils.WriteJSON(w, r, http.StatusOK, movies)
+}
+
+func (h Handler) MovieTextFREEHandler(w http.ResponseWriter, r *http.Request) {
+	var payload *types.TMoviesPayload
+
+	if err := utils.ParseJSON(r, &payload); err != nil {
+		utils.WriteJSON(w, r, http.StatusBadRequest, err)
+	}
+
+	if err := utils.Validate.Struct(payload); err != nil {
+		utils.WriteJSON(w, r, http.StatusBadRequest, "not all fields are filled in!")
+		return
+	}
+
+	movies, err := h.movie.GetMoviesByText(payload.Text)
+	if err != nil {
+		utils.WriteJSON(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 

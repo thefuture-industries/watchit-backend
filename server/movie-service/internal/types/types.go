@@ -32,7 +32,21 @@ type Movie struct {
 	VoteCount        uint16   `json:"vote_count"`
 }
 
+type TMoviesPayload struct {
+	Text string `json:"text" validate:"required"`
+}
+
 type IndexEntry struct {
 	Page   int32
 	Offset int64
+}
+
+type WC struct {
+	Word  string
+	Count int
+}
+
+type LSASimilarity struct {
+	Index      int
+	Similarity float64
 }

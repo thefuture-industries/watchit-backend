@@ -92,6 +92,51 @@
 					}
 				}
 			}
+		},
+		"/movie/t/{uuid}": {
+			"post": {
+				"summary": "Get movies by text user",
+				"tags": ["Movies"],
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"security": [
+					{
+						"cookieAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "uuid",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "payload",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/TMoviesPayload"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "List of similar movies",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/Movie"
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input or failed to process movie"
+					}
+				}
+			}
 		}
 	},
 	"securityDefinitions": {
@@ -208,6 +253,16 @@
 					"type": "integer",
 					"format": "uint16",
 					"description": "Number of votes received"
+				}
+			}
+		},
+		"TMoviesPayload": {
+			"type": "object",
+			"required": ["text"],
+			"properties": {
+				"text": {
+					"type": "string",
+					"example": "I want a fantasy movie with dragons and adventure"
 				}
 			}
 		}

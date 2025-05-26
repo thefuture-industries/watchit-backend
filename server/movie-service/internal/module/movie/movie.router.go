@@ -14,4 +14,8 @@ func (h Handler) RegisterRoutes(router *mux.Router) {
 
 	movieRouter.HandleFunc("/{id}", h.MovieDetailsHandler).Methods(http.MethodGet)
 	movieRouter.HandleFunc("", h.MovieGetHandler).Methods(http.MethodGet)
+	movieRouter.HandleFunc("/t/{uuid}", h.MovieTextHandler).Methods(http.MethodPost)
+
+	movieFREERouter := router.PathPrefix("/movie/f").Subrouter()
+	movieFREERouter.HandleFunc("/t/gost", h.MovieTextFREEHandler).Methods(http.MethodPost)
 }
