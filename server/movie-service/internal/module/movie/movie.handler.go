@@ -2,6 +2,7 @@ package movie
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -130,7 +131,8 @@ func (h Handler) MovieImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url := fmt.Sprintf("https://image.tmdb.org/t/p/w500%s?api_key=%s", image, os.Getenv("TMDB_KEY_API"))
+	url := fmt.Sprintf("https://image.tmdb.org/t/p/w500/%s?api_key=%s", image, os.Getenv("TMDB_KEY_API"))
+	fmt.Println(url)
 
 	httpConfig, err := utils.GetProxy()
 	if err != nil {
@@ -144,5 +146,21 @@ func (h Handler) MovieImageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp, err := client.Get(url)
-	if err != nil || resp.StatusCode != http.Stat
+	if err != nil {
+		utils.WriteJSON(w, r, http.StatusBadGateway, err.Error())
+		return
+	}
+	defer resp.Body.Close()
+
+	fmt.Println(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		utils.WriteJSON(w, r, resp.StatusCode, "error send request to get image")
+		return
+	}
+
+	w.Header().Set("Content-Type", resp.Header.Get("Content-Type"))
+	w.WriteHeader(http.StatusOK)
+
+	io.Copy(w, resp.Body)
 }

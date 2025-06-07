@@ -137,132 +137,170 @@
 					}
 				}
 			}
-		}
-	},
-	"securityDefinitions": {
-		"cookieAuth": {
-			"type": "apiKey",
-			"in": "cookie",
-			"name": "auth-token"
-		}
-	},
-	"definitions": {
-		"RecommendationAddPayload": {
-			"type": "object",
-			"required": ["genres"],
-			"properties": {
-				"genres": {
-					"type": "array",
-					"items": {
-						"type": "integer"
+		},
+		"/movie/image/{image}": {
+			"get": {
+				"summary": "Get a movie image",
+				"description": "Downloads the image from TMDB using the specified path and returns it via proxy",
+				"tags": ["Movies"],
+				"parameters": [
+					{
+						"name": "image",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "The relative path to the TMDB image, for example: /xqR4ABkFTFYe8NDJi3knwWX7zfn.jpg"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response with an image",
+						"schema": {
+							"type": "file"
+						}
 					},
-					"example": [28, 36, 53]
+					"400": {
+						"description": "Invalid request (missing image parameter)",
+						"schema": {
+							"type": "string",
+							"example": "image not found"
+						}
+					},
+					"500": {
+						"description": "Server or proxy error",
+						"schema": {
+							"type": "string",
+							"example": "proxy error"
+						}
+					}
 				}
 			}
 		},
-		"Movies": {
-			"type": "object",
-			"properties": {
-				"page": {
-					"type": "integer",
-					"format": "uint16",
-					"description": "Current page number"
-				},
-				"results": {
-					"type": "array",
-					"items": {
-						"$ref": "#/definitions/Movie"
-					},
-					"description": "List of movies on the current page"
-				},
-				"total_pages": {
-					"type": "integer",
-					"format": "uint32",
-					"description": "Total number of pages available"
-				},
-				"total_results": {
-					"type": "integer",
-					"format": "uint32",
-					"description": "Total number of results available"
-				}
+		"securityDefinitions": {
+			"cookieAuth": {
+				"type": "apiKey",
+				"in": "cookie",
+				"name": "auth-token"
 			}
 		},
-		"Movie": {
-			"type": "object",
-			"properties": {
-				"adult": {
-					"type": "boolean",
-					"description": "Indicates if this is an adult movie"
-				},
-				"backdrop_path": {
-					"type": "string",
-					"description": "URL to backdrop image"
-				},
-				"genre_ids": {
-					"type": "array",
-					"items": {
+		"definitions": {
+			"RecommendationAddPayload": {
+				"type": "object",
+				"required": ["genres"],
+				"properties": {
+					"genres": {
+						"type": "array",
+						"items": {
+							"type": "integer"
+						},
+						"example": [28, 36, 53]
+					}
+				}
+			},
+			"Movies": {
+				"type": "object",
+				"properties": {
+					"page": {
 						"type": "integer",
-						"format": "uint16"
+						"format": "uint16",
+						"description": "Current page number"
 					},
-					"description": "List of genre IDs associated with the movie"
-				},
-				"id": {
-					"type": "integer",
-					"format": "uint32",
-					"description": "Unique identifier for the movie"
-				},
-				"original_language": {
-					"type": "string",
-					"description": "Original language of the movie"
-				},
-				"original_title": {
-					"type": "string",
-					"description": "Original title of the movie"
-				},
-				"overview": {
-					"type": "string",
-					"description": "Brief overview or summary of the movie"
-				},
-				"popularity": {
-					"type": "number",
-					"format": "float",
-					"description": "Popularity score of the movie"
-				},
-				"poster_path": {
-					"type": "string",
-					"description": "URL to poster image"
-				},
-				"release_date": {
-					"type": "string",
-					"description": "Release date of the movie in ISO format (YYYY-MM-DD)"
-				},
-				"title": {
-					"type": "string",
-					"description": "Translated title of the movie"
-				},
-				"video": {
-					"type": "boolean",
-					"description": "Indicates if there is a video trailer available"
-				},
-				"vote_average": {
-					"type": "number",
-					"format": "double",
-					"description": "Average rating given by users"
-				},
-				"vote_count": {
-					"type": "integer",
-					"format": "uint16",
-					"description": "Number of votes received"
+					"results": {
+						"type": "array",
+						"items": {
+							"$ref": "#/definitions/Movie"
+						},
+						"description": "List of movies on the current page"
+					},
+					"total_pages": {
+						"type": "integer",
+						"format": "uint32",
+						"description": "Total number of pages available"
+					},
+					"total_results": {
+						"type": "integer",
+						"format": "uint32",
+						"description": "Total number of results available"
+					}
 				}
-			}
-		},
-		"TMoviesPayload": {
-			"type": "object",
-			"required": ["text"],
-			"properties": {
-				"text": {
-					"type": "string",
-					"example": "I want a fantasy movie with dragons and adventure"
+			},
+			"Movie": {
+				"type": "object",
+				"properties": {
+					"adult": {
+						"type": "boolean",
+						"description": "Indicates if this is an adult movie"
+					},
+					"backdrop_path": {
+						"type": "string",
+						"description": "URL to backdrop image"
+					},
+					"genre_ids": {
+						"type": "array",
+						"items": {
+							"type": "integer",
+							"format": "uint16"
+						},
+						"description": "List of genre IDs associated with the movie"
+					},
+					"id": {
+						"type": "integer",
+						"format": "uint32",
+						"description": "Unique identifier for the movie"
+					},
+					"original_language": {
+						"type": "string",
+						"description": "Original language of the movie"
+					},
+					"original_title": {
+						"type": "string",
+						"description": "Original title of the movie"
+					},
+					"overview": {
+						"type": "string",
+						"description": "Brief overview or summary of the movie"
+					},
+					"popularity": {
+						"type": "number",
+						"format": "float",
+						"description": "Popularity score of the movie"
+					},
+					"poster_path": {
+						"type": "string",
+						"description": "URL to poster image"
+					},
+					"release_date": {
+						"type": "string",
+						"description": "Release date of the movie in ISO format (YYYY-MM-DD)"
+					},
+					"title": {
+						"type": "string",
+						"description": "Translated title of the movie"
+					},
+					"video": {
+						"type": "boolean",
+						"description": "Indicates if there is a video trailer available"
+					},
+					"vote_average": {
+						"type": "number",
+						"format": "double",
+						"description": "Average rating given by users"
+					},
+					"vote_count": {
+						"type": "integer",
+						"format": "uint16",
+						"description": "Number of votes received"
+					}
+				}
+			},
+			"TMoviesPayload": {
+				"type": "object",
+				"required": ["text"],
+				"properties": {
+					"text": {
+						"type": "string",
+						"example": "I want a fantasy movie with dragons and adventure"
+					}
 				}
 			}
 		}
