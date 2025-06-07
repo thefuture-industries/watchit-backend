@@ -117,3 +117,8 @@ func (h Handler) MovieTextFREEHandler(w http.ResponseWriter, r *http.Request) {
 
 	utils.WriteJSON(w, r, http.StatusOK, movies)
 }
+
+func (h Handler) MovieImageHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	image, ok := vars["image"]
+}
