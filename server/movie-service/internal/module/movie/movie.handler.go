@@ -1,7 +1,9 @@
 package movie
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"go-movie-service/internal/common/database/schema"
@@ -127,5 +129,7 @@ func (h Handler) MovieImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url := ""
+	url := fmt.Sprintf("https://image.tmdb.org/t/p/w500%s?api_key=%s", image, os.Getenv("TMDB_KEY_API"))
+
+	client := 
 }
