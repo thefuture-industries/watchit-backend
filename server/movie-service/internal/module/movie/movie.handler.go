@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"go-movie-service/internal/common/database/schema"
 	"go-movie-service/internal/common/utils"
@@ -131,5 +132,13 @@ func (h Handler) MovieImageHandler(w http.ResponseWriter, r *http.Request) {
 
 	url := fmt.Sprintf("https://image.tmdb.org/t/p/w500%s?api_key=%s", image, os.Getenv("TMDB_KEY_API"))
 
-	client := 
+	httpConfig, err := utils.GetProxy()
+	if err != nil {
+		
+	}
+
+	client := &http.Client{
+		Transport: utils.GetProxy(),
+		Timeout: 15 * time.Second,
+	}
 }
