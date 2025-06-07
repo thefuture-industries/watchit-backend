@@ -9,10 +9,10 @@ import (
 	"time"
 )
 
-func GetProxy() (error, *http.Transport) {
+func GetProxy() (*http.Transport, error) {
 	proxy, err := url.Parse("http://" + os.Getenv("PROXY_USERNAME") + ":" + os.Getenv("PROXY_PASSWORD") + "@" + os.Getenv("PROXY_ADDRESS") + ":" + os.Getenv("PROXY_PORT"))
 	if err != nil {
-		return fmt.Errorf("invalid proxy URL"), nil
+		return nil, fmt.Errorf("invalid proxy URL")
 	}
 
 	transport := &http.Transport{
@@ -22,5 +22,5 @@ func GetProxy() (error, *http.Transport) {
 		}).DialContext,
 	}
 
-	return nil, transport
+	return transport, nil
 }

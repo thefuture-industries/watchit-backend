@@ -134,11 +134,15 @@ func (h Handler) MovieImageHandler(w http.ResponseWriter, r *http.Request) {
 
 	httpConfig, err := utils.GetProxy()
 	if err != nil {
-		
+		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	client := &http.Client{
-		Transport: utils.GetProxy(),
-		Timeout: 15 * time.Second,
+		Transport: httpConfig,
+		Timeout:   15 * time.Second,
 	}
+
+	resp, err := client.Get(url)
+	if err != nil || resp.StatusCode != http.Stat
 }
