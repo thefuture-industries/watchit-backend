@@ -121,4 +121,11 @@ func (h Handler) MovieTextFREEHandler(w http.ResponseWriter, r *http.Request) {
 func (h Handler) MovieImageHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	image, ok := vars["image"]
+
+	if !ok {
+		utils.WriteJSON(w, r, http.StatusBadRequest, "image not found")
+		return
+	}
+
+	url := ""
 }
