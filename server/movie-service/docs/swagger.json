@@ -5,9 +5,9 @@
 		"title": "movie microservice API",
 		"version": "0.1.2"
 	},
-	"host": "stunning-adventure-4jjjwvxj7wv5cj65v-8011.app.github.dev",
+	"host": "localhost:8011",
 	"basePath": "/microservice/movie-service",
-	"schemes": ["https"],
+	"schemes": ["http"],
 	"paths": {
 		"/recommendation": {
 			"post": {
@@ -171,6 +171,44 @@
 					},
 					"400": {
 						"description": "Invalid input or failed to process movie"
+					}
+				}
+			}
+		},
+		"/movie/image/{image}": {
+			"get": {
+				"summary": "Get a movie image",
+				"description": "Downloads the image from TMDB using the specified path and returns it via proxy",
+				"tags": ["Movies"],
+				"parameters": [
+					{
+						"name": "image",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "The relative path to the TMDB image, for example: /xqR4ABkFTFYe8NDJi3knwWX7zfn.jpg"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response with an image",
+						"schema": {
+							"type": "file"
+						}
+					},
+					"400": {
+						"description": "Invalid request (missing image parameter)",
+						"schema": {
+							"type": "string",
+							"example": "image not found"
+						}
+					},
+					"500": {
+						"description": "Server or proxy error",
+						"schema": {
+							"type": "string",
+							"example": "proxy error"
+						}
 					}
 				}
 			}
