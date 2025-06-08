@@ -220,7 +220,7 @@ func (lsa *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string)
 	}
 	wg.Wait()
 
-	matrix := mat.eNewDnse(nDocs, nTerms, data)
+	matrix := mat.NewDense(nDocs, nTerms, data)
 
 	var mm = int(float64(len(documents)) * 0.14)
 	rows, cols := matrix.Dims()
