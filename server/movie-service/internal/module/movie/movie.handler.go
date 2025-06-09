@@ -1,8 +1,12 @@
 package movie
 
 import (
+	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
+	"time"
 
 	"go-movie-service/internal/common/database/schema"
 	"go-movie-service/internal/common/utils"
@@ -116,4 +120,44 @@ func (h Handler) MovieTextFREEHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSON(w, r, http.StatusOK, movies)
+}
+
+func (h Handler) MovieImageHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	image, ok := vars["image"]
+
+	if !ok {
+		utils.WriteJSON(w, r, http.StatusBadRequest, "image not found")
+		return
+	}
+
+	url := fmt.Sprintf("https://image.tmdb.org/t/p/w500/%s?api_key=%s", image, os.Getenv("TMDB_KEY_API"))
+
+	httpConfig, err := utils.GetProxy()
+	if err != nil {
+		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	client := &http.Client{
+		Transport: httpConfig,
+		Timeout:   15 * time.Second,
+	}
+
+	resp, err := client.Get(url)
+	if err != nil {
+		utils.WriteJSON(w, r, http.StatusBadGateway, err.Error())
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		utils.WriteJSON(w, r, resp.StatusCode, "error send request to get image")
+		return
+	}
+
+	w.Header().Set("Content-Type", resp.Header.Get("Content-Type"))
+	w.WriteHeader(http.StatusOK)
+
+	io.Copy(w, resp.Body)
 }

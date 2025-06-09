@@ -35,7 +35,7 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Валидация данных от пользователя
 	if err := utils.Validate.Struct(payload); err != nil {
-		utils.WriteJSON(w, r, http.StatusBadRequest, "Not all fields are filled in")
+		utils.WriteJSON(w, r, http.StatusBadRequest, "not all fields are filled in")
 		return
 	}
 
@@ -50,7 +50,7 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 	h.monitor.VisionDBQuery(time.Since(queryStart))
 
 	if isUsername == nil {
-		utils.WriteJSON(w, r, http.StatusBadRequest, "The user was not found")
+		utils.WriteJSON(w, r, http.StatusBadRequest, "the user was not found")
 		return
 	}
 
@@ -63,21 +63,14 @@ func (h Handler) SigninHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Проверка на pincode
 	if password_hash != isUsername.Password {
-		utils.WriteJSON(w, r, http.StatusBadRequest, "The user was not found")
-		return
-	}
-
-	uuid_hash, err := utils.Encrypt(isUsername.UUID)
-	if err != nil {
-		h.errors.HandleErrors(err, false)
-		utils.WriteJSON(w, r, http.StatusInternalServerError, err.Error())
+		utils.WriteJSON(w, r, http.StatusBadRequest, "the user was not found")
 		return
 	}
 
 	// Создание и установка cookie
 	cookie := &http.Cookie{
 		Name:     "auth-token",
-		Value:    uuid_hash,
+		Value:    isUsername.UUID,
 		Path:     "/",
 		Expires:  time.Now().AddDate(0, 6, 0),
 		SameSite: http.SameSiteStrictMode,
@@ -101,7 +94,7 @@ func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Валидация данных от пользователя
 	if err := utils.Validate.Struct(payload); err != nil {
-		utils.WriteJSON(w, r, http.StatusBadRequest, "Not all fields are filled in")
+		utils.WriteJSON(w, r, http.StatusBadRequest, "not all fields are filled in")
 		return
 	}
 
@@ -115,7 +108,7 @@ func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 	h.monitor.VisionDBQuery(time.Since(queryStart))
 
 	if isUsername != nil {
-		utils.WriteJSON(w, r, http.StatusBadRequest, "This username is busy, try another one")
+		utils.WriteJSON(w, r, http.StatusBadRequest, "this username is busy, try another one")
 		return
 	}
 
@@ -141,7 +134,7 @@ func (h Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	h.monitor.VisionDBQuery(time.Since(queryStart))
 
-	utils.WriteJSON(w, r, http.StatusCreated, "The user has been successfully created!")
+	utils.WriteJSON(w, r, http.StatusCreated, "the user has been successfully created!")
 }
 
 func (h Handler) UpdateHandler(w http.ResponseWriter, r *http.Request) {}
@@ -157,5 +150,5 @@ func (h Handler) SignoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, cookie)
 
-	utils.WriteJSON(w, r, http.StatusOK, "You have successfully logged out.")
+	utils.WriteJSON(w, r, http.StatusOK, "you have successfully logged out.")
 }

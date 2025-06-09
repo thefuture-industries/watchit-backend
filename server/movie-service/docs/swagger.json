@@ -137,6 +137,81 @@
 					}
 				}
 			}
+		},
+		"/movie/f/t/gost": {
+			"post": {
+				"summary": "Get movies by text user",
+				"tags": ["Movies"],
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"security": [
+					{
+						"cookieAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "payload",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/TMoviesPayload"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "List of similar movies",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/Movie"
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input or failed to process movie"
+					}
+				}
+			}
+		},
+		"/movie/g/image/{image}": {
+			"get": {
+				"summary": "Get a movie image",
+				"description": "Downloads the image from TMDB using the specified path and returns it via proxy",
+				"tags": ["Movies"],
+				"parameters": [
+					{
+						"name": "image",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "The relative path to the TMDB image, for example: /xqR4ABkFTFYe8NDJi3knwWX7zfn.jpg"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response with an image",
+						"schema": {
+							"type": "file"
+						}
+					},
+					"400": {
+						"description": "Invalid request (missing image parameter)",
+						"schema": {
+							"type": "string",
+							"example": "image not found"
+						}
+					},
+					"500": {
+						"description": "Server or proxy error",
+						"schema": {
+							"type": "string",
+							"example": "proxy error"
+						}
+					}
+				}
+			}
 		}
 	},
 	"securityDefinitions": {

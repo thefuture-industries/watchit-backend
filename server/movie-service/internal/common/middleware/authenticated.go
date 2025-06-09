@@ -11,15 +11,11 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("auth-token")
 		if err != nil || cookie.Value == "" {
-			utils.WriteJSON(w, r, http.StatusUnauthorized, "Sign in to your account")
+			utils.WriteJSON(w, r, http.StatusUnauthorized, "sign in to your account")
 			return
 		}
 
-		uuid, err := utils.Decrypt(cookie.Value)
-		if err != nil {
-			utils.WriteJSON(w, r, http.StatusInternalServerError, err)
-			return
-		}
+		uuid := cookie.Value
 
 		user, err := action.GetUserByUUID(uuid)
 		if err != nil {
@@ -28,7 +24,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		if user == nil {
-			utils.WriteJSON(w, r, http.StatusUnauthorized, "Sign in to your account")
+			utils.WriteJSON(w, r, http.StatusUnauthorized, "sign in to your account")
 			return
 		}
 
