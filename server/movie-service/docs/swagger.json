@@ -175,7 +175,7 @@
 				}
 			}
 		},
-		"/movie/image/{image}": {
+		"/movie/g/image/{image}": {
 			"get": {
 				"summary": "Get a movie image",
 				"description": "Downloads the image from TMDB using the specified path and returns it via proxy",

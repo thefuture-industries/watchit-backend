@@ -29,7 +29,7 @@ func (s *System) StartDBMonitoring() error {
 	}
 
 	go func() {
-		ticker := time.NewTicker(60 * time.Second)
+		ticker := time.NewTicker(3 * time.Minute)
 		defer ticker.Stop()
 
 		for {

@@ -243,17 +243,6 @@ func (lsa *LSABuilder) AnalyzeByMovie(documents []types.Movie, inputText string)
 }
 
 func (lsa *LSABuilder) AnalyzeByCosine(documents []types.Movie, text string, top uint16) {
-	overviews := make([]string, len(documents))
-	for i, movie := range documents {
-		overviews[i] = movie.Overview
-	}
-
-	lsa.addVocabulary(overviews)
-	lsa.calcIDF()
-
-	vectorInput := lsa.CVector(text)
-
-
 }
 
 func (lsa *LSABuilder) CosineSimilarity(a, b []float64) float64 {

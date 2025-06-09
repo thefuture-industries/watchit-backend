@@ -132,7 +132,6 @@ func (h Handler) MovieImageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url := fmt.Sprintf("https://image.tmdb.org/t/p/w500/%s?api_key=%s", image, os.Getenv("TMDB_KEY_API"))
-	fmt.Println(url)
 
 	httpConfig, err := utils.GetProxy()
 	if err != nil {
@@ -151,8 +150,6 @@ func (h Handler) MovieImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer resp.Body.Close()
-
-	fmt.Println(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		utils.WriteJSON(w, r, resp.StatusCode, "error send request to get image")
