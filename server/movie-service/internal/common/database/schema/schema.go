@@ -33,6 +33,15 @@ type Users struct {
 }
 
 type Profiles struct {
+	ID        uint      `gorm:"primarykey" json:"id"`
+	UserID    uint      `gorm:"unique;not null" json:"user_id"`
+	Bio       string    `gorm:"size:255;" json:"bio"`
+	Avatar    byte      `json:"avatar"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type Payments struct {
 	ID uint `gorm:"primarykey" json:"id"`
 }
 
