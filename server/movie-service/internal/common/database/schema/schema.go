@@ -32,6 +32,10 @@ type Users struct {
 	UpdatedAt    time.Time      `json:"updated_at"`
 }
 
+type Profiles struct {
+	ID uint `gorm:"primarykey" json:"id"`
+}
+
 type Limiter struct {
 	ID           uint      `gorm:"primarykey" json:"id"`
 	UUID         string    `gorm:"unique;size:255;not null" json:"uuid"`
