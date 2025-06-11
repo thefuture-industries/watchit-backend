@@ -5,12 +5,6 @@ import (
 	"time"
 )
 
-type Genres struct {
-	ID        uint   `gorm:"primarykey" json:"id"`
-	GenreID   uint   `gorm:"unique;not null" json:"genre_id"`
-	GenreName string `gorm:"unique;not null" json:"genre_name"`
-}
-
 type Users struct {
 	ID           uint           `gorm:"primarykey" json:"id"`
 	UUID         string         `gorm:"unique;type:varchar(255);not null" json:"uuid"`
@@ -55,11 +49,19 @@ type PaymentCards struct {
 }
 
 type Limiter struct {
-	ID           uint      `gorm:"primarykey" json:"id"`
-	UUID         string    `gorm:"unique;type:varchar(255);not null" json:"uuid"`
-	TextLimit    uint      `gorm:"default:3;not null;" json:"text_limit"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	ID        uint      `gorm:"primarykey" json:"id"`
+	UUID      string    `gorm:"unique;type:varchar(255);not null" json:"uuid"`
+	TextLimit uint      `gorm:"default:3;not null;" json:"text_limit"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type Recommendations struct {
+	ID        uint      `gorm:"primarykey" json:"id"`
+	UUID      string    `gorm:"type:varchar(255);not null" json:"uuid"`
+	GenreID   uint      `gorm:"not null" json:"genre_id"`
+	Count     uint      `gorm:"not null" json:"count"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type Favourites struct {
@@ -69,4 +71,10 @@ type Favourites struct {
 	MoviePoster string    `gorm:"type:varchar(255);not null" json:"movie_poster"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type Genres struct {
+	ID        uint   `gorm:"primarykey" json:"id"`
+	GenreID   uint   `gorm:"unique;not null" json:"genre_id"`
+	GenreName string `gorm:"unique;not null" json:"genre_name"`
 }
