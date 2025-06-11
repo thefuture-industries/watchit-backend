@@ -3,6 +3,8 @@ package schema
 import (
 	"database/sql"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 type Users struct {
@@ -22,25 +24,25 @@ type Profiles struct {
 	ID        uint      `gorm:"primarykey" json:"id"`
 	UUID      string    `gorm:"unique;type:varchar(255);not null" json:"uuid"`
 	Bio       string    `gorm:"type:varchar(255)" json:"bio"`
-	Avatar    byte      `json:"avatar"`
+	Avatar    []byte    `gorm:"type:bytea" json:"avatar"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Payments struct {
-	ID          uint      `gorm:"primarykey" json:"id"`
-	UUID        string    `gorm:"unique;type:varchar(255);not null" json:"uuid"`
-	Amount      decimal   `gorm:"type:decimal(17,11);not null" json:"amount"`
-	PaymentDate time.Time `gorm:"not null" json:"payment_date"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          uint            `gorm:"primarykey" json:"id"`
+	UUID        string          `gorm:"unique;type:varchar(255);not null" json:"uuid"`
+	Amount      decimal.Decimal `gorm:"type:decimal(17,11);not null" json:"amount"`
+	PaymentDate time.Time       `gorm:"not null" json:"payment_date"`
+	CreatedAt   time.Time       `json:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at"`
 }
 
 type PaymentCards struct {
 	ID               uint      `gorm:"primarykey" json:"id"`
 	UUID             string    `gorm:"unique;type:varchar(255);not null" json:"uuid"`
 	CardNumber       string    `gorm:"type:varchar(16);not null" json:"card_number"`
-	ExpirationMounth int16     `gorm:"not null;check:expiration_month >= 1 AND expiration_month <= 12" json:"expiration_mounth"`
+	ExpirationMonth int16     `gorm:"not null;check:expiration_month >= 1 AND expiration_month <= 12" json:"expiration_month"`
 	ExpirationYear   int16     `gorm:"not null" json:"expiration_year"`
 	CVVCode          string    `gorm:"type:varchar(3);not null" json:"cvv_code"`
 	CardHolderName   string    `gorm:"type:varchar(100);not null" json:"cardholder_name"`
