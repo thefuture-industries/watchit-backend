@@ -30,7 +30,7 @@ type Profiles struct {
 type Payments struct {
 	ID          uint      `gorm:"primarykey" json:"id"`
 	UUID        string    `gorm:"unique;type:varchar(255);not null" json:"uuid"`
-	Amount      float64   `gorm:"not null" json:"amount"`
+	Amount      decimal   `gorm:"type:decimal(17,11);not null" json:"amount"`
 	PaymentDate time.Time `gorm:"not null" json:"payment_date"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
