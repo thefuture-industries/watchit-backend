@@ -42,7 +42,21 @@ type Profiles struct {
 }
 
 type Payments struct {
-	ID uint `gorm:"primarykey" json:"id"`
+	ID          uint      `gorm:"primarykey" json:"id"`
+	UserID      uint      `gorm:"not null" json:"user_id"`
+	Amount      float64   `gorm:"not null" json:"amount"`
+	PaymentDate time.Time `gorm:"not null" json:"payment_date"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type PaymentCards struct {
+	ID     uint `gorm:"primarykey" json:"id"`
+	UserID uint `gorm:"not null" json:"user_id"`
+	UserID uint `gorm:"not null" json:"user_id"`
+	UserID uint `gorm:"not null" json:"user_id"`
+	UserID uint `gorm:"not null" json:"user_id"`
+	UserID uint `gorm:"not null" json:"user_id"`
 }
 
 type Limiter struct {
