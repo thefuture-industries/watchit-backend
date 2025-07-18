@@ -10,8 +10,6 @@ import (
 	"watchit/httpx/pkg/machinelearning"
 )
 
-var maxCountMovie int = 50
-
 func (h *Handler) GetMoviesSuggestHandler(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 

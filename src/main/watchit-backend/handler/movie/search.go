@@ -7,6 +7,8 @@ import (
 )
 
 func (h *Handler) GetMoviesBySearchHandler(w http.ResponseWriter, r *http.Request) error {
+	ctx := r.Context()
+
 	var payload *SearchPayload
 
 	if err := httpx.HttpParse(r, &payload); err != nil {
@@ -17,8 +19,17 @@ func (h *Handler) GetMoviesBySearchHandler(w http.ResponseWriter, r *http.Reques
 		return httperr.BadRequest("not all fields are filled in")
 	}
 
-	sims :=
+	movies, err := h.Store.Movies.Get_Movies(ctx)
+	if err != nil {
+		return httperr.Db(ctx, err)
+	}
 
-		httpx.HttpResponse(w, r, http.StatusOK, "MOVIEs")
+	if movies == nil {
+		return httperr.NotFound("sorry, we couldn't find the movie")
+	}
+
+	sims := lsaBuilder.AnalyzeByCosine(movies, payload.Text)
+
+	httpx.HttpResponse(w, r, http.StatusOK, "MOVIEs")
 	return nil
 }
