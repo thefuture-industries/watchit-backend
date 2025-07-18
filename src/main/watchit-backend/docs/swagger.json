@@ -157,6 +157,185 @@
           }
         }
       }
+    },
+    "/movies/search": {
+      "post": {
+        "description": "Search movies",
+        "tags": ["movies"],
+        "summary": "Search movies",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/event-stream"
+        ],
+        "operationId": "search-movies",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "payload",
+            "in": "body",
+            "description": "Text input for search movie",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SuggestPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of searched movies",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Movie"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "No matching movies found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/movies/image/{image}": {
+      "get": {
+        "description": "Get movie image by filename",
+        "tags": ["movies"],
+        "summary": "Get movie image",
+        "produces": ["image/jpeg", "image/png"],
+        "operationId": "get-movie-image",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "image",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Image file name (e.g. aosm8NMQ3UyoBVpSxyimorCQykC.jpg)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Image file",
+            "schema": {
+              "type": "file"
+            }
+          },
+          "404": {
+            "description": "Image not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "error": "image not found"
+              }
+            }
+          },
+          "502": {
+            "description": "Bad gateway error from TMDB proxy",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "error": "error send request to get image"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "error": "internal server error"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/movies/details/{id}": {
+      "get": {
+        "description": "Get detailed information about a movie by its ID",
+        "tags": ["movies"],
+        "summary": "Get movie details",
+        "produces": ["application/json"],
+        "operationId": "get-movie-details",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "description": "ID of the movie to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Movie details retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/Movie"
+            }
+          },
+          "400": {
+            "description": "Invalid movie ID supplied",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Movie not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {

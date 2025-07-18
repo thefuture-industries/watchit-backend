@@ -1,6 +1,7 @@
 package movie
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
@@ -27,9 +28,9 @@ func (h *Handler) GetDetailsMovieHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	if movie == nil {
-		return httperr.NotFound("movie not found")
+		return httperr.NotFound(fmt.Sprintf("movie with id %d not found", id))
 	}
 
-	httpx.HttpResponse(w, r, http.StatusOK, "MOVIEs")
+	httpx.HttpResponse(w, r, http.StatusOK, movie)
 	return nil
 }

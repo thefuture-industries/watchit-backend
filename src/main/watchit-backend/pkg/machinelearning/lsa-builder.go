@@ -223,14 +223,12 @@ func (lsa *LSABuilder) AnalyzeByMovie(documents []models.Movie, inputText string
 }
 
 func (lsa *LSABuilder) AnalyzeByCosine(documents []models.Movie, inputText string, top uint16) []types.LSASimilarity {
-	overviews := make([]string, len(documents)+1)
+	titles := make([]string, len(documents)+1)
 	for i, movie := range documents {
-		if movie.Overview != nil {
-			overviews[i] = *movie.Overview
-		}
+		titles[i] = movie.Title
 	}
 
-	allDocs := append(overviews, inputText)
+	allDocs := append(titles, inputText)
 
 	lsa.addVocabulary(allDocs)
 	lsa.calcIDF()
@@ -239,7 +237,7 @@ func (lsa *LSABuilder) AnalyzeByCosine(documents []models.Movie, inputText strin
 
 	sims := make([]types.LSASimilarity, 0, len(documents))
 	for i := range documents {
-		docVec := lsa.CVector(overviews[i])
+		docVec := lsa.CVector(titles[i])
 		sim := lsa.CosineSimilarity(inputVec, docVec)
 		sims = append(sims, types.LSASimilarity{Index: i, Similarity: sim})
 	}
