@@ -31,11 +31,13 @@ func (h *Handler) AddFavouriteHandler(w http.ResponseWriter, r *http.Request) er
 	}
 
 	if err := h.Store.Favourites.Create_Favourite(ctx, &models.Favourite{
-		UserUUID: authToken,
-		MovieId:  payload.MovieId,
+		UserUUID:    authToken,
+		MovieId:     payload.MovieId,
 		MoviePoster: payload.MoviePoster,
-	})
+	}); err != nil {
+		return httperr.Db(ctx, err)
+	}
 
-	httpx.HttpResponse(w, r, http.StatusOK, "FAVs")
+	httpx.HttpResponse(w, r, http.StatusOK, "the movie is saved to favorites")
 	return nil
 }
