@@ -139,34 +139,14 @@ func (lsa *LSABuilder) CVector(doc string) []float64 {
 
 	termFreq := make(map[string]int)
 	for _, token := range tokens {
-		if _, ok := termFreq[token]; ok {
-			termFreq[token]++
-			continue
-		}
-
-		termFreq[token] = 0
+		termFreq[token]++
 	}
 
-	for i := range len(lsa.vocabulary) {
+	for i := range lsa.vocabulary {
 		term := lsa.vocabulary[i]
-
-		var termCount int
-		if value, ok := termFreq[term]; ok {
-			termCount = value
-		} else {
-			termCount = 0
-		}
-
-		tf := lsa.tfidfBuilder.TF(termCount, len(tokens))
-
-		var idfCacheValue float64
-		if value, ok := lsa.idfCache[term]; ok {
-			idfCacheValue = value
-		} else {
-			idfCacheValue = 0.0
-		}
-
-		tfidf[i] = lsa.tfidfBuilder.TFIDF(tf, idfCacheValue)
+		tf := lsa.tfidfBuilder.TF(termFreq[term], len(tokens))
+		idf := lsa.idfCache[term]
+		tfidf[i] = lsa.tfidfBuilder.TFIDF(tf, idf)
 	}
 
 	return tfidf
@@ -177,8 +157,6 @@ func (lsa *LSABuilder) AnalyzeByMovie(documents []models.Movie, inputText string
 	for i, movie := range documents {
 		if movie.Overview != nil {
 			overviews[i] = *movie.Overview
-		} else {
-			overviews[i] = ""
 		}
 	}
 	overviews[len(overviews)-1] = inputText
@@ -224,7 +202,7 @@ func (lsa *LSABuilder) AnalyzeByMovie(documents []models.Movie, inputText string
 
 	matrix := mat.NewDense(nDocs, nTerms, data)
 
-	var mm = int(float64(len(documents)) * 0.14)
+	var mm = int(float64(len(documents)) * 0.17)
 	rows, cols := matrix.Dims()
 	if cols > mm {
 		sliced := matrix.Slice(0, rows, 0, mm)
@@ -244,8 +222,20 @@ func (lsa *LSABuilder) AnalyzeByMovie(documents []models.Movie, inputText string
 	return U, documents
 }
 
-func (lsa *LSABuilder) AnalyzeByCosine(documents []models.Movie, text string, top uint16) {
+func (lsa *LSABuilder) AnalyzeByCosine(documents []models.Movie, inputText string, top uint16) {
+	overviews := make([]string, len(documents)+1)
+	for i, movie := range documents {
+		if movie.Overview != nil {
+			overviews[i] = *movie.Overview
+		}
+	}
 
+	allDocs := append(overviews, inputText)
+
+	lsa.addVocabulary(allDocs)
+	lsa.calcIDF()
+
+	inputVec := lsa.CVector(inputText)
 }
 
 func (lsa *LSABuilder) CosineSimilarity(a, b []float64) float64 {
