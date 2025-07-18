@@ -19,3 +19,8 @@ type Movie struct {
 	Video            bool       `db:"video" json:"video"`
 	Adult            bool       `db:"adult" json:"adult"`
 }
+
+type MovieWithGenres struct {
+	Movie
+	Genres []string `json:"genres"`
+}

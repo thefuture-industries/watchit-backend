@@ -64,12 +64,27 @@ func (s *MovieStore) Get_Movies(ctx context.Context) (*[]models.Movie, error) {
 	return &movies, nil
 }
 
-func (s *MovieStore) Get_MovieById(ctx context.Context, id int) (*models.Movie, error) {
-	movie := models.Movie{}
+func (s *MovieStore) Get_MovieById(ctx context.Context, id int) (*models.MovieWithGenres, error) {
+	movie := models.MovieWithGenres{}
 
 	query := `
-		SELECT id, title, overview, release_date, original_language, popularity, vote_average, poster_path, backdrop_path, video, adult FROM movie
-		WHERE id = $1 LIMIT 1
+		SELECT
+		    movie.id,
+		    movie.title,
+		    movie.overview,
+		    movie.release_date,
+		    movie.original_language,
+		    movie.popularity,
+		    movie.vote_average,
+		    movie.poster_path,
+		    movie.backdrop_path,
+		    movie.video,
+		    movie.adult,
+		    array_agg(genres.genre_name ORDER BY genres.genre_name) AS genres
+		FROM movie
+		LEFT JOIN movie_genres ON movie.id = movie_genres.movie_id
+		LEFT JOIN genres ON movie_genres.genre_id = genres.genre_id
+		WHERE movie.id = $1 GROUP BY movie.id
 	`
 
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
@@ -87,6 +102,7 @@ func (s *MovieStore) Get_MovieById(ctx context.Context, id int) (*models.Movie, 
 		&movie.BackdropPath,
 		&movie.Video,
 		&movie.Adult,
+		
 	)
 
 	if err != nil {
