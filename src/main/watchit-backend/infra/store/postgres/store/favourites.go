@@ -40,7 +40,7 @@ func (s *FavouriteStore) Get_FavouritesByUuid(ctx context.Context, uuid string) 
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	rows, err := s.db.QueryContext(ctx, query)
+	rows, err := s.db.QueryContext(ctx, query, uuid)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil

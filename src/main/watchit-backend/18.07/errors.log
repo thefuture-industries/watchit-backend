@@ -11,3 +11,12 @@
 [18.07.2025 23:51:18] [ERROR] favourite.FavouriteAddPayload.MovieId: readUint64: unexpected character: �, error found in #10 byte of ...|vie_id": ,
   "movie_|..., bigger context ...|{"movie_id": ,
   "movie_poster": ""}|...
+[18.07.2025 23:52:20] [ERROR] not all fields are filled in
+[18.07.2025 23:52:24] [ERROR] favourite.FavouriteAddPayload.MovieId: readUint64: unexpected character: �, error found in #10 byte of ...|vie_id": ,
+  "movie_|..., bigger context ...|{"movie_id": ,
+  "movie_poster": ""}|...
+[18.07.2025 23:53:46] [ERROR] the movie is already in favorites
+[18.07.2025 23:53:47] [ERROR] the movie is already in favorites
+[18.07.2025 23:53:47] [ERROR] the movie is already in favorites
+[18.07.2025 23:53:48] [ERROR] the movie is already in favorites
+[18.07.2025 23:54:03] [ERROR] не удалось выполнить операцию с базой данных

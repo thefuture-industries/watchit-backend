@@ -1,6 +1,6 @@
 package favourite
 
 type FavouriteAddPayload struct {
-	MovieId     int    `json:"movie_id"`
-	MoviePoster string `json:"movie_poster"`
+	MovieId     int    `json:"movie_id" validate:"required"`
+	MoviePoster string `json:"movie_poster" validate:"required"`
 }
