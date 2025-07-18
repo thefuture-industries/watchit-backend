@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"github.com/lib/pq"
 	"time"
 	"watchit/httpx/infra/logger"
@@ -112,7 +111,6 @@ func (s *MovieStore) Get_MovieById(ctx context.Context, id int) (*models.MovieWi
 			return nil, nil
 		}
 
-		fmt.Println(err.Error())
 		return nil, err
 	}
 

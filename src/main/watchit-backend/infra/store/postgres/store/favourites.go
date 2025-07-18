@@ -96,27 +96,6 @@ func (s *FavouriteStore) Get_FavouriteByUuidByMovieId(ctx context.Context, uuid 
 
 		return nil, err
 	}
-	defer rows.Close()
 
-	for rows.Next() {
-		favourite := models.Favourite{}
-
-		err := rows.Scan(
-			&favourite.ID,
-			&favourite.UserUUID,
-			&favourite.MovieId,
-			&favourite.MoviePoster,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		favourites = append(favourites, favourite)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return &favourites, nil
+	return &favourite, nil
 }

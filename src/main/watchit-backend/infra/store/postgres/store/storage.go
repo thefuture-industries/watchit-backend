@@ -23,6 +23,7 @@ type Storage struct {
 	Favourites interface {
 		Create_Favourite(ctx context.Context, favourite *models.Favourite) error
 		Get_FavouritesByUuid(ctx context.Context, uuid string) (*[]models.Favourite, error)
+		Get_FavouriteByUuidByMovieId(ctx context.Context, uuid string, movieId int) (*models.Favourite, error)
 	}
 }
 
