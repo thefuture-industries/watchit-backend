@@ -18,7 +18,7 @@ func (s *MovieStore) Get_Movies(ctx context.Context) (*[]models.Movie, error) {
 	movies := []models.Movie{}
 
 	query := `
-		SELECT title, overview, release_date, original_language, popularity, vote_average, poster_path, backdrop_path, video, adult FROM movie
+		SELECT id, title, overview, release_date, original_language, popularity, vote_average, poster_path, backdrop_path, video, adult FROM movie
 	`
 
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
@@ -38,6 +38,7 @@ func (s *MovieStore) Get_Movies(ctx context.Context) (*[]models.Movie, error) {
 		movie := models.Movie{}
 
 		err := rows.Scan(
+			&movie.ID,
 			&movie.Title,
 			&movie.Overview,
 			&movie.ReleaseDate,
@@ -64,7 +65,7 @@ func (s *MovieStore) Get_Movies(ctx context.Context) (*[]models.Movie, error) {
 }
 
 func (s *MovieStore) Get_MovieById(ctx context.Context, id int) (*models.Movie, error) {
-	movie := &models.Movie{}
+	movie := models.Movie{}
 
 	query := `
 		SELECT id, title, overview, release_date, original_language, popularity, vote_average, poster_path, backdrop_path, video, adult FROM movie
@@ -76,5 +77,25 @@ func (s *MovieStore) Get_MovieById(ctx context.Context, id int) (*models.Movie, 
 
 	err := s.db.QueryRowContext(ctx, query, id).Scan(
 		&movie.ID,
+		&movie.Title,
+		&movie.Overview,
+		&movie.ReleaseDate,
+		&movie.OriginalLanguage,
+		&movie.Popularity,
+		&movie.VoteAverage,
+		&movie.PosterPath,
+		&movie.BackdropPath,
+		&movie.Video,
+		&movie.Adult,
 	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return &movie, nil
 }
