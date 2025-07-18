@@ -222,35 +222,40 @@ func (lsa *LSABuilder) AnalyzeByMovie(documents []models.Movie, inputText string
 	return U, documents
 }
 
-func (lsa *LSABuilder) AnalyzeByCosine(documents []models.Movie, inputText string, top uint16) []types.LSASimilarity {
-	titles := make([]string, len(documents)+1)
+func (lsa *LSABuilder) SearchTitleFuzzy(documents []models.Movie, query string) []int {
+	qTokens := set(lsa.nlpBuilder.Preprocess(query))
+
+	var matches []int
 	for i, movie := range documents {
-		titles[i] = movie.Title
+		tokens := set(lsa.nlpBuilder.Preprocess(movie.Title))
+		if len(intersect(qTokens, tokens)) > 0 {
+			matches = append(matches, i)
+		}
 	}
 
-	allDocs := append(titles, inputText)
+	return matches
+}
 
-	lsa.addVocabulary(allDocs)
-	lsa.calcIDF()
+func set(tokens []string) map[string]struct{} {
+	m := make(map[string]struct{}, len(tokens))
 
-	inputVec := lsa.CVector(inputText)
-
-	sims := make([]types.LSASimilarity, 0, len(documents))
-	for i := range documents {
-		docVec := lsa.CVector(titles[i])
-		sim := lsa.CosineSimilarity(inputVec, docVec)
-		sims = append(sims, types.LSASimilarity{Index: i, Similarity: sim})
+	for _, token := range tokens {
+		m[token] = struct{}{}
 	}
 
-	sort.Slice(sims, func(i, j int) bool {
-		return sims[i].Similarity < sims[j].Similarity
-	})
+	return m
+}
 
-	if int(top) < len(sims) {
-		sims = sims[:top]
+func intersect(a, b map[string]struct{}) []string {
+	var res []string
+
+	for token := range a {
+		if _, ok := b[token]; ok {
+			res = append(res, token)
+		}
 	}
 
-	return sims
+	return res
 }
 
 func (lsa *LSABuilder) CosineSimilarity(a, b []float64) float64 {

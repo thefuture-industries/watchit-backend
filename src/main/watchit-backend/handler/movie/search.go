@@ -30,17 +30,17 @@ func (h *Handler) GetMoviesBySearchHandler(w http.ResponseWriter, r *http.Reques
 		return httperr.NotFound("sorry, we couldn't find the movie")
 	}
 
-	sims := lsaBuilder.AnalyzeByCosine(*movies, payload.Text, uint16(maxCountMovie))
+	indices := lsaBuilder.SearchTitleFuzzy(*movies, payload.Text)
 
-	var topMovies []models.Movie
-	for _, sim := range sims {
-		topMovies = append(topMovies, (*movies)[sim.Index])
+	var foundMovies []models.Movie
+	for _, idx := range indices {
+		foundMovies = append(foundMovies, (*movies)[idx])
 	}
 
-	if err := machinelearning.ShuffleArray(topMovies); err != nil {
+	if err := machinelearning.ShuffleArray(foundMovies); err != nil {
 		return httperr.InternalServerError(err.Error())
 	}
 
-	httpx.HttpResponse(w, r, http.StatusOK, topMovies)
+	httpx.HttpResponse(w, r, http.StatusOK, foundMovies)
 	return nil
 }
