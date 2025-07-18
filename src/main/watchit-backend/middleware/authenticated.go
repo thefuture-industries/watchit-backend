@@ -4,9 +4,8 @@ package middleware
 import (
 	"context"
 	"net/http"
-	"time"
+	"strings"
 	"watchit/httpx/encryption"
-	"watchit/httpx/infra/types"
 	"watchit/httpx/pkg/httpx"
 
 	jsoniter "github.com/json-iterator/go"
@@ -14,26 +13,26 @@ import (
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
-// Middleware для проверки на аутентифицированного пользователя
+// IsAuthenticated Middleware для проверки на аутентифицированного пользователя
 func IsAuthenticated(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("auth-token")
-		if err != nil || cookie == nil {
-			httpx.HttpResponse(w, r, http.StatusUnauthorized, "Войдите в аккаунт.")
+		header := r.Header.Get("Authorization")
+		if header == "" {
+			httpx.HttpResponse(w, r, http.StatusUnauthorized, "log in to your account")
 			return
 		}
 
-		authTokenModel, err := encryption.Decrypt(cookie.Value)
+		const prefix = "Bearer "
+		if !strings.HasPrefix(header, prefix) {
+			httpx.HttpResponse(w, r, http.StatusUnauthorized, "log in to your account")
+			return
+		}
+
+		token := strings.TrimPrefix(header, prefix)
+
+		authToken, err := encryption.Decrypt(token)
 		if err != nil {
-			httpx.HttpResponse(w, r, http.StatusUnauthorized, "Войдите в аккаунт.")
-			return
-		}
-
-		var authToken types.AuthToken
-		json.Unmarshal([]byte(authTokenModel), &authToken)
-
-		if time.Since(authToken.Timestamp).Hours() >= 24 {
-			httpx.HttpResponse(w, r, http.StatusUnauthorized, "Войдите в аккаунт.")
+			httpx.HttpResponse(w, r, http.StatusUnauthorized, "log in to your account")
 			return
 		}
 

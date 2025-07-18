@@ -25,7 +25,7 @@ func (s *httpServer) docs(r *mux.Router) {
 		htmlContent, err := scalar.ApiReferenceHTML(&scalar.Options{
 			SpecURL: "http://localhost:8080/api/v1/docs",
 			CustomOptions: scalar.CustomOptions{
-				PageTitle: "Neomatica Server",
+				PageTitle: "watchit api",
 			},
 			DarkMode: true,
 		})

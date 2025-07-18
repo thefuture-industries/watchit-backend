@@ -1,0 +1,213 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": ".",
+    "title": "watchit api",
+    "contact": {},
+    "version": "2.0.0"
+  },
+  "host": "localhost:8080",
+  "basePath": "/api/v1",
+  "paths": {
+    "/auth/create": {
+      "post": {
+        "description": "Create user",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["auth"],
+        "summary": "Create user",
+        "operationId": "create-user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/types.CreateUser"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "auth token",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "token"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "this username is already registered",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "this username is already registered"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/movies/": {
+      "get": {
+        "description": "Get movies",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["movies"],
+        "summary": "Get movies",
+        "operationId": "get-movies",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "unauthorized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/movies/suggest": {
+      "post": {
+        "description": "Suggest movies",
+        "tags": ["movies"],
+        "summary": "Suggest movies",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/event-stream"
+        ],
+        "operationId": "suggest-movies",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "payload",
+            "in": "body",
+            "description": "Text input for movie similarity",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SuggestPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of suggested movies",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Movie"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "No matching movies found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "types.CreateUser": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "guest"
+        }
+      },
+      "required": [
+        "username"
+      ]
+    },
+    "SuggestPayload": {
+      "type": "object",
+      "required": ["text"],
+      "properties": {
+        "text": {
+          "type": "string",
+          "example": "robot stranded on island with animals"
+        }
+      }
+    },
+    "Movie": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer", "format": "int64" },
+        "title": { "type": "string" },
+        "original_title": { "type": "string" },
+        "overview": { "type": "string" },
+        "release_date": { "type": "string", "format": "date" },
+        "original_language": { "type": "string" },
+        "popularity": { "type": "number", "format": "float" },
+        "vote_average": { "type": "number", "format": "float" },
+        "vote_count": { "type": "integer" },
+        "poster_path": { "type": "string" },
+        "backdrop_path": { "type": "string" },
+        "video": { "type": "boolean" },
+        "adult": { "type": "boolean" }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string",
+          "example": "unauthorized"
+        }
+      }
+    }
+  }
+}

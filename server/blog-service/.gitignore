@@ -1,4 +1,0 @@
-bin
-logs
-.env
-*.env.production
