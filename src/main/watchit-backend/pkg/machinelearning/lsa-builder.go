@@ -222,7 +222,7 @@ func (lsa *LSABuilder) AnalyzeByMovie(documents []models.Movie, inputText string
 	return U, documents
 }
 
-func (lsa *LSABuilder) AnalyzeByCosine(documents []models.Movie, inputText string, top uint16) {
+func (lsa *LSABuilder) AnalyzeByCosine(documents []models.Movie, inputText string, top uint16) []types.LSASimilarity {
 	overviews := make([]string, len(documents)+1)
 	for i, movie := range documents {
 		if movie.Overview != nil {
@@ -248,7 +248,11 @@ func (lsa *LSABuilder) AnalyzeByCosine(documents []models.Movie, inputText strin
 		return sims[i].Similarity < sims[j].Similarity
 	})
 
-	if top < 
+	if int(top) < len(sims) {
+		sims = sims[:top]
+	}
+
+	return sims
 }
 
 func (lsa *LSABuilder) CosineSimilarity(a, b []float64) float64 {

@@ -25,7 +25,7 @@ func (h *Handler) GetMoviesSuggestHandler(w http.ResponseWriter, r *http.Request
 		return httperr.BadRequest("not all fields are filled in")
 	}
 
-	movies, err := h.Store.Movies.GetMovies(ctx)
+	movies, err := h.Store.Movies.Get_Movies(ctx)
 	if err != nil {
 		return httperr.Db(ctx, err)
 	}
