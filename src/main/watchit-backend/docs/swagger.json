@@ -55,48 +55,6 @@
         }
       }
     },
-    "/movies/": {
-      "get": {
-        "description": "Get movies",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["movies"],
-        "summary": "Get movies",
-        "operationId": "get-movies",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Bearer token",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "object"
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string",
-                  "example": "unauthorized"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/movies/suggest": {
       "post": {
         "description": "Suggest movies",
