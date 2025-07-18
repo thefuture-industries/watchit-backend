@@ -8,6 +8,7 @@ import (
 
 func (h *Handler) AddFavouriteHandler(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
+	authToken := r.Context().Value("identity").(string)
 
 	var payload *FavouriteAddPayload
 
@@ -19,7 +20,14 @@ func (h *Handler) AddFavouriteHandler(w http.ResponseWriter, r *http.Request) er
 		return httperr.BadRequest("not all fields are filled in")
 	}
 
-	exists, err := h.Store.Favourites.Get_FavouriteByUuidByMovieId(ctx)
+	exists, err := h.Store.Favourites.Get_FavouriteByUuidByMovieId(ctx, authToken, payload.MovieId)
+	if err != nil {
+		return httperr.Db(ctx, err)
+	}
+
+	if exists != nil {
+		return httperr.BadRequest("movie already exists")
+	}
 
 	httpx.HttpResponse(w, r, http.StatusOK, "FAVs")
 	return nil
