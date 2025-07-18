@@ -2,6 +2,7 @@ package favourite
 
 import (
 	"net/http"
+	"watchit/httpx/infra/store/postgres/models"
 	"watchit/httpx/pkg/httpx"
 	"watchit/httpx/pkg/httpx/httperr"
 )
@@ -26,8 +27,14 @@ func (h *Handler) AddFavouriteHandler(w http.ResponseWriter, r *http.Request) er
 	}
 
 	if exists != nil {
-		return httperr.BadRequest("movie already exists")
+		return httperr.BadRequest("the movie is already in favorites")
 	}
+
+	if err := h.Store.Favourites.Create_Favourite(ctx, &models.Favourite{
+		UserUUID: authToken,
+		MovieId:  payload.MovieId,
+		MoviePoster: payload.MoviePoster,
+	})
 
 	httpx.HttpResponse(w, r, http.StatusOK, "FAVs")
 	return nil
