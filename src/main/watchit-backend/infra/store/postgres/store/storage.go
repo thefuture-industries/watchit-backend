@@ -18,6 +18,7 @@ type Storage struct {
 	}
 	Movies interface {
 		Get_Movies(ctx context.Context) (*[]models.Movie, error)
+		Get_MovieById(ctx context.Context, id int) (*models.MovieWithGenres, error)
 	}
 }
 

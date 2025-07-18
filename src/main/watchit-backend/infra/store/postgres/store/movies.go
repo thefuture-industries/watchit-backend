@@ -102,7 +102,7 @@ func (s *MovieStore) Get_MovieById(ctx context.Context, id int) (*models.MovieWi
 		&movie.BackdropPath,
 		&movie.Video,
 		&movie.Adult,
-		
+		&movie.Genres,
 	)
 
 	if err != nil {
