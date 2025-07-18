@@ -14,6 +14,22 @@ type FavouriteStore struct {
 	logger *logger.Logger
 }
 
+func (s *FavouriteStore) Create_Favourite(ctx context.Context, favourite *models.Favourite) error {
+	query := `
+		INSERT INTO favourites (user_uuid, movie_id, movie_poster) VALUES ($1, $2, $3)
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	_, err := s.db.ExecContext(ctx, query, favourite.UserUUID, favourite.MovieId, favourite.MoviePoster)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *FavouriteStore) Get_FavouritesByUuid(ctx context.Context, uuid string) (*[]models.Favourite, error) {
 	favourites := []models.Favourite{}
 
@@ -36,5 +52,23 @@ func (s *FavouriteStore) Get_FavouritesByUuid(ctx context.Context, uuid string) 
 
 	for rows.Next() {
 		favourite := models.Favourite{}
+
+		err := rows.Scan(
+			&favourite.ID,
+			&favourite.UserUUID,
+			&favourite.MovieId,
+			&favourite.MoviePoster,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		favourites = append(favourites, favourite)
 	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &favourites, nil
 }
