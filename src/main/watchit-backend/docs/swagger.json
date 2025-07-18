@@ -294,6 +294,105 @@
           }
         }
       }
+    },
+    "/favourites/": {
+      "post": {
+        "description": "Add movie to user's favourites",
+        "summary": "Add favourite movie",
+        "operationId": "add-favourite",
+        "tags": ["favourites"],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Movie ID and poster to add to favourites",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/FavouriteAddPayload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Movie added to favourites",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "the movie is saved to favorites"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or movie already favourited",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      },
+      "get": {
+        "description": "Get all favourite movies for the authenticated user",
+        "summary": "Get user's favourites",
+        "operationId": "get-favourites",
+        "tags": ["favourites"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of favourite movies",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Favourite"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -343,6 +442,39 @@
         "error": {
           "type": "string",
           "example": "unauthorized"
+        }
+      }
+    },
+    "Favourite": {
+      "type": "object",
+      "properties": {
+        "user_uuid": {
+          "type": "string",
+          "example": "3e16d9de-9399-4cf4-b97e-9aa518de0b1a"
+        },
+        "movie_id": {
+          "type": "integer",
+          "format": "int64",
+          "example": 123
+        },
+        "movie_poster": {
+          "type": "string",
+          "example": "/poster/spiderman.jpg"
+        }
+      }
+    },
+    "FavouriteAddPayload": {
+      "type": "object",
+      "required": ["movie_id", "movie_poster"],
+      "properties": {
+        "movie_id": {
+          "type": "integer",
+          "format": "int64",
+          "example": 550
+        },
+        "movie_poster": {
+          "type": "string",
+          "example": "/poster/spiderman.jpg"
         }
       }
     }

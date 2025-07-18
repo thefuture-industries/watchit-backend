@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"watchit/httpx/handler"
 	"watchit/httpx/handler/auth"
+	"watchit/httpx/handler/favourite"
 	"watchit/httpx/handler/movie"
 	"watchit/httpx/middleware"
 )
@@ -27,6 +28,7 @@ func (s *httpServer) routes() http.Handler {
 	// routes path
 	auth.NewHandler(baseHandler).RegisterRoutes(subrouter)
 	movie.NewHandler(baseHandler).RegisterRoutes(subrouter)
+	favourite.NewHandler(baseHandler).RegisterRoutes(subrouter)
 
 	// docs
 	s.docs(subrouter)
