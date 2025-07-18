@@ -16,7 +16,7 @@ check: fmt lint test
 	@echo "All checks passed!"
 build:
 	@echo "Running build..."
-	@go build -o bin/watchit_http ./src/main/watchit-backend/cmd/server
+	@go build -o bin/watchit_http ./cmd/server
 
 test:
 	@go test -v ./...
