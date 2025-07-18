@@ -21,26 +21,25 @@ CREATE TRIGGER set_updated_at_trigger
     FOR EACH ROW
     EXECUTE FUNCTION set_updated_at();
 
-INSERT INTO genres (genre_id, genre_name) VALUES
-(18, 'Drama'),
-(36, 'History'),
-(27, 'Horror'),
-(16, 'Animation'),
-(99, 'Documentary'),
-(10751, 'Family'),
-(10402, 'Music'),
-(9648, 'Mystery'),
-(878, 'Science Fiction'),
-(28, 'Action'),
-(35, 'Comedy'),
-(80, 'Crime'),
-(14, 'Fantasy'),
-(37, 'Western'),
-(12, 'Adventure'),
-(10749, 'Romance'),
-(10770, 'TV Movie'),
-(53, 'Thriller'),
-(10752, 'War');
+INSERT INTO genres (genre_id, genre_name) VALUES (18, 'Drama');
+INSERT INTO genres (genre_id, genre_name) VALUES (36, 'History');
+INSERT INTO genres (genre_id, genre_name) VALUES (27, 'Horror');
+INSERT INTO genres (genre_id, genre_name) VALUES (16, 'Animation');
+INSERT INTO genres (genre_id, genre_name) VALUES (99, 'Documentary');
+INSERT INTO genres (genre_id, genre_name) VALUES (10751, 'Family');
+INSERT INTO genres (genre_id, genre_name) VALUES (10402, 'Music');
+INSERT INTO genres (genre_id, genre_name) VALUES (9648, 'Mystery');
+INSERT INTO genres (genre_id, genre_name) VALUES (878, 'Science Fiction');
+INSERT INTO genres (genre_id, genre_name) VALUES (28, 'Action');
+INSERT INTO genres (genre_id, genre_name) VALUES (35, 'Comedy');
+INSERT INTO genres (genre_id, genre_name) VALUES (80, 'Crime');
+INSERT INTO genres (genre_id, genre_name) VALUES (14, 'Fantasy');
+INSERT INTO genres (genre_id, genre_name) VALUES (37, 'Western');
+INSERT INTO genres (genre_id, genre_name) VALUES (12, 'Adventure');
+INSERT INTO genres (genre_id, genre_name) VALUES (10749, 'Romance');
+INSERT INTO genres (genre_id, genre_name) VALUES (10770, 'TV Movie');
+INSERT INTO genres (genre_id, genre_name) VALUES (53, 'Thriller');
+INSERT INTO genres (genre_id, genre_name) VALUES (10752, 'War');
 -- +goose StatementEnd
 
 -- +goose Down
