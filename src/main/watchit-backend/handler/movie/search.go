@@ -2,8 +2,10 @@ package movie
 
 import (
 	"net/http"
+	"watchit/httpx/infra/store/postgres/models"
 	"watchit/httpx/pkg/httpx"
 	"watchit/httpx/pkg/httpx/httperr"
+	"watchit/httpx/pkg/machinelearning"
 )
 
 func (h *Handler) GetMoviesBySearchHandler(w http.ResponseWriter, r *http.Request) error {
@@ -28,8 +30,17 @@ func (h *Handler) GetMoviesBySearchHandler(w http.ResponseWriter, r *http.Reques
 		return httperr.NotFound("sorry, we couldn't find the movie")
 	}
 
-	sims := lsaBuilder.AnalyzeByCosine(movies, payload.Text)
+	sims := lsaBuilder.AnalyzeByCosine(*movies, payload.Text, uint16(maxCountMovie))
 
-	httpx.HttpResponse(w, r, http.StatusOK, "MOVIEs")
+	var topMovies []models.Movie
+	for _, sim := range sims {
+		topMovies = append(topMovies, (*movies)[sim.Index])
+	}
+
+	if err := machinelearning.ShuffleArray(topMovies); err != nil {
+		return httperr.InternalServerError(err.Error())
+	}
+
+	httpx.HttpResponse(w, r, http.StatusOK, topMovies)
 	return nil
 }

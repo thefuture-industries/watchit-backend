@@ -67,7 +67,14 @@ func (s *MovieStore) Get_MovieById(ctx context.Context, id int) (*models.Movie, 
 	movie := &models.Movie{}
 
 	query := `
-		SELECT title, overview, release_date, original_language, popularity, vote_average, poster_path, backdrop_path, video, adult FROM movie
+		SELECT id, title, overview, release_date, original_language, popularity, vote_average, poster_path, backdrop_path, video, adult FROM movie
 		WHERE id = $1 LIMIT 1
 	`
+
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	err := s.db.QueryRowContext(ctx, query, id).Scan(
+		&movie.ID,
+	)
 }
