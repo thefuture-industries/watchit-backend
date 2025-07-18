@@ -17,4 +17,5 @@ require (
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	gonum.org/v1/gonum v0.16.0 // indirect
 )

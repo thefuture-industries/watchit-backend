@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"time"
 	"watchit/httpx/config"
 )
 
@@ -21,14 +20,5 @@ func (s *httpServer) httpStart() error {
 
 	fmt.Printf("[INFO] Listening on :%d\n", config.HttpServerPort)
 
-	httpServe := &http.Server{
-		Addr:              fmt.Sprintf(":%d", config.HttpServerPort),
-		Handler:           routes,
-		ReadTimeout:       7 * time.Second,
-		WriteTimeout:      12 * time.Second,
-		IdleTimeout:       60 * time.Second,
-		ReadHeaderTimeout: 4 * time.Second,
-	}
-
-	return httpServe.ListenAndServe()
+	return http.ListenAndServe(fmt.Sprintf(":%d", config.HttpServerPort), routes)
 }

@@ -14,7 +14,8 @@ func RecoveryMiddleware() mux.MiddlewareFunc {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			defer func() {
 				if rec := recover(); rec != nil {
-					httpx.HttpResponseError(w, r, fmt.Errorf(rec.(string)))
+					fmt.Println(rec)
+					httpx.HttpResponseError(w, r, fmt.Errorf("oops, something went wrong"))
 				}
 			}()
 

@@ -1,5 +1,6 @@
 bin
 logs
 .env
+.env.production
 *.env
 *.production

@@ -9,6 +9,6 @@ import (
 func (h *Handler) RegisterRoutes(router *mux.Router) {
 	authRouter := router.PathPrefix("/auth").Subrouter()
 
-	authRouter.HandleFunc("/create", httpx.ErrorHandler(h.CreateHandler)).Methods(http.MethodGet)
+	authRouter.HandleFunc("/create", httpx.ErrorHandler(h.CreateHandler)).Methods(http.MethodPost)
 	authRouter.HandleFunc("/out", httpx.ErrorHandler(h.OutHandler)).Methods(http.MethodPost)
 }
