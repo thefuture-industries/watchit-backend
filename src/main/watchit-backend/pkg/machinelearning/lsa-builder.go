@@ -60,8 +60,6 @@ func (lsa *LSABuilder) addVocabulary(documents []string) {
 				localCount[token]++
 			}
 
-			lsa.tfidfVectors = lsa.CVector(documents[i])
-
 			mu.Lock()
 			for token, count := range localCount {
 				wCount[token] += count
@@ -136,10 +134,10 @@ func (lsa *LSABuilder) calcIDF() {
 }
 
 func (lsa *LSABuilder) CVector(doc string) []float64 {
-	var tfidf []float64 = make([]float64, len(lsa.vocabulary))
+	tfidf := make([]float64, len(lsa.vocabulary))
 	tokens := lsa.nlpBuilder.Preprocess(doc)
 
-	var termFreq map[string]int = map[string]int{}
+	termFreq := make(map[string]int)
 	for _, token := range tokens {
 		if _, ok := termFreq[token]; ok {
 			termFreq[token]++
@@ -247,6 +245,7 @@ func (lsa *LSABuilder) AnalyzeByMovie(documents []models.Movie, inputText string
 }
 
 func (lsa *LSABuilder) AnalyzeByCosine(documents []models.Movie, text string, top uint16) {
+
 }
 
 func (lsa *LSABuilder) CosineSimilarity(a, b []float64) float64 {

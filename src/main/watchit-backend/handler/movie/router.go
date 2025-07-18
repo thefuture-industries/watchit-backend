@@ -14,5 +14,6 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 
 	movieRouter.HandleFunc("/suggest", httpx.ErrorHandler(h.GetMoviesSuggestHandler)).Methods(http.MethodPost)
 	movieRouter.HandleFunc("/search", httpx.ErrorHandler(h.GetMoviesBySearchHandler)).Methods(http.MethodPost)
-	movieRouter.HandleFunc("/{id}", httpx.ErrorHandler(h.GetDetailsMovieHandler)).Methods(http.MethodGet)
+	movieRouter.HandleFunc("/image/{image}", httpx.ErrorHandler(h.GetMovieImageHandler)).Methods(http.MethodGet)
+	movieRouter.HandleFunc("/details/{id}", httpx.ErrorHandler(h.GetDetailsMovieHandler)).Methods(http.MethodGet)
 }

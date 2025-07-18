@@ -17,7 +17,7 @@ type Storage struct {
 		Get_UserLimitByUuid(ctx context.Context, uuid string) (*models.UserLimit, error)
 	}
 	Movies interface {
-		GetMovies(ctx context.Context) (*[]models.Movie, error)
+		Get_Movies(ctx context.Context) (*[]models.Movie, error)
 	}
 }
 

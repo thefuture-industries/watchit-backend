@@ -14,7 +14,7 @@ type MovieStore struct {
 	logger *logger.Logger
 }
 
-func (s *MovieStore) GetMovies(ctx context.Context) (*[]models.Movie, error) {
+func (s *MovieStore) Get_Movies(ctx context.Context) (*[]models.Movie, error) {
 	movies := []models.Movie{}
 
 	query := `
@@ -61,4 +61,13 @@ func (s *MovieStore) GetMovies(ctx context.Context) (*[]models.Movie, error) {
 	}
 
 	return &movies, nil
+}
+
+func (s *MovieStore) Get_MovieById(ctx context.Context, id int) (*models.Movie, error) {
+	movie := &models.Movie{}
+
+	query := `
+		SELECT title, overview, release_date, original_language, popularity, vote_average, poster_path, backdrop_path, video, adult FROM movie
+		WHERE id = $1 LIMIT 1
+	`
 }
