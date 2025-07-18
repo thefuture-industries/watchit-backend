@@ -236,6 +236,19 @@ func (lsa *LSABuilder) AnalyzeByCosine(documents []models.Movie, inputText strin
 	lsa.calcIDF()
 
 	inputVec := lsa.CVector(inputText)
+
+	sims := make([]types.LSASimilarity, 0, len(documents))
+	for i := range documents {
+		docVec := lsa.CVector(overviews[i])
+		sim := lsa.CosineSimilarity(inputVec, docVec)
+		sims = append(sims, types.LSASimilarity{Index: i, Similarity: sim})
+	}
+
+	sort.Slice(sims, func(i, j int) bool {
+		return sims[i].Similarity < sims[j].Similarity
+	})
+
+	if top < 
 }
 
 func (lsa *LSABuilder) CosineSimilarity(a, b []float64) float64 {
