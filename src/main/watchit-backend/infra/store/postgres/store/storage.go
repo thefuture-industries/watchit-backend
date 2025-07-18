@@ -20,12 +20,17 @@ type Storage struct {
 		Get_Movies(ctx context.Context) (*[]models.Movie, error)
 		Get_MovieById(ctx context.Context, id int) (*models.MovieWithGenres, error)
 	}
+	Favourites interface {
+		Create_Favourite(ctx context.Context, favourite *models.Favourite) error
+		Get_FavouritesByUuid(ctx context.Context, uuid string) (*[]models.Favourite, error)
+	}
 }
 
 func NewStorage(db *sql.DB, logger *logger.Logger) Storage {
 	return Storage{
-		Users:  &UserStore{db: db, logger: logger},
-		Movies: &MovieStore{db: db, logger: logger},
+		Users:      &UserStore{db: db, logger: logger},
+		Movies:     &MovieStore{db: db, logger: logger},
+		Favourites: &FavouriteStore{db: db, logger: logger},
 	}
 }
 

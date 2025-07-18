@@ -72,3 +72,51 @@ func (s *FavouriteStore) Get_FavouritesByUuid(ctx context.Context, uuid string) 
 
 	return &favourites, nil
 }
+
+func (s *FavouriteStore) Get_FavouriteByUuidByMovieId(ctx context.Context, uuid string, movieId int) (*models.Favourite, error) {
+	favourite := models.Favourite{}
+
+	query := `
+		SELECT id, user_uuid, movie_id, movie_poster FROM favourites WHERE movie_id = $1 AND user_uuid = $2
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	err := s.db.QueryRowContext(ctx, query, movieId, uuid).Scan(
+		&favourite.ID,
+		&favourite.UserUUID,
+		&favourite.MovieId,
+		&favourite.MoviePoster,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		favourite := models.Favourite{}
+
+		err := rows.Scan(
+			&favourite.ID,
+			&favourite.UserUUID,
+			&favourite.MovieId,
+			&favourite.MoviePoster,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		favourites = append(favourites, favourite)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &favourites, nil
+}
