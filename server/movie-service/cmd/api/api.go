@@ -11,6 +11,7 @@ import (
 	"gorm.io/gorm"
 
 	"go-movie-service/internal/lib"
+	"go-movie-service/internal/module/favourite"
 	"go-movie-service/internal/module/movie"
 	"go-movie-service/internal/module/recommendation"
 	"go-movie-service/internal/packages"
@@ -71,6 +72,7 @@ func (s *APIServer) Run() error {
 
 	movie.NewHandler(monitoring, errors).RegisterRoutes(subrouter)
 	recommendation.NewHandler(monitoring, errors).RegisterRoutes(subrouter)
+	favourite.NewHandler(monitoring, errors).RegisterRoutes(subrouter)
 
 	// Логирование server
 	router.Use(packages.NewLogger().LoggerMiddleware)

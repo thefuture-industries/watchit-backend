@@ -24,7 +24,7 @@ func ConnectDB(dsn string) {
 		return
 	}
 
-	err = db.AutoMigrate(&schema.Recommendations{}, &schema.Genres{})
+	err = db.AutoMigrate(&schema.Users{}, &schema.Profiles{}, &schema.Payments{}, &schema.PaymentCards{}, &schema.Limiter{}, &schema.Recommendations{}, &schema.Favourites{}, &schema.Genres{})
 	if err != nil {
 		loggerApp.Error(err.Error())
 		return
