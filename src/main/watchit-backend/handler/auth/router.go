@@ -1,9 +1,10 @@
 package auth
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
 	"watchit/httpx/pkg/httpx"
+
+	"github.com/gorilla/mux"
 )
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {

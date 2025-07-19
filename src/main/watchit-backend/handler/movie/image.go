@@ -2,13 +2,14 @@ package movie
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
 	"io"
 	"net/http"
 	"os"
 	"time"
 	"watchit/httpx/pkg/httpx/httperr"
 	"watchit/httpx/pkg/httpx/httpprox"
+
+	"github.com/gorilla/mux"
 )
 
 func (h *Handler) GetMovieImageHandler(w http.ResponseWriter, r *http.Request) error {

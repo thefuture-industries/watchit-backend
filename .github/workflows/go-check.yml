@@ -26,35 +26,33 @@ jobs:
 
             - name: Check / Build Go package
               run: |
-                  for dir in server/user-service server/movie-service; do
-                    echo "Обработка директории $dir"
+                  echo "Обработка директории"
 
-                    cd $dir
+                  cd ./src/main/watchit-backend
 
-                    echo "→ Установка зависимостей"
-                    go mod tidy
-                    go mod download
+                  echo "→ Установка зависимостей"
+                  go mod tidy
+                  go mod download
 
-                    echo "→ Проверка форматирования (gofmt)"
-                    if [ -n "$(gofmt -l .)" ]; then
-                      echo "Файлы не отформатированы в $dir. Запустите 'gofmt -w .'"
-                      gofmt -l .
-                      exit 1
-                    fi
+                  echo "→ Проверка форматирования (gofmt)"
+                  if [ -n "$(gofmt -l .)" ]; then
+                    echo "Файлы не отформатированы в $dir. Запустите 'gofmt -w .'"
+                    gofmt -l .
+                    exit 1
+                  fi
 
-                    echo "→ Проверка импорта (goimports)"
-                    if [ -n "$(goimports -l .)" ]; then
-                      echo "Неверный импорт в $dir. Запустите 'goimports -w .'"
-                      goimports -l .
-                      exit 1
-                    fi
+                  echo "→ Проверка импорта (goimports)"
+                  if [ -n "$(goimports -l .)" ]; then
+                    echo "Неверный импорт в $dir. Запустите 'goimports -w .'"
+                    goimports -l .
+                    exit 1
+                  fi
 
-                    echo "→ Проверка lint (golangci-lint)"
-                    make lint
+                  echo "→ Проверка lint (golangci-lint)"
+                  make lint
 
-                    echo "→ Сборка бинарника"
-                    mkdir -p bin
-                    make build
+                  echo "→ Сборка бинарника"
+                  mkdir -p bin
+                  make build
 
-                    cd - > /dev/null
-                  done
+                  cd - > /dev/null

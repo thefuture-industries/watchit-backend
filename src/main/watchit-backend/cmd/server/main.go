@@ -3,11 +3,12 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/joho/godotenv"
 	"os"
 	"watchit/httpx/infra/logger"
 	"watchit/httpx/infra/store/postgres"
 	"watchit/httpx/infra/store/postgres/store"
+
+	"github.com/joho/godotenv"
 )
 
 type httpServer struct {
@@ -39,6 +40,9 @@ func main() {
 		logger: log,
 		store:  store,
 	}
+
+	// cron
+	go server.Cron()
 
 	// start http server
 	if err := server.httpStart(); err != nil {

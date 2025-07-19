@@ -14,4 +14,5 @@ func NewHandler(base *handler.BaseHandler) *Handler {
 }
 
 var maxCountMovie int = 50
+var maxCountSearchMovie int = 25
 var lsaBuilder *machinelearning.LSABuilder = machinelearning.NewLSABuilder()

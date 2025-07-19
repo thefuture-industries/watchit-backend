@@ -1,12 +1,13 @@
 package machinelearning
 
 import (
-	"gonum.org/v1/gonum/mat"
 	"math"
 	"sort"
 	"sync"
 	"watchit/httpx/infra/store/postgres/models"
 	"watchit/httpx/infra/types"
+
+	"gonum.org/v1/gonum/mat"
 )
 
 type LSABuilder struct {
@@ -72,7 +73,7 @@ func (lsa *LSABuilder) addVocabulary(documents []string) {
 	filtered := make([]types.WC, 0, len(wCount))
 	for w, c := range wCount {
 		if c >= minTokenCount {
-			filtered = append(filtered, types.WC{w, c})
+			filtered = append(filtered, types.WC{Word: w, Count: c})
 		}
 	}
 

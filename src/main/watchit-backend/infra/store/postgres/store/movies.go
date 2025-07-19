@@ -4,10 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"github.com/lib/pq"
 	"time"
 	"watchit/httpx/infra/logger"
 	"watchit/httpx/infra/store/postgres/models"
+
+	"github.com/lib/pq"
 )
 
 type MovieStore struct {

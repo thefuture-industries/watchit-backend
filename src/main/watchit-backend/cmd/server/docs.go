@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/MarceloPetrucio/go-scalar-api-reference"
-	"github.com/gorilla/mux"
 	"net/http"
 	"os"
+
+	"github.com/MarceloPetrucio/go-scalar-api-reference"
+	"github.com/gorilla/mux"
 )
 
 func (s *httpServer) docs(r *mux.Router) {
