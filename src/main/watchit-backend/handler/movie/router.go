@@ -1,10 +1,11 @@
 package movie
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
 	"watchit/httpx/middleware"
 	"watchit/httpx/pkg/httpx"
+
+	"github.com/gorilla/mux"
 )
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {

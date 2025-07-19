@@ -3,6 +3,8 @@ package movie
 import (
 	"net/http"
 	"sort"
+	"time"
+	"watchit/httpx/infra/constants"
 	"watchit/httpx/infra/store/postgres/models"
 	"watchit/httpx/infra/types"
 	"watchit/httpx/pkg/httpx"
@@ -12,6 +14,7 @@ import (
 
 func (h *Handler) GetMoviesSuggestHandler(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
+	authToken := r.Context().Value("identity").(string)
 
 	var payload *SuggestPayload
 
@@ -31,6 +34,48 @@ func (h *Handler) GetMoviesSuggestHandler(w http.ResponseWriter, r *http.Request
 	if movies == nil {
 		return httperr.NotFound("sorry, we couldn't find the movie")
 	}
+
+	if err := machinelearning.ShuffleArray(*movies); err != nil {
+		return httperr.InternalServerError(err.Error())
+	}
+
+	// check user limit
+	// ----------------
+	limits, err := h.Store.Users.Get_UserLimitByUuid(ctx, authToken)
+	if err != nil {
+		return httperr.Db(ctx, err)
+	}
+
+	if limits == nil {
+		return httperr.Forbidden("log in to your account")
+	}
+
+	switch limits.LimitId {
+	case constants.LimitFree:
+		if len(payload.Text) > constants.FreeMaxQueryLengthUsage {
+			return httperr.BadRequest("request length exceeded in the free version")
+		}
+
+		if limits.DailySearchLimitUsage > constants.FreeDailySearchLimitUsage {
+			return httperr.BadRequest("you have reached the daily search limit")
+		}
+
+		limitMovie := len(*movies) * 85 / 100
+		*movies = (*movies)[:limitMovie]
+
+		time.Sleep(2 * time.Second)
+
+	case constants.LimitPay:
+		if len(payload.Text) > constants.PayMaxQueryLengthUsage {
+			return httperr.BadRequest("oops, request length exceeded")
+		}
+
+		if limits.DailySearchLimitUsage > constants.PayDailySearchLimitUsage {
+			return httperr.BadRequest("you have reached the daily search limit")
+		}
+	}
+	// ----------------
+	// check user limit
 
 	matrix, docs := lsaBuilder.AnalyzeByMovie(*movies, payload.Text)
 	if matrix == nil {
@@ -64,8 +109,9 @@ func (h *Handler) GetMoviesSuggestHandler(w http.ResponseWriter, r *http.Request
 		moviesTop = append(moviesTop, movie)
 	}
 
-	if err := machinelearning.ShuffleArray(moviesTop); err != nil {
-		return httperr.InternalServerError(err.Error())
+	// db: update limits usage
+	if err := h.Store.Users.Update_UserLimitIncrementUsageByUuid(ctx, limits.UserUUID); err != nil {
+		return httperr.Db(ctx, err)
 	}
 
 	httpx.HttpResponse(w, r, http.StatusOK, moviesTop)

@@ -6,10 +6,10 @@ const (
 )
 
 const (
-	FreeMaxQueryLengthUsage   = 255
-	PayMaxQueryLengthUsage    = 1000
-	FreeDailySearchLimitUsage = 10
-	PayDailySearchLimitUsage  = 100
-	FreeSearchPriorityUsage   = 0
-	PaySearchPriorityUsage    = 1
+	FreeMaxQueryLengthUsage   = 255  // Длина поискового запроса (макс)
+	PayMaxQueryLengthUsage    = 1000 // Длина поискового запроса (макс)
+	FreeDailySearchLimitUsage = 10   // Кол-во поисков в день
+	PayDailySearchLimitUsage  = 100  // Кол-во поисков в день
+	FreeSearchPriorityUsage   = 0    // Приоритет в очереди (0 — низкий)
+	PaySearchPriorityUsage    = 1    // Приоритет в очереди (0 — низкий)
 )

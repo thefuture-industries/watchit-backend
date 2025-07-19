@@ -15,6 +15,9 @@ type Storage struct {
 
 		Get_UserProfileByUsername(ctx context.Context, username string) (*models.UserProfile, error)
 		Get_UserLimitByUuid(ctx context.Context, uuid string) (*models.UserLimit, error)
+
+		Update_UserLimitIncrementUsageByUuid(ctx context.Context, uuid string) error
+		Update_UserLimitReset(ctx context.Context) error
 	}
 	Movies interface {
 		Get_Movies(ctx context.Context) (*[]models.Movie, error)

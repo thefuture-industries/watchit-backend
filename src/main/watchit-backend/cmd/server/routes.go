@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
 	"watchit/httpx/handler"
 	"watchit/httpx/handler/auth"
 	"watchit/httpx/handler/favourite"
 	"watchit/httpx/handler/movie"
 	"watchit/httpx/middleware"
+
+	"github.com/gorilla/mux"
 )
 
 func (s *httpServer) routes() http.Handler {

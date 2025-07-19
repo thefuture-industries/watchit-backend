@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 	"watchit/httpx/infra/logger"
 	"watchit/httpx/infra/store/postgres/models"
@@ -89,7 +90,7 @@ func (s *UserStore) Get_UserLimitByUuid(ctx context.Context, uuid string) (*mode
 	user := models.UserLimit{}
 
 	query := `
-		SELECT id, user_uuid, limit_id, max_query_length_usage, daily_search_limit_usage, search_priority_usage
+		SELECT id, user_uuid, limit_id, daily_search_limit_usage
 		FROM user_limits WHERE user_uuid = $1 LIMIT 1
 	`
 
@@ -98,7 +99,7 @@ func (s *UserStore) Get_UserLimitByUuid(ctx context.Context, uuid string) (*mode
 
 	row := s.db.QueryRowContext(ctx, query, uuid)
 
-	if err := row.Scan(&user.ID, &user.UserUUID, &user.LimitId, &user.MaxQueryLengthUsage, &user.DailySearchLimitUsage, &user.SearchPriorityUsage); err != nil {
+	if err := row.Scan(&user.ID, &user.UserUUID, &user.LimitId, &user.DailySearchLimitUsage); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
@@ -107,4 +108,37 @@ func (s *UserStore) Get_UserLimitByUuid(ctx context.Context, uuid string) (*mode
 	}
 
 	return &user, nil
+}
+
+func (s *UserStore) Update_UserLimitIncrementUsageByUuid(ctx context.Context, uuid string) error {
+	query := `
+		SELECT increment_user_limits_usage($1)
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	_, err := s.db.ExecContext(ctx, query, uuid)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserStore) Update_UserLimitReset(ctx context.Context) error {
+	query := `
+		UPDATE user_limits SET daily_search_limit_usage = 0
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	_, err := s.db.ExecContext(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("All limits resets!)")
+	return nil
 }

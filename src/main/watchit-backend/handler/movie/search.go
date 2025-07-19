@@ -41,6 +41,12 @@ func (h *Handler) GetMoviesBySearchHandler(w http.ResponseWriter, r *http.Reques
 		return httperr.InternalServerError(err.Error())
 	}
 
+	if len(foundMovies) < maxCountSearchMovie {
+		foundMovies = foundMovies[:]
+	} else {
+		foundMovies = foundMovies[:maxCountSearchMovie]
+	}
+
 	httpx.HttpResponse(w, r, http.StatusOK, foundMovies)
 	return nil
 }

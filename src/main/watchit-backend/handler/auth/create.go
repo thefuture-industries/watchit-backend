@@ -1,13 +1,14 @@
 package auth
 
 import (
-	"github.com/google/uuid"
 	"net/http"
 	"watchit/httpx/encryption"
 	"watchit/httpx/infra/constants"
 	"watchit/httpx/infra/store/postgres/models"
 	"watchit/httpx/pkg/httpx"
 	"watchit/httpx/pkg/httpx/httperr"
+
+	"github.com/google/uuid"
 )
 
 func (h *Handler) CreateHandler(w http.ResponseWriter, r *http.Request) error {
